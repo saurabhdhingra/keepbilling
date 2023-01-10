@@ -1,0 +1,21 @@
+import 'package:flutter/material.dart';
+import '../../../utils/constants.dart';
+
+class TitleText extends StatelessWidget {
+  final String text;
+  const TitleText({Key? key, required this.text}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    var height = SizeConfig.getHeight(context);
+    var width = SizeConfig.getWidth(context);
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+          width * 0.05, height * 0.01, width * 0.05, height * 0.01),
+      child: Text(
+        text,
+        style: TextStyle(fontSize: height * 0.04, fontWeight: FontWeight.w800),
+      ),
+    );
+  }
+}
