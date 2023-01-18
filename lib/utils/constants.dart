@@ -135,8 +135,9 @@ final List<Map> links = [
 final ScrollController controller0 = ScrollController();
 final ScrollController controller1 = ScrollController();
 final ScrollController controller2 = ScrollController();
+final ScrollController controller3 = ScrollController();
 
-final List<Map> tabs = [
+final List<Map> settingsTabs = [
   {"title": "Change No."},
   {"title": "Add Extra Fields in Bills"},
   {"title": "Quotation T & C"},

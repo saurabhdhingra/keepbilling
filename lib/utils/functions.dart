@@ -9,6 +9,7 @@ ScrollController? getCurrentController(int index) {
       return controller1;
     case 2:
       return controller2;
+    case 3  : return controller3;
     default:
       return null;
   }

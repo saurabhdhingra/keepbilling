@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
         context,
         PageRouteBuilder(
           pageBuilder: (_, __, ___) => const SelectorPage(),
-          transitionDuration: const Duration(seconds: 2),
+          transitionDuration: const Duration(seconds: 1),
           transitionsBuilder: (_, a, __, c) =>
               FadeTransition(opacity: a, child: c),
         ),

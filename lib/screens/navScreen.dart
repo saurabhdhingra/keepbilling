@@ -5,11 +5,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:keepbilling/screens/dumy.dart';
 import 'package:keepbilling/screens/selector.dart';
+import 'package:keepbilling/widgets/formPages/titleText.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../api/dashboard.dart';
 import '../model/cheque.dart';
 import '../model/toDoTask.dart';
+import '../widgets/formPages/customField.dart';
 import '../widgets/navscreens/quickLink.dart';
 import '../widgets/navscreens/quickView.dart';
 import '../widgets/navscreens/rowText.dart';
@@ -43,6 +46,12 @@ class _NavScreenState extends State<NavScreen> {
   bool swipeStatus = false;
 
   DashboardService service = DashboardService();
+
+  String subject = "";
+  String query = "";
+
+  final _formKey1 = GlobalKey<FormState>();
+  final _formKey2 = GlobalKey<FormState>();
 
   removeUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -84,30 +93,23 @@ class _NavScreenState extends State<NavScreen> {
   bool isDrawerOpen = false;
   final List<List> _screensData = [
     [
-      CupertinoIcons.chat_bubble,
-      'Contact\nSupport',
-      const Settings(key: PageStorageKey('support'))
+      CupertinoIcons.arrow_up_circle,
+      'Quick Links',
     ],
     [
       CupertinoIcons.home,
       'Dashboard',
-      const DashboardPage(
-        key: PageStorageKey('dashboard'),
-      )
+    ],
+    [
+      CupertinoIcons.doc,
+      'Reports',
     ],
     [
       CupertinoIcons.settings,
       'Settings',
-      const Settings(key: PageStorageKey('settings'))
     ],
   ];
-  final List<Widget> _screens = [
-    const Support(key: PageStorageKey('support')),
-    const DashboardPage(
-      key: PageStorageKey('dashboard'),
-    ),
-    const Settings(key: PageStorageKey('settings')),
-  ];
+
   int _currentIndex = 0;
 
   @override
@@ -126,16 +128,97 @@ class _NavScreenState extends State<NavScreen> {
     return isLoading
         ? dashboardLoading(context)
         : Scaffold(
-      body: _screens[_currentIndex],
-      bottomNavigationBar: ScrolltoHide(
-        isDrawerOpen: isDrawerOpen,
-        duration: const Duration(milliseconds: 200),
-        height: height * 0.1,
-        controller: getCurrentController(_currentIndex)!,
-        child: BottomBar(
-          screens: _screensData,
-          setIndex: (int value) => setState(() => _currentIndex = value),
-          index: _currentIndex,
+            body: selectedScreen(height, width),
+            bottomNavigationBar: ScrolltoHide(
+              isDrawerOpen: isDrawerOpen,
+              duration: const Duration(milliseconds: 200),
+              height: height * 0.1,
+              controller: getCurrentController(_currentIndex)!,
+              child: BottomBar(
+                screens: _screensData,
+                setIndex: (int value) => setState(() => _currentIndex = value),
+                index: _currentIndex,
+              ),
+            ),
+          );
+  }
+
+  Widget selectedScreen(double height, double width) {
+    switch (_currentIndex) {
+      case 0:
+        return quickLinksPage();
+      case 1:
+        return homePage(height, width);
+      case 2:
+        return reportsPage();
+      case 3:
+        return settingsPage();
+      default:
+        return homePage(height, width);
+    }
+  }
+
+  Widget quickLinksPage() {
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 243, 243, 243),
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const TitleText(text: "Quick Links"),
+            ...quickLinks.map(
+              (e) {
+                return QuickLink(
+                  text: e,
+                  screen: quickLinksScreens[e],
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget reportsPage() {
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 243, 243, 243),
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const TitleText(text: "Reports"),
+            ...links[2]["subLinks"].map(
+              (e) {
+                return QuickLink(
+                  text: e["title"],
+                  screen: e["screen"],
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget settingsPage() {
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 243, 243, 243),
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const TitleText(text: "Settings"),
+            ...settingsTabs.map(
+              (e) {
+                return QuickLink(
+                  text: e["title"],
+                  screen: const DumyScreen(),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -189,9 +272,9 @@ class _NavScreenState extends State<NavScreen> {
             children: [
               quickViewsBox(height),
               SizedBox(height: height * 0.02),
-              const RowText(
-                  text: "Quick Links", color: Color.fromRGBO(16, 196, 161, 1)),
-              quickLinksBox(height, width),
+              // const RowText(
+              //     text: "Quick Links", color: Color.fromRGBO(16, 196, 161, 1)),
+              // quickLinksBox(height, width),
               toDoData.isEmpty
                   ? const SizedBox()
                   : SizedBox(height: height * 0.02),
@@ -483,7 +566,5 @@ class _NavScreenState extends State<NavScreen> {
   //Home Page ends
   //Home Page ends
   //Home Page ends
-  //Home Page ends
-  //Home Page ends
-  //Home Page ends
+
 }

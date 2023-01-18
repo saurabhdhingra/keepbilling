@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import '../../../utils/constants.dart';
 
 class Settings extends StatefulWidget {
-  
   const Settings({Key? key}) : super(key: key);
 
   @override
@@ -11,12 +10,12 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-
-    @override
+  @override
   void initState() {
     super.initState();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
+
   @override
   Widget build(BuildContext context) {
     var height = SizeConfig.getHeight(context);
@@ -46,7 +45,7 @@ class _SettingsState extends State<Settings> {
               //   height: height * 0.04,
               // ),
               title: Text(
-                tabs[index]["title"],
+                settingsTabs[index]["title"],
                 style: TextStyle(
                   fontSize: width * 0.04,
                   fontWeight: FontWeight.bold,

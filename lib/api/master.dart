@@ -112,10 +112,10 @@ class MasterService {
         body: jsonEncode(data),
       );
       responseJson = returnResponse(response);
+      print(jsonEncode(data));
     } on SocketException {
       throw FetchDataException('No Internet Connection');
     }
-
     return responseJson;
   }
 

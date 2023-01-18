@@ -39,7 +39,6 @@ class _VerifyOTPPageState extends State<VerifyOTPPage> {
     prefs.setString('userName', userName);
     prefs.setString('companyId', companyId);
     prefs.setString('cashId', cashId);
-
     prefs.setBool('swipeStatus', false);
   }
 
@@ -121,8 +120,12 @@ class _VerifyOTPPageState extends State<VerifyOTPPage> {
           if (value["message"] == "OTP Verified and Login successfull") {
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (context) => const NavScreen()));
-            await setUserData(value["userid"], value["username"],
-                value["companyid"], value["cashid"]);
+            await setUserData(
+              value["userid"],
+              value["username"],
+              value["companyid"],
+              value["cashid"],
+            );
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 content: Text("OTP verified and logged in successfully.")));
             Provider.of<AuthenticationProvider>(context, listen: false)

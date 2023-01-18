@@ -71,6 +71,7 @@ class _LoginPageState extends State<LoginPage> {
       setValue: (value) => setState(() => passKey = value),
       formKey: _formKey1,
       hintText: 'Enter PIN',
+      keyboardType: TextInputType.phone,
       obscureText: true,
     );
   }

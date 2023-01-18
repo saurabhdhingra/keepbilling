@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../utils/constants.dart';
+import '../../widgets/formPages/customField.dart';
 import '../../widgets/navscreens/rowText.dart';
 
 class Support extends StatefulWidget {
@@ -18,17 +19,18 @@ class _SupportState extends State<Support> {
   final _formKey1 = GlobalKey<FormState>();
   final _formKey2 = GlobalKey<FormState>();
 
-    @override
+  @override
   void initState() {
     super.initState();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
+
   @override
   Widget build(BuildContext context) {
     var height = SizeConfig.getHeight(context);
     var width = SizeConfig.getWidth(context);
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 243, 243, 243),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,44 +47,16 @@ class _SupportState extends State<Support> {
             ),
             SizedBox(height: height * 0.02),
             const RowText(text: "Subject", color: Colors.black87),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-              child: Form(
-                key: _formKey1,
-                child: TextFormField(
-                  cursorColor: Colors.black,
-                  onChanged: (value) {
-                    setState(() {
-                      subject = value;
-                    });
-                  },
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                  ),
-                ),
-              ),
+            CustomField(
+              setValue: (value) => setState(() => subject = value),
+              formKey: _formKey1,
             ),
             SizedBox(height: height * 0.02),
             const RowText(text: "Write your query", color: Colors.black87),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-              child: Form(
-                key: _formKey2,
-                child: TextFormField(
-                  maxLines: 19,
-                  cursorColor: Colors.black,
-                  onChanged: (value) {
-                    setState(() {
-                      subject = value;
-                    });
-                  },
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                  ),
-                ),
-              ),
+            CustomField(
+              setValue: (value) => setState(() => query = value),
+              formKey: _formKey2,
+              maxLines: 21,
             ),
             SizedBox(height: height * 0.02),
             Padding(

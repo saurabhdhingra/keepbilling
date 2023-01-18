@@ -28,29 +28,33 @@ class _QuickLinkState extends State<QuickLink> {
           MaterialPageRoute(builder: (context) => widget.screen),
         );
       },
-      child: Container(
-        height: height * 0.1,
-        width: width * 0.25,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(
-            Radius.circular(height * 0.02),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+            horizontal: width * 0.05, vertical: height * 0.01),
+        child: Container(
+          height: height * 0.08,
+          width: width * 0.9,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(
+              Radius.circular(height * 0.02),
+            ),
           ),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                widget.text,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: width * 0.04,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.blue,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  widget.text,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: width * 0.04,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.blue,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

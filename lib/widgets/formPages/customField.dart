@@ -10,8 +10,9 @@ class CustomField extends StatefulWidget {
   final bool obscureText;
   final String? initialValue;
   final String? hintText;
+  final int? maxLines;
   final TextEditingController? controller;
-  
+
   final bool readOnly;
 
   const CustomField({
@@ -25,6 +26,7 @@ class CustomField extends StatefulWidget {
     this.controller,
     this.readOnly = false,
     this.hintText,
+    this.maxLines = 1,
   }) : super(key: key);
 
   @override
@@ -41,6 +43,7 @@ class _CustomFieldState extends State<CustomField> {
       child: Form(
         key: widget.formKey,
         child: TextFormField(
+          maxLines: widget.maxLines,
           readOnly: widget.readOnly,
           controller: widget.controller,
           initialValue: widget.initialValue,

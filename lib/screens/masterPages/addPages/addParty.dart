@@ -47,23 +47,23 @@ class _AddPartyMasterState extends State<AddPartyMaster> {
 
   final _formKey1 = GlobalKey<FormState>();
   final _formKey2 = GlobalKey<FormState>();
-  final _formKey3 = GlobalKey<FormState>();
+  // final _formKey3 = GlobalKey<FormState>();
   final _formKey4 = GlobalKey<FormState>();
   final _formKey5 = GlobalKey<FormState>();
   final _formKey6 = GlobalKey<FormState>();
   final _formKey7 = GlobalKey<FormState>();
   final _formKey8 = GlobalKey<FormState>();
-  final _formKey9 = GlobalKey<FormState>();
+  // final _formKey9 = GlobalKey<FormState>();
   final _formKey10 = GlobalKey<FormState>();
   final _formKey11 = GlobalKey<FormState>();
-  final _formKey12 = GlobalKey<FormState>();
+  // final _formKey12 = GlobalKey<FormState>();
   final _formKey13 = GlobalKey<FormState>();
   final _formKey14 = GlobalKey<FormState>();
   final _formKey15 = GlobalKey<FormState>();
-  final _formKey16 = GlobalKey<FormState>();
+  // final _formKey16 = GlobalKey<FormState>();
   final _formKey17 = GlobalKey<FormState>();
-  final _formKey18 = GlobalKey<FormState>();
-  final _formKey19 = GlobalKey<FormState>();
+  // final _formKey18 = GlobalKey<FormState>();
+  // final _formKey19 = GlobalKey<FormState>();
 
   List gstTypes = ["Unselected", "Composite", "Unregistered", "Regular"];
   List gstTypesV = ["", "Composite", "Unregistered", "Regular"];
@@ -133,21 +133,6 @@ class _AddPartyMasterState extends State<AddPartyMaster> {
                 keyboardType: TextInputType.number,
               ),
               SizedBox(height: height * 0.02),
-              const RowText(text: "Phone Number"),
-              CustomField(
-                setValue: (value) => setState(() => partyPhone = value),
-                formKey: _formKey5,
-                keyboardType: TextInputType.phone,
-                validator: (value) {
-                  if (partyPhone != "" &&
-                      !RegExp(r'((\+*)((0[ -]*)*|((91 )*))((\d{12})+|(\d{10})+))|\d{5}([- ]*)\d{6}')
-                          .hasMatch(partyPhone)) {
-                    return 'Please enter a valid phone number';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: height * 0.02),
               const RowText(text: "Mobile"),
               CustomField(
                 setValue: (value) => setState(() => partyMobile = value),
@@ -163,7 +148,23 @@ class _AddPartyMasterState extends State<AddPartyMaster> {
                 },
               ),
               SizedBox(height: height * 0.02),
-              const RowText(text: "Email 1"),
+              const RowText(text: "Phone Number"),
+              CustomField(
+                setValue: (value) => setState(() => partyPhone = value),
+                formKey: _formKey5,
+                keyboardType: TextInputType.phone,
+                validator: (value) {
+                  if (partyPhone != "" &&
+                      !RegExp(r'((\+*)((0[ -]*)*|((91 )*))((\d{12})+|(\d{10})+))|\d{5}([- ]*)\d{6}')
+                          .hasMatch(partyPhone)) {
+                    return 'Please enter a valid phone number';
+                  }
+                  return null;
+                },
+              ),
+
+              SizedBox(height: height * 0.02),
+              const RowText(text: "Email"),
               CustomField(
                 setValue: (value) => setState(() => partyEmail1 = value),
                 formKey: _formKey7,
@@ -177,21 +178,21 @@ class _AddPartyMasterState extends State<AddPartyMaster> {
                   return null;
                 },
               ),
-              SizedBox(height: height * 0.02),
-              const RowText(text: "Email 2"),
-              CustomField(
-                setValue: (value) => setState(() => partyEmail2 = value),
-                formKey: _formKey8,
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (partyEmail2 != "" &&
-                      !RegExp(r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
-                          .hasMatch(partyEmail2)) {
-                    return 'Please enter a valid email address';
-                  }
-                  return null;
-                },
-              ),
+              // SizedBox(height: height * 0.02),
+              // const RowText(text: "Email 2"),
+              // CustomField(
+              //   setValue: (value) => setState(() => partyEmail2 = value),
+              //   formKey: _formKey8,
+              //   keyboardType: TextInputType.emailAddress,
+              //   validator: (value) {
+              //     if (partyEmail2 != "" &&
+              //         !RegExp(r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+              //             .hasMatch(partyEmail2)) {
+              //       return 'Please enter a valid email address';
+              //     }
+              //     return null;
+              //   },
+              // ),
               SizedBox(height: height * 0.02),
               const RowText(text: "GST Type"),
               DropdownSelector(
@@ -396,21 +397,21 @@ class _AddPartyMasterState extends State<AddPartyMaster> {
               pincode: pincode,
               payValue: payValue,
               paymentType: paymentType,
-              state: "${stateIndex + 1}",
+              state: "$stateIndex",
               tds: tds,
               tdspercent: tdsPercent,
               thirdParty: thirdParty,
             ).toMap(),
             "party");
-
-      }else if(_formKey5.currentState!.validate() &&
+     
+      } else if (_formKey5.currentState!.validate() &&
           _formKey6.currentState!.validate() &&
           _formKey7.currentState!.validate() &&
           _formKey8.currentState!.validate() &&
-          stateIndex == 0){
-
+          stateIndex == 0) {
+        return {"type": "error", "message": "State is a mandatory field"};
       } else {
-        return {"message": "Invalid Values"};
+        return {"type": "error", "message": "Invalid Values"};
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
