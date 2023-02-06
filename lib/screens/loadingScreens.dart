@@ -182,20 +182,67 @@ Widget filtersLoading(BuildContext context, int count) {
     backgroundColor: Colors.white,
     appBar: AppBar(
       backgroundColor: Colors.white,
-      iconTheme: const IconThemeData(color: Colors.black),
       elevation: 0,
-      actions: [
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.search),
-        ),
-      ],
     ),
     body: SafeArea(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const TitleText(text: "Filters"),
+          ...List.generate(
+            count,
+            (int index) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(width * 0.03, 0, 0, 0),
+                    child: Container(
+                      height: height * 0.02,
+                      width: width * 0.5,
+                      color: Colors.grey.shade300,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: width * 0.05, vertical: height * 0.045),
+                    child: Container(
+                      height: height * 0.03,
+                      width: width * 0.9,
+                      color: Colors.grey.shade300,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget quickLinksLoading(BuildContext context, int count, String title) {
+  var width = SizeConfig.getWidth(context);
+  var height = SizeConfig.getHeight(context);
+  return Scaffold(
+    backgroundColor: Colors.white,
+    body: SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              SizedBox(width: width * 0.8),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Cancel"),
+              )
+            ],
+          ),
+          TitleText(text: title),
           ...List.generate(
             count,
             (int index) {

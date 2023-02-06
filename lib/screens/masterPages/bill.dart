@@ -48,6 +48,7 @@ class _BillMasterState extends State<BillMaster> {
     final Map propeties = {
       "title": "prefix_name",
       "subtitle": "is_default",
+      
       "entries": [
         {"fieldName": "Flag", "fieldValue": "flag"},
       ]

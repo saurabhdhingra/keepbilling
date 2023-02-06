@@ -374,7 +374,7 @@ class _AddPartyMasterState extends State<AddPartyMaster> {
       if (_formKey5.currentState!.validate() &&
           _formKey6.currentState!.validate() &&
           _formKey7.currentState!.validate() &&
-          _formKey8.currentState!.validate() &&
+          // _formKey8.currentState!.validate() &&
           stateIndex != 0) {
         return await service.addMaster(
             Party(
@@ -403,11 +403,10 @@ class _AddPartyMasterState extends State<AddPartyMaster> {
               thirdParty: thirdParty,
             ).toMap(),
             "party");
-     
       } else if (_formKey5.currentState!.validate() &&
           _formKey6.currentState!.validate() &&
           _formKey7.currentState!.validate() &&
-          _formKey8.currentState!.validate() &&
+          // _formKey8.currentState!.validate() &&
           stateIndex == 0) {
         return {"type": "error", "message": "State is a mandatory field"};
       } else {

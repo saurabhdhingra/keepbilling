@@ -10,11 +10,17 @@ class PaddedText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var width = SizeConfig.getWidth(context);
-    return Padding(
-      padding: EdgeInsets.fromLTRB(width * 0.03, 0, 0, 0),
-      child: Text(
-        text,
-        style: style,
+    var height = SizeConfig.getHeight(context);
+    return SizedBox(
+      height: height * 0.05,
+      child: FittedBox(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(width * 0.02, 0, width * 0.02, 0),
+          child: Text(
+            text,
+            style: style,
+          ),
+        ),
       ),
     );
   }

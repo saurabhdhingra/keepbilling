@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../utils/constants.dart';
 import '../../provider/authenticationProvider.dart';
+import '../../widgets/formPages/statusButton.dart';
 import '../../widgets/infoPages/CustomExpansionTile.dart';
 import '../../widgets/infoPages/paddedText.dart';
 import '../searchBarDelegate.dart';
@@ -100,35 +101,21 @@ class _OutstandingTransactionState extends State<OutstandingTransaction> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        GestureDetector(
-                          onTap: () => setState(() {
+                        StatusButton(
+                          isSelected: listName == "Sale" ? true : false,
+                          setState: (String value) => setState(() {
                             listName = "Sale";
                             dataList = saleList;
                           }),
-                          child: PaddedText(
-                            text: "Sale",
-                            style: TextStyle(
-                                fontSize: height * 0.025,
-                                fontWeight: FontWeight.w600,
-                                color: listName == "Sale"
-                                    ? Colors.blue
-                                    : Colors.black87),
-                          ),
+                          text: "Sale",
                         ),
-                        GestureDetector(
-                          onTap: () => setState(() {
+                        StatusButton(
+                          isSelected: listName == "Purchase" ? true : false,
+                          setState: (String value) => setState(() {
                             listName = "Purchase";
                             dataList = purchaseList;
                           }),
-                          child: PaddedText(
-                            text: "Purchase",
-                            style: TextStyle(
-                                fontSize: height * 0.025,
-                                fontWeight: FontWeight.w600,
-                                color: listName == "Purchase"
-                                    ? Colors.blue
-                                    : Colors.black87),
-                          ),
+                          text: "Purchase",
                         ),
                       ],
                     ),

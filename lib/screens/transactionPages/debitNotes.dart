@@ -52,6 +52,7 @@ class _DebitNoteTransactionState extends State<DebitNoteTransaction> {
     final Map propeties = {
       "title": "invoice_no",
       "subtitle": "inv_date",
+   
       "entries": [
         {"fieldName": "Amount", "fieldValue": "amount"},
         {"fieldName": "Bill Type", "fieldValue": "bill_type"},
@@ -71,7 +72,7 @@ class _DebitNoteTransactionState extends State<DebitNoteTransaction> {
                   onPressed: () {
                     showSearch(
                       context: context,
-                      delegate: SearchBar(dataList, propeties),
+                      delegate: SearchBar(dataList, propeties,),
                     );
                   },
                   icon: const Icon(Icons.search),

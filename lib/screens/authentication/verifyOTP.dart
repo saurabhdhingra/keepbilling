@@ -32,13 +32,14 @@ class _VerifyOTPPageState extends State<VerifyOTPPage> {
 
   final _formKey1 = GlobalKey<FormState>();
 
-  setUserData(
-      String userId, String userName, String companyId, String cashId) async {
+  setUserData(String userId, String userName, String companyId, String cashId,
+      String companyName) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('userId', userId);
     prefs.setString('userName', userName);
     prefs.setString('companyId', companyId);
     prefs.setString('cashId', cashId);
+    prefs.setString('companyName', companyName);
     prefs.setBool('swipeStatus', false);
   }
 
@@ -116,31 +117,49 @@ class _VerifyOTPPageState extends State<VerifyOTPPage> {
     return GestureDetector(
       onTap: () {
         if (!mounted) return;
-        verifyOTP().then((value) async {
-          if (value["message"] == "OTP Verified and Login successfull") {
-            Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => const NavScreen()));
-            await setUserData(
+        verifyOTP().then((value) {
+          if (value["type"] == "success" &&
+              value["userid"] != null &&
+              value["username"] != null &&
+              value["companyid"] != null &&
+              value["cashid"] != null &&
+              value["company_name"] != null) {
+            setUserData(
               value["userid"],
               value["username"],
               value["companyid"],
               value["cashid"],
+              value["company_name"],
+            ).then(
+              (value) => Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NavScreen(),
+                ),
+              ),
             );
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 content: Text("OTP verified and logged in successfully.")));
-            Provider.of<AuthenticationProvider>(context, listen: false)
-                .setCredentials(
-              value["companyid"],
-              value["cashid"],
-              value["userid"],
+          } else if (value["type"] == "success" &&
+              value["userid"] == null &&
+              value["username"] == null &&
+              value["companyid"] == null &&
+              value["cashid"] == null &&
+              value["company_name"] == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                    "Critcal credentials not found. Call customer care at (+91)-9867933272 Mon-Sat 10AM - 7PM or email us at support@bmscomputers.com"),
+                duration: Duration(seconds: 120),
+              ),
             );
+            Navigator.pop(context);
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(value["message"]),
               ),
             );
-            Navigator.pop(context);
           }
         });
       },

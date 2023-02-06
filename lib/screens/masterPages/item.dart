@@ -66,6 +66,7 @@ class _ItemMasterState extends State<ItemMaster> {
     final Map propeties = {
       "title": "item_name",
       "subtitle": "item_stock",
+       
       "entries": [
         {"fieldName": "Type", "fieldValue": "item_type"},
         {"fieldName": "HSN_SAC", "fieldValue": "hsn_sac"},

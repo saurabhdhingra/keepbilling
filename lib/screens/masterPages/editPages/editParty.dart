@@ -390,7 +390,7 @@ class _EditPartyMasterState extends State<EditPartyMaster> {
           "party_id": widget.data["id"],
           "party_name": partyName,
           "party_address": partyAddress,
-          "state": state,
+          "state": stateIndex.toString(),
           "pincode": pincode,
           "party_phone": partyPhone,
           "party_mobile": partyMobile,

@@ -50,6 +50,9 @@ class ApiService {
   String get editVoucher => "bills.php?type=edit_voucher";
   String get editJV => "bills.php?type=edit_JV";
 
+  //Bill PDF generation
+  String get pdf => "bills.php?type=bill_pdf";
+
   //Reports pages
   String get generalReport => "reports.php?type=general_report";
   String get stockStatement => "reports.php?type=stock_statement";
@@ -62,5 +65,13 @@ class ApiService {
   //Profile Pages
   String get license => "profile.php?type=licence_detail";
   String get transactions => "profile.php?type=licence_transaction";
-  String get company  => "profile.php?type=company_detail";
+  String get company => "profile.php?type=company_detail";
+
+  //Settings Pages
+  String get refrenceNo => "settings.php?type=referenceno";
+  String get setQuickLinks => "settings.php?type=set_quicklinks";
+  String get setPaymentTerms => "settings.php?type=set_payment_terms";
+  String get extraFields => "settings.php?type=set_extrafields";
+  String get otpChangePin => "settings.php?type=otpfor_pin";
+  String get verifyChange => "settings.php?type=verify_pinotp";
 }

@@ -4,7 +4,7 @@ class ScrolltoHide extends StatefulWidget {
   final Widget child;
   final double height;
   final ScrollController controller;
-  final bool isDrawerOpen;
+ 
   final Duration duration;
 
   const ScrolltoHide({
@@ -13,7 +13,7 @@ class ScrolltoHide extends StatefulWidget {
     required this.controller,
     required this.height,
     this.duration = const Duration(microseconds: 200),
-    required this.isDrawerOpen,
+   
   }) : super(key: key);
 
   @override
@@ -27,7 +27,7 @@ class _ScrolltoHideState extends State<ScrolltoHide> {
   void initState() {
     super.initState();
     widget.controller.addListener(listen);
-    
+
   }
 
   @override
@@ -37,7 +37,7 @@ class _ScrolltoHideState extends State<ScrolltoHide> {
   }
 
   void listen() {
-    if (widget.controller.position.pixels >= 200 || widget.isDrawerOpen ) {
+    if (widget.controller.position.pixels >= 200 ) {
       hide();
     } else {
       show();

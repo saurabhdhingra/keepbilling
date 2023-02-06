@@ -56,10 +56,12 @@ class _PartyMasterState extends State<PartyMaster> {
     final Map propeties = {
       "title": "party_name",
       "subtitle": "party_mobile",
+   
       "entries": [
         {"fieldName": "Address", "fieldValue": "party_address"},
         {"fieldName": "Email", "fieldValue": "party_email"},
-        {"fieldName": "Opening Balance", "fieldValue": "opening_bal"}
+        {"fieldName": "Opening Balance", "fieldValue": "opening_bal"},
+        {"fieldName": "GST No.", "fieldValue": "party_gst"}
       ]
     };
     return isLoading

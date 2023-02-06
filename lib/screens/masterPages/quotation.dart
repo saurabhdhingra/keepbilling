@@ -58,9 +58,11 @@ class _QuotationMasterState extends State<QuotationMaster> {
 
     final Map propeties = {
       "title": "subject",
-      "subtitle": "build_date",
+      "subtitle": "subject",
+      
       "entries": [
-        {"fieldName": "Comment", "fieldValue": "comment"},
+        {"fieldName": "Date", "fieldValue": "build_date"},
+        {"fieldName": "Amount", "fieldValue": "grandtotal"}
       ]
     };
     List parties = [

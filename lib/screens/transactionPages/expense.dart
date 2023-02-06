@@ -21,6 +21,7 @@ class _ExpensesTransactionState extends State<ExpensesTransaction> {
   bool isLoading = false;
   List dataList = [];
 
+
   TransactionsService service = TransactionsService();
 
   String companyId = "";
@@ -31,6 +32,7 @@ class _ExpensesTransactionState extends State<ExpensesTransaction> {
      SharedPreferences prefs = await SharedPreferences.getInstance();
     userId = prefs.getString('userId') ?? "";
     companyId = prefs.getString('companyId') ?? "";
+    
     dataList = await service.fetchDataList("expense", userId, companyId);
 
     setState(() => isLoading = false);
@@ -52,6 +54,7 @@ class _ExpensesTransactionState extends State<ExpensesTransaction> {
     final Map propeties = {
       "title": "delivery_note",
       "subtitle": "order_date",
+      
       "entries": [
         {"fieldName": "Total Amount", "fieldValue": "totalamount"},
         {"fieldName": "Tax Amount", "fieldValue": "tax_amount"},

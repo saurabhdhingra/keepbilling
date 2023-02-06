@@ -15,14 +15,18 @@ class RowText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var width = SizeConfig.getWidth(context);
-    return Row(
-      children: [
-        SizedBox(width: width * 0.05),
-        Text(
-          text,
-          style: style,
-        )
-      ],
+    var height = SizeConfig.getHeight(context);
+    return SizedBox(
+      height: height * 0.025,
+      child: FittedBox(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(width * 0.04, 0, width * 0.02, 0),
+          child: Text(
+            text,
+            style: style,
+          ),
+        ),
+      ),
     );
   }
 }

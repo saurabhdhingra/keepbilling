@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:keepbilling/screens/dumy.dart';
 import 'package:keepbilling/screens/masterPages/export.dart';
 import 'package:keepbilling/screens/profilePages/export.dart';
+import 'package:keepbilling/screens/settings/export.dart';
 import 'package:keepbilling/screens/transactionPages/export.dart';
-import 'package:keepbilling/screens/reportsPages/filtersPages/export.dart';
-
+import 'package:keepbilling/screens/masterPages/addPages/export.dart';
+import 'package:keepbilling/screens/masterPages/quickLinkPages/export.dart';
+import 'package:keepbilling/screens/transactionPages/quickLinkPages/export.dart';
 import '../screens/masterPages/bank.dart';
+import '../screens/reports/filtersPages/export.dart';
 
 class SizeConfig {
   static getHeight(context) {
@@ -16,26 +20,76 @@ class SizeConfig {
   }
 }
 
+List<String> quickLinks = [
+  "Party List",
+  "New Party",
+  "Banks",
+  "New Bank",
+  "Item List",
+  "New Item",
+  "Quotations",
+  "New Quotation",
+  "Bill Prefix",
+  "Sales",
+  "New Sale",
+  "Purchase List",
+  "New Purchase",
+  "Credit Notes",
+  "Debit Notes",
+  "Journal Vouchers",
+  "New Journal Voucher",
+  "Vouchers",
+  "New Voucher",
+  "Outstanding",
+  "General Report",
+  "Stock Summary",
+  "Detailed Stock",
+  "GST TAX Summary",
+  "GST Detail",
+  "TDS Report",
+  "HSN Report",
+  "Add Extra field",
+  "Change Password",
+  "Add Payment Term",
+  "Change Reference Number"
+];
+
 Map quickLinksScreens = {
-  "Party": const PartyMaster(),
-  "Quotation": const QuotationMaster(),
+  "Party List": const PartyMaster(),
+  "New Party": const AddPartyMaster(),
+  "Banks": const BankMaster(),
+  "New Bank": const AddBankMaster(),
+  "Item List": const ItemMaster(),
+  "New Item": const AddItemMasterQL(), //Change this after correction
+  "Quotations": const QuotationMaster(),
+  "New Quotation": const AddQuotationMasterQL(),
+  "Bill Prefix": const BillMaster(),
+
   "Sales": const SaleTransaction(),
-  "Purchase": const PurchaseTransaction(),
-  "Voucher": const VoucherTransaction(),
+  "New Sale": const CreateBillQL(billType: 'S'),
+  "Purchase List": const PurchaseTransaction(),
+  "New Purchase": const CreateBillQL(billType: 'P'),
+  "Credit Notes": const CreditNoteTransaction(),
+  "Debit Notes": const DebitNoteTransaction(),
+  "Journal Vouchers": const JournalVoucherTransaction(),
+  "New Journal Voucher": const AddJVTransactionQL(),
+  "Vouchers": const VoucherTransaction(),
+  "New Voucher": const AddVoucherTransactionQL(),
+  "Outstanding": const OutstandingTransaction(),
+
+  "General Report": const GeneralFilters(),
+  "Stock Summary": const StockSummaryFilters(),
+  "Detailed Stock": const StockStatementFilters(),
+  "GST TAX Summary": const GSTSummaryFilters(),
+  "GST Detail": const GSTDetailedFilters(),
+  "TDS Report": const TDSFilters(),
+  "HSN Report": const HSNFilters(),
+
+  "Add Extra field": const ExtraFieldsSetings(),
+  "Change Password": const ChangePINSetings(),
+  "Add Payment Term": const AddPaymentTermSettings(),
+  "Change Reference Number": const ChangeRefNoSettings(),
 };
-
-final List<String> toDos = [
-  "Update passook",
-  "Call Mr. Bhavesh Shah",
-  "File ITR",
-  "Sign Quotation"
-];
-
-final List<Map<String, String>> cheques = [
-  {"date": "01/10", "amount": "₹10,000"},
-  {"date": "03/10", "amount": "₹4,000"},
-  {"date": "18/09", "amount": "₹120,000"},
-];
 
 final List states = [
   "Unselected",
@@ -126,7 +180,7 @@ final List<Map> links = [
   {
     "title": "Profile",
     "subLinks": [
-      {"title": "Licesense", "screen": const LicenseDetails()},
+      {"title": "License", "screen": const LicenseDetails()},
       {"title": "Transaction", "screen": const TransactionDetails()}
     ]
   },
@@ -138,24 +192,12 @@ final ScrollController controller2 = ScrollController();
 final ScrollController controller3 = ScrollController();
 
 final List<Map> settingsTabs = [
-  {"title": "Change No."},
-  {"title": "Add Extra Fields in Bills"},
-  {"title": "Quotation T & C"},
-  {"title": "Payment Terms"},
-  {"title": "System Notification"},
-];
-
-List<Map> quickViews = [
+  {"title": "Change Reference Number", "screen": const ChangeRefNoSettings()},
   {
-    "title": "Bank",
+    "title": "Adjust Extra Fields in Bills",
+    "screen": const ExtraFieldsSetings()
   },
-  {
-    "title": "Cash",
-  },
-  {
-    "title": "Recievables",
-  },
-  {
-    "title": "Pending",
-  }
+  {"title": "Set Quick Links", "screen": const QuickLinksSettings()},
+  {"title": "Add Payment Term", "screen": const AddPaymentTermSettings()},
+  {"title": "Change Login PIN", "screen": const ChangePINSetings()},
 ];

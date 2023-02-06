@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:keepbilling/api/constants.dart';
 import 'package:keepbilling/model/bill.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../model/journalVoucher.dart';
 import '../model/voucher.dart';
@@ -332,6 +334,50 @@ class TransactionsService {
       default:
         return Uri.parse(service.backend);
     }
+  }
+
+  Future fetchBillPDF(
+      String billType, String userId, String companyId, String billID) async {
+    dynamic responseJson;
+    try {
+      final response = await http.post(
+        Uri.parse("${service.backend}${service.bills}bill_pdf"),
+        encoding: Encoding.getByName('gzip, deflate, br'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Accept': '*/*',
+          'Connection': 'keep-alive'
+        },
+        body: jsonEncode(
+          <String, String>{
+            "userid": userId,
+            "companyid": companyId,
+            "product": "1",
+            "bill_type": billType,
+            "bill_id": billID,
+          },
+        ),
+      );
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException('No Internet Connection');
+    }
+
+    return responseJson;
+  }
+
+  static Future<File> loadPDF(String url) async {
+    final response = await http.get(Uri.parse(url));
+    final bytes = response.bodyBytes;
+    return _storeFile(url, bytes);
+  }
+
+  static Future<File> _storeFile(String url, List<int> bytes) async {
+    final filename = basename(url);
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File('${dir.path}/$filename');
+    await file.writeAsBytes(bytes, flush: true);
+    return file;
   }
 
   dynamic returnResponse(http.Response response) {

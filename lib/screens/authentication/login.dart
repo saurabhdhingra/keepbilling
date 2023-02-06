@@ -48,6 +48,8 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: height * 0.08),
               logInButton(context, height, width),
               SizedBox(height: height * 0.06),
+              accountLogin(),
+              SizedBox(height: height * 0.06),
               changeAccount(),
             ],
           ),
@@ -76,85 +78,91 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Row changeAccount() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text(
-          "Login for",
-          style: TextStyle(
-              color: Colors.grey, fontWeight: FontWeight.w500, fontSize: 13),
-        ),
-        TextButton(
-            child: Text(
-              widget.userName,
-              style: const TextStyle(
-                  color: Colors.blue,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 13),
-            ),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return Platform.isIOS
-                      ? CupertinoAlertDialog(
-                          title: const Text('Change account ?'),
-                          content: Text(
-                              'Logged in for ${widget.userName}. Do you want to change the account.'),
-                          actions: [
-                            CupertinoDialogAction(
-                              child: const Text('Yes'),
-                              onPressed: () {
-                                Navigator.pop(context);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: ((context) =>
-                                        const SendOTPPage(showAppBar: true)),
-                                  ),
-                                );
-                              },
-                            ),
-                            CupertinoDialogAction(
-                              child: const Text('Cancel'),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ],
-                        )
-                      : AlertDialog(
-                          title: const Text('Change account ?'),
-                          content: Text(
-                              'Logged in for ${widget.userName}. Do you want to change the account.'),
-                          actions: [
-                            TextButton(
-                              child: const Text('Yes'),
-                              onPressed: () {
-                                Navigator.pop(context);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: ((context) =>
-                                        const SendOTPPage(showAppBar: true)),
-                                  ),
-                                );
-                              },
-                            ),
-                            TextButton(
-                              child: const Text('Cancel'),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ],
-                        );
-                },
-              );
-            }),
-      ],
+  Text accountLogin() {
+    return Text(
+      "Login for ${widget.userName}",
+      style: const TextStyle(
+          color: Colors.grey, fontWeight: FontWeight.w500, fontSize: 15),
     );
+  }
+
+  Widget changeAccount() {
+    return TextButton(
+        child: const Text(
+          "Change Account",
+          style: TextStyle(
+              color: Colors.blue, fontWeight: FontWeight.w800, fontSize: 15),
+        ),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return Platform.isIOS
+                  ? CupertinoAlertDialog(
+                      title: const Text('Change account ?'),
+                      content: Text(
+                          'Logged in for ${widget.userName}. Do you want to change the account.'),
+                      actions: [
+                        CupertinoDialogAction(
+                          child: const Text('Yes'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: ((context) =>
+                                    const SendOTPPage(showAppBar: true)),
+                              ),
+                            );
+                          },
+                        ),
+                        CupertinoDialogAction(
+                          child: const Text('Cancel'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    )
+                  : AlertDialog(
+                      title: const Text('Change account ?'),
+                      content: Text(
+                          'Logged in for ${widget.userName}. Do you want to change the account.'),
+                      actions: [
+                        TextButton(
+                          child: const Text('Yes'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: ((context) =>
+                                    const SendOTPPage(showAppBar: true)),
+                              ),
+                            );
+                          },
+                        ),
+                        TextButton(
+                          child: const Text('Cancel'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    );
+            },
+          );
+        });
+    // return Row(
+    //   mainAxisAlignment: MainAxisAlignment.center,
+    //   children: [
+    //     Text(
+    //       "Login for ${widget.userName}",
+    //       style: const TextStyle(
+    //           color: Colors.grey, fontWeight: FontWeight.w500, fontSize: 13),
+    //     ),
+    //   ],
+    // );
   }
 
   Row createAccount() {

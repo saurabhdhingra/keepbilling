@@ -7,17 +7,17 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:keepbilling/screens/dumy.dart';
 import 'package:keepbilling/screens/selector.dart';
+import 'package:keepbilling/screens/settings/quickLinks.dart';
+import 'package:keepbilling/screens/support.dart';
 import 'package:keepbilling/widgets/formPages/titleText.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../api/dashboard.dart';
 import '../model/cheque.dart';
 import '../model/toDoTask.dart';
-import '../widgets/formPages/customField.dart';
 import '../widgets/navscreens/quickLink.dart';
 import '../widgets/navscreens/quickView.dart';
 import '../widgets/navscreens/rowText.dart';
 import 'loadingScreens.dart';
-import 'navScreens/export.dart';
 import 'package:keepbilling/widgets/scrollToHide.dart';
 import '../../utils/constants.dart';
 import '../../utils/functions.dart';
@@ -34,7 +34,7 @@ class NavScreen extends StatefulWidget {
 class _NavScreenState extends State<NavScreen> {
   bool isLoading = false;
   String userId = "";
-  String userName = "";
+  String companyName = "";
   String companyId = "";
   List<ToDoTask> toDoData = [];
   List<Cheque> chequeData = [];
@@ -76,7 +76,7 @@ class _NavScreenState extends State<NavScreen> {
     //Get user credentials
     userId = prefs.getString('userId') ?? "";
     companyId = prefs.getString('companyId') ?? "";
-    userName = prefs.getString('userName') ?? "";
+    companyName = prefs.getString('companyName') ?? "";
 
     //set Data
     toDoData = await service.fetchToDoList(userId, companyId);
@@ -90,7 +90,6 @@ class _NavScreenState extends State<NavScreen> {
     }
   }
 
-  bool isDrawerOpen = false;
   final List<List> _screensData = [
     [
       CupertinoIcons.arrow_up_circle,
@@ -130,7 +129,6 @@ class _NavScreenState extends State<NavScreen> {
         : Scaffold(
             body: selectedScreen(height, width),
             bottomNavigationBar: ScrolltoHide(
-              isDrawerOpen: isDrawerOpen,
               duration: const Duration(milliseconds: 200),
               height: height * 0.1,
               controller: getCurrentController(_currentIndex)!,
@@ -146,7 +144,7 @@ class _NavScreenState extends State<NavScreen> {
   Widget selectedScreen(double height, double width) {
     switch (_currentIndex) {
       case 0:
-        return quickLinksPage();
+        return quickLinksPage(height, width);
       case 1:
         return homePage(height, width);
       case 2:
@@ -158,7 +156,7 @@ class _NavScreenState extends State<NavScreen> {
     }
   }
 
-  Widget quickLinksPage() {
+  Widget quickLinksPage(double height, double width) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 243, 243, 243),
       body: SafeArea(
@@ -169,10 +167,25 @@ class _NavScreenState extends State<NavScreen> {
             ...quickLinks.map(
               (e) {
                 return QuickLink(
+                  icon: Icons.abc,
                   text: e,
                   screen: quickLinksScreens[e],
+                  isButton: false,
                 );
               },
+            ),
+            Divider(
+              thickness: 2,
+              height: height * 0.02,
+              indent: width * 0.05,
+              endIndent: width * 0.05,
+              color: Colors.black87,
+            ),
+            const QuickLink(
+              icon: Icons.abc,
+              text: "Edit Quick Links",
+              screen: QuickLinksSettings(),
+              isButton: false,
             ),
           ],
         ),
@@ -191,8 +204,10 @@ class _NavScreenState extends State<NavScreen> {
             ...links[2]["subLinks"].map(
               (e) {
                 return QuickLink(
+                  icon: Icons.abc,
                   text: e["title"],
                   screen: e["screen"],
+                  isButton: false,
                 );
               },
             ),
@@ -213,8 +228,78 @@ class _NavScreenState extends State<NavScreen> {
             ...settingsTabs.map(
               (e) {
                 return QuickLink(
+                  icon: Icons.abc,
                   text: e["title"],
-                  screen: const DumyScreen(),
+                  screen: e["screen"],
+                  isButton: false,
+                );
+              },
+            ),
+            QuickLink(
+              icon: Icons.abc,
+              text: "Remove Account",
+              screen: const DumyScreen(),
+              isButton: true,
+              function: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Platform.isIOS
+                        ? CupertinoAlertDialog(
+                            title: const Text('Remove account ?'),
+                            content: const Text(
+                                'You will have to add the account again by verifying it through OTP sent over text.'),
+                            actions: [
+                              CupertinoDialogAction(
+                                child: const Text('Yes'),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  removeUserData().then((value) {
+                                    setSwipeStatus();
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: ((context) =>
+                                                const SelectorPage())));
+                                  });
+                                },
+                              ),
+                              CupertinoDialogAction(
+                                child: const Text('Cancel'),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          )
+                        : AlertDialog(
+                            title: const Text('Remove account ?'),
+                            content: const Text(
+                                'You will have to add the account again by verifying it through OTP sent over text.'),
+                            actions: [
+                              TextButton(
+                                child: const Text('Yes'),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  removeUserData().then((value) {
+                                    setSwipeStatus();
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: ((context) =>
+                                                const SelectorPage())));
+                                  });
+                                },
+                              ),
+                              TextButton(
+                                child: const Text('Cancel'),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          );
+                  },
                 );
               },
             ),
@@ -226,10 +311,6 @@ class _NavScreenState extends State<NavScreen> {
 
   //Home Page Starts
   //Home Page Starts
-  //Home Page Starts
-  //Home Page Starts
-  //Home Page Starts
-  //Home Page Starts
   Widget homePage(double height, double width) {
     final theme = Theme.of(context).copyWith(dividerColor: Colors.transparent);
     var scaffoldKey = GlobalKey<ScaffoldState>();
@@ -239,17 +320,16 @@ class _NavScreenState extends State<NavScreen> {
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.black),
         backgroundColor: Colors.transparent,
+        centerTitle: false,
+        title: Text(
+          companyName,
+          style: GoogleFonts.alfaSlabOne(
+            color: Colors.black87,
+            fontSize: height * 0.018,
+          ),
+        ),
         elevation: 0,
         actions: [
-          Center(
-            child: Text(
-              userName,
-              style: GoogleFonts.alfaSlabOne(
-                color: Colors.black87,
-                fontSize: height * 0.015,
-              ),
-            ),
-          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {
@@ -278,10 +358,10 @@ class _NavScreenState extends State<NavScreen> {
               toDoData.isEmpty
                   ? const SizedBox()
                   : SizedBox(height: height * 0.02),
-              toDoData.isEmpty ? const SizedBox() : todoListHeading(width),
-              toDoData.isEmpty
-                  ? const SizedBox()
-                  : todoListBox(height, width, userId, companyId),
+              const RowText(
+                  text: "To Do List", color: Color.fromRGBO(16, 196, 161, 1)),
+
+              todoListBox(height, width, userId, companyId),
               const RowText(
                   text: "Cheques to be deposited",
                   color: Color.fromRGBO(16, 196, 161, 1)),
@@ -296,19 +376,23 @@ class _NavScreenState extends State<NavScreen> {
 
   SizedBox chequesBox(height, width) {
     return SizedBox(
-      height: height * 0.08 * chequeData.length,
       width: width * 0.95,
-      child: ListView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: chequeData.length,
-        padding: EdgeInsets.zero,
-        itemBuilder: (context, int index) {
-          return ListTile(
-            title: Text(chequeData[index].party),
-            subtitle: Text(chequeData[index].amount),
-            trailing: Text(chequeData[index].chqDate),
-          );
-        },
+      child: Column(
+        children: chequeData.isEmpty
+            ? const [
+                ListTile(
+                  title: Text("No Cheques to be deposited"),
+                )
+              ]
+            : [
+                ...chequeData.map(
+                  (e) => ListTile(
+                    title: Text(e.party),
+                    subtitle: Text(e.amount),
+                    trailing: Text(e.chqDate),
+                  ),
+                ),
+              ],
       ),
     );
   }
@@ -324,124 +408,132 @@ class _NavScreenState extends State<NavScreen> {
 
   SizedBox todoListBox(height, width, String userId, String companyId) {
     return SizedBox(
-      height: height * 0.064 * toDoData.length,
       width: width * 0.95,
-      child: ListView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: toDoData.length,
-        padding: EdgeInsets.zero,
-        itemBuilder: (context, int index) {
-          return Dismissible(
-            key: Key(toDoData[index].id),
-            background:
-                Container(color: Colors.green, child: const Icon(Icons.check)),
-            direction: DismissDirection.endToStart,
-            onDismissed: (direction) {
-              setState(() {
-                deletedItem = toDoData.removeAt(index);
-              });
+      child: Column(
+        children: toDoData.isEmpty
+            ? const [
+                ListTile(
+                  title: Text("Todo list empty."),
+                )
+              ]
+            : [
+                ...toDoData.map(
+                  (e) => Dismissible(
+                    key: Key(e.id),
+                    background: Container(
+                        color: Colors.green, child: const Icon(Icons.check)),
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (direction) {
+                      setState(() {
+                        deletedItem = toDoData.removeAt(toDoData.indexOf(e));
+                      });
 
-              int delIndex = index;
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return Platform.isIOS
-                      ? CupertinoAlertDialog(
-                          title: const Text('Warning'),
-                          content: const Text(
-                              'Are you sure you wanna mark this as complete. This can\'t be undone!'),
-                          actions: [
-                            CupertinoDialogAction(
-                              child: const Text('Yes'),
-                              onPressed: () async {
-                                await service
-                                    .deleteToDo(
-                                        deletedItem.id, userId, companyId)
-                                    .then((value) {
-                                  if (value["type"] == "success") {
-                                    if (swipeStatus == false) {
-                                      setState(() {
-                                        setSwipeStatus();
-                                      });
-                                    }
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(value["message"]),
-                                      ),
-                                    );
-                                  }
-                                });
-                                // ignore: use_build_context_synchronously
-                                Navigator.pop(context);
-                              },
-                            ),
-                            CupertinoDialogAction(
-                              child: const Text('Cancel'),
-                              onPressed: () {
-                                setState(() {
-                                  toDoData.insert(delIndex, deletedItem);
-                                });
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ],
-                        )
-                      : AlertDialog(
-                          title: const Text('Warning'),
-                          content: const Text(
-                              'Are you sure you wanna mark this as complete. This can\'t be undone!'),
-                          actions: [
-                            TextButton(
-                              child: const Text('Yes'),
-                              onPressed: () async {
-                                await service
-                                    .deleteToDo(
-                                        deletedItem.id, userId, companyId)
-                                    .then((value) {
-                                  if (value["type"] == "success") {
-                                    if (swipeStatus == false) {
-                                      setState(() {
-                                        setSwipeStatus();
-                                      });
-                                    }
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(value["message"]),
-                                      ),
-                                    );
-                                  }
-                                });
-                                // ignore: use_build_context_synchronously
-                                Navigator.pop(context);
-                              },
-                            ),
-                            TextButton(
-                              child: const Text('Cancel'),
-                              onPressed: () {
-                                setState(() {
-                                  toDoData.insert(delIndex, deletedItem);
-                                });
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ],
-                        );
-                },
-              );
-            },
-            child: ListTile(
-              title: Text(
-                toDoData[index].descrip,
-                style: TextStyle(
-                  fontSize: width * 0.04,
-                  fontWeight: FontWeight.bold,
+                      int delIndex = toDoData.indexOf(e);
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Platform.isIOS
+                              ? CupertinoAlertDialog(
+                                  title: const Text('Warning'),
+                                  content: const Text(
+                                      'Are you sure you wanna mark this as complete. This can\'t be undone!'),
+                                  actions: [
+                                    CupertinoDialogAction(
+                                      child: const Text('Yes'),
+                                      onPressed: () async {
+                                        await service
+                                            .deleteToDo(deletedItem.id, userId,
+                                                companyId)
+                                            .then((value) {
+                                          if (value["type"] == "success") {
+                                            if (swipeStatus == false) {
+                                              setState(() {
+                                                setSwipeStatus();
+                                              });
+                                            }
+                                          } else {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(value["message"]),
+                                              ),
+                                            );
+                                          }
+                                        });
+                                        // ignore: use_build_context_synchronously
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    CupertinoDialogAction(
+                                      child: const Text('Cancel'),
+                                      onPressed: () {
+                                        setState(() {
+                                          toDoData.insert(
+                                              delIndex, deletedItem);
+                                        });
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  ],
+                                )
+                              : AlertDialog(
+                                  title: const Text('Warning'),
+                                  content: const Text(
+                                      'Are you sure you wanna mark this as complete. This can\'t be undone!'),
+                                  actions: [
+                                    TextButton(
+                                      child: const Text('Yes'),
+                                      onPressed: () async {
+                                        await service
+                                            .deleteToDo(deletedItem.id, userId,
+                                                companyId)
+                                            .then((value) {
+                                          if (value["type"] == "success") {
+                                            if (swipeStatus == false) {
+                                              setState(() {
+                                                setSwipeStatus();
+                                              });
+                                            }
+                                          } else {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(value["message"]),
+                                              ),
+                                            );
+                                          }
+                                        });
+                                        // ignore: use_build_context_synchronously
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: const Text('Cancel'),
+                                      onPressed: () {
+                                        setState(() {
+                                          toDoData.insert(
+                                              delIndex, deletedItem);
+                                        });
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  ],
+                                );
+                        },
+                      );
+                    },
+                    child: ListTile(
+                      title: Text(
+                        e.descrip,
+                        style: TextStyle(
+                          fontSize: width * 0.04,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          );
-        },
+              ],
       ),
     );
   }
@@ -501,8 +593,10 @@ class _NavScreenState extends State<NavScreen> {
               mainAxisSpacing: width * 0.05),
           itemCount: min(quickLinks.length, 6),
           itemBuilder: (context, i) => QuickLink(
+            icon: Icons.abc,
             text: quickLinks[i],
             screen: quickLinksScreens[quickLinks[i]],
+            isButton: false,
           ),
         ),
       ),
@@ -516,11 +610,11 @@ class _NavScreenState extends State<NavScreen> {
         child: Column(
           children: [
             SizedBox(height: height * 0.1),
-
             ...links.map(
               (e) => Theme(
                 data: theme,
                 child: ExpansionTile(
+                  leading: const Icon(Icons.abc),
                   key: PageStorageKey<String>(e["title"]),
                   title: Text(e["title"]),
                   textColor: Colors.black87,
@@ -529,6 +623,7 @@ class _NavScreenState extends State<NavScreen> {
                   children: e["subLinks"]
                       .map<Widget>(
                         (i) => ListTile(
+                          leading: const Icon(Icons.abc),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -546,18 +641,14 @@ class _NavScreenState extends State<NavScreen> {
                 ),
               ),
             ),
-            // ListTile(
-            //   title: const Text("Logout"),
-            //   onTap: () async {
-            //     await removeUserData().then((value) {
-            //       setSwipeStatus();
-            //       Navigator.pushReplacement(
-            //           context,
-            //           MaterialPageRoute(
-            //               builder: ((context) => const SelectorPage())));
-            //     });
-            //   },
-            // )
+            ListTile(
+              leading: const Icon(Icons.abc),
+              title: const Text("Send Feedback"),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const Support()));
+              },
+            )
           ],
         ),
       ),

@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/api/transaction.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
+import 'package:keepbilling/screens/pdfView.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../utils/constants.dart';
@@ -73,6 +76,7 @@ class _PurchaseTransactionState extends State<PurchaseTransaction> {
     final Map propeties = {
       "title": "totalamount",
       "subtitle": "inv_date",
+       
       "entries": [
         {"fieldName": "Tax Amount", "fieldValue": "tax_amount"},
         {"fieldName": "Discount Amount", "fieldValue": "disc_amount"},
@@ -156,7 +160,7 @@ class _PurchaseTransactionState extends State<PurchaseTransaction> {
                               properties: propeties,
                               editAction: () async {
                                 var navigationResult =
-                                    await getBillData(companyId, e).then(
+                                    await getBillData(e).then(
                                   (value) => Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -177,6 +181,9 @@ class _PurchaseTransactionState extends State<PurchaseTransaction> {
                                   getUpdatedData();
                                 }
                               },
+                              pdfAction: () async {
+                                await generatePDF(e["id"]);
+                              },
                             ),
                           ),
                         );
@@ -190,7 +197,7 @@ class _PurchaseTransactionState extends State<PurchaseTransaction> {
           );
   }
 
-  Future getBillData(String compId, Map bill) async {
+  Future generatePDF(String billID) async {
     final TransactionsService service = TransactionsService();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -198,7 +205,49 @@ class _PurchaseTransactionState extends State<PurchaseTransaction> {
       ),
     );
     try {
-      return await service.fetchBillById(compId, bill);
+      return await service.fetchBillPDF('P', userId, companyId, billID).then(
+        (value) async {
+          if (value["type"] == "success") {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("PDF genereated successfully."),
+              ),
+            );
+            await TransactionsService.loadPDF(value["response_data"]).then(
+              (value) => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PdfViewPage(file: value),
+                ),
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Error : ${value["message"]}"),
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+  }
+
+  Future getBillData(Map bill) async {
+    final TransactionsService service = TransactionsService();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Please wait...."),
+      ),
+    );
+    try {
+      return await service.fetchBillById(companyId, bill);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

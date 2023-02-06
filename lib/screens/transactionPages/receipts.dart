@@ -52,6 +52,7 @@ class _RecieptsTransactionState extends State<RecieptsTransaction> {
     final Map propeties = {
       "title": "narration",
       "subtitle": "inv_date",
+       
       "entries": [
         {"fieldName": "Amount", "fieldValue": "amount"},
         {"fieldName": "Transaction Date", "fieldValue": "trans_date"},

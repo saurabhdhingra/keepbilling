@@ -1,5 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:keepbilling/screens/dumy.dart';
+import 'package:keepbilling/screens/masterPages/bank.dart';
+import 'package:keepbilling/screens/transactionPages/expense.dart';
+import 'package:keepbilling/screens/transactionPages/purchase.dart';
+import 'package:keepbilling/screens/transactionPages/sale.dart';
 import 'package:keepbilling/utils/functions.dart';
 
 import '../../../utils/constants.dart';
@@ -19,7 +26,7 @@ class QuickView extends StatelessWidget {
       height: height * 0.25,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: 6,
+        itemCount: 5,
         itemBuilder: (context, index) {
           switch (index) {
             case 0:
@@ -30,47 +37,52 @@ class QuickView extends StatelessWidget {
                   true,
                   false,
                   Colors.blue,
-                  "Bank",
-                  listChild(data["Bank"], height, width, true),
+                  "Bank and Cash",
+                  bankAndCash(data["Cash"] + data["Bank"], height, width),
+                  context,
+                  const BankMaster(),
                 );
               }
             case 1:
               {
                 return card(
-                  height,
-                  width,
-                  false,
-                  false,
-                  const Color.fromRGBO(16, 196, 161, 1),
-                  "Cash",
-                  listChild(data["Cash"], height, width, false),
-                );
+                    height,
+                    width,
+                    false,
+                    false,
+                    const Color.fromRGBO(16, 196, 161, 1),
+                    "Purchase",
+                    doubleTextChild(data["Purchase"], height, width, "Total",
+                        "Outstanding"),
+                    context,
+                    const PurchaseTransaction());
               }
             case 2:
               {
                 return card(
-                  height,
-                  width,
-                  false,
-                  false,
-                  Colors.blue,
-                  "Purchase",
-                  doubleTextChild(data["Purchase"], height, width,
-                      "Total Purchase", "Purchase Outstanding"),
-                );
+                    height,
+                    width,
+                    false,
+                    false,
+                    Colors.blue,
+                    "Sales",
+                    doubleTextChild(
+                        data["Sales"], height, width, "Total", "Outstanding"),
+                    context,
+                    const SaleTransaction());
               }
             case 3:
               {
                 return card(
-                  height,
-                  width,
-                  false,
-                  false,
-                  const Color.fromRGBO(16, 196, 161, 1),
-                  "Sales",
-                  doubleTextChild(data["Sales"], height, width, "Total Sales",
-                      "Sales Outstanding"),
-                );
+                    height,
+                    width,
+                    false,
+                    false,
+                    const Color.fromRGBO(16, 196, 161, 1),
+                    "Expenses",
+                    singleTextChild(data["Expenses"], height, "Total"),
+                    context,
+                    const ExpensesTransaction());
               }
             case 4:
               {
@@ -78,23 +90,13 @@ class QuickView extends StatelessWidget {
                   height,
                   width,
                   false,
-                  false,
-                  Colors.blue,
-                  "Expenses",
-                  singleTextChild(data["Expenses"], height, "Total Expense"),
-                );
-              }
-            case 5:
-              {
-                return card(
-                  height,
-                  width,
-                  false,
                   true,
-                  const Color.fromRGBO(16, 196, 161, 1),
-                  "Deposited",
-                  doubleTextChild(data["Deposited"], height, width,
-                      "Cheque Recievable", "Cheque Payable"),
+                  Colors.blue,
+                  "Post Dated Cheque",
+                  doubleTextChild(data["Post Dated Cheque"], height, width,
+                      "Recievable", "Payable"),
+                  context,
+                  null,
                 );
               }
             default:
@@ -105,8 +107,10 @@ class QuickView extends StatelessWidget {
                   false,
                   true,
                   const Color.fromRGBO(16, 196, 161, 1),
-                  "Deposited",
-                  listChild(data["Bank"], height, width, true),
+                  "ABC",
+                  bankAndCash(data["Bank"] + data["Cash"], height, width),
+                  context,
+                  null,
                 );
               }
           }
@@ -120,109 +124,136 @@ class QuickView extends StatelessWidget {
     );
   }
 
-  Widget card(double height, double width, bool isFirst, bool isLast,
-      Color color, String title, Widget child) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-          isFirst ? width * 0.05 : 0, 0, isLast ? width * 0.05 : 0, 0),
-      child: Container(
-        padding: EdgeInsets.fromLTRB(0, 0, 0, width * 0.02),
-        width: width * 0.9,
-        height: height * 0.3,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(
-            Radius.circular(height * 0.02),
+  Widget card(
+    double height,
+    double width,
+    bool isFirst,
+    bool isLast,
+    Color color,
+    String title,
+    Widget child,
+    BuildContext context,
+    Widget? screen,
+  ) {
+    return GestureDetector(
+      onTap: () {
+        if (screen != null) {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => screen));
+        }
+      },
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+            isFirst ? width * 0.05 : 0, 0, isLast ? width * 0.05 : 0, 0),
+        child: Container(
+          padding: EdgeInsets.fromLTRB(0, 0, 0, width * 0.02),
+          width: width * 0.9,
+          height: height * 0.3,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(
+              Radius.circular(height * 0.02),
+            ),
+            color: color,
           ),
-          color: color,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: EdgeInsets.fromLTRB(
-                  width * 0.02, height * 0.01, width * 0.02, 0),
-              height: height * 0.05,
-              width: width * 0.9,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(height * 0.02),
-                  topRight: Radius.circular(height * 0.02),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: EdgeInsets.fromLTRB(
+                    width * 0.02, height * 0.01, width * 0.02, 0),
+                height: height * 0.05,
+                width: width * 0.9,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(height * 0.02),
+                    topRight: Radius.circular(height * 0.02),
+                  ),
+                  color: Colors.white,
                 ),
-                color: Colors.white,
-              ),
-              child: Row(
-                children: [
-                  Image(
-                    image: AssetImage(
-                      icon(title),
+                child: Row(
+                  children: [
+                    Image(
+                      image: AssetImage(
+                        icon(title),
+                      ),
+                      height: height * 0.03,
                     ),
-                    height: height * 0.03,
-                  ),
-                  SizedBox(
-                    width: width * 0.03,
-                  ),
-                  Text(
-                    title,
-                    style: GoogleFonts.alfaSlabOne(
-                      color: color == Colors.blue
-                          ? const Color.fromRGBO(16, 196, 161, 1)
-                          : Colors.blue,
-                      fontSize: height * 0.028,
+                    SizedBox(
+                      width: width * 0.03,
                     ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: height * 0.03),
-            SizedBox(
-              height: height * 0.12,
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: child,
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(width * 0.05, 0, 0, 0),
-              child: GestureDetector(
-                child: Text(
-                  "Expand",
-                  style: GoogleFonts.alfaSlabOne(
-                    color: Colors.white,
-                    fontSize: height * 0.02,
-                  ),
+                    Text(
+                      title,
+                      style: GoogleFonts.alfaSlabOne(
+                        color: color == Colors.blue
+                            ? const Color.fromRGBO(16, 196, 161, 1)
+                            : Colors.blue,
+                        fontSize: height * 0.028,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
+              SizedBox(height: height * 0.03),
+              SizedBox(
+                height: height * 0.14,
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: child,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget listChild(List data, double height, double width, bool showIndex) {
-    return Row(
+  Widget bankAndCash(List data, double height, double width) {
+    return Column(
       children: [
-        SizedBox(
-          width: width * 0.3,
+        Row(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(0, 1, 0, 0),
+                shrinkWrap: true,
+                itemCount: min(data.length, 4),
+                itemBuilder: (BuildContext context, int index) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        height: height * 0.032,
+                        child: FittedBox(
+                          child: Text(
+                            '  ${data[index]["name"]}',
+                            style: GoogleFonts.alfaSlabOne(
+                              color: Colors.white,
+                              fontSize: height * 0.023,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: height * 0.032,
+                        child: FittedBox(
+                          child: Text(
+                            '${data[index]["balance"]}   ',
+                            style: GoogleFonts.alfaSlabOne(
+                              color: Colors.white,
+                              fontSize: height * 0.025,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
         ),
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.fromLTRB(0, 1, 0, 0),
-            shrinkWrap: true,
-            itemCount: data.length,
-            itemBuilder: (BuildContext context, int index) {
-              return Text(
-                showIndex
-                    ? '${index + 1}. ${data[index]["name"]}      ${data[index]["balance"]}'
-                    : '${data[index]["name"]}       ${data[index]["balance"]}',
-                style: GoogleFonts.alfaSlabOne(
-                  color: Colors.white,
-                  fontSize: height * 0.02,
-                ),
-              );
-            },
-          ),
-        )
       ],
     );
   }
@@ -230,11 +261,16 @@ class QuickView extends StatelessWidget {
   Widget singleTextChild(Map data, double height, String key) {
     return Align(
       alignment: Alignment.centerRight,
-      child: Text(
-        "${data[key].round()} ",
-        style: GoogleFonts.alfaSlabOne(
-          color: Colors.white,
-          fontSize: height * 0.05,
+      child: SizedBox(
+        height: height * 0.065,
+        child: FittedBox(
+          child: Text(
+            "${data[key].round()} ",
+            style: GoogleFonts.alfaSlabOne(
+              color: Colors.white,
+              fontSize: height * 0.05,
+            ),
+          ),
         ),
       ),
     );
@@ -249,29 +285,26 @@ class QuickView extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Padding(
-                padding: EdgeInsets.fromLTRB(width * 0.05, 0, 0, 0),
-                child: Text(
-                  key1,
-                  style: GoogleFonts.alfaSlabOne(
-                    color: Colors.white,
-                    fontSize: height * 0.02,
+              SizedBox(
+                height: height * 0.032,
+                child: FittedBox(
+                  child: Text(
+                    "  $key1",
+                    style: GoogleFonts.alfaSlabOne(
+                      color: Colors.white,
+                      fontSize: height * 0.023,
+                    ),
                   ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, width * 0.05, 0),
-                child: SizedBox(
-                  width: width * 0.26,
-                  height: height * 0.032,
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      data[key1].toString(),
-                      style: GoogleFonts.alfaSlabOne(
-                        color: Colors.white,
-                        fontSize: height * 0.03,
-                      ),
+              SizedBox(
+                height: height * 0.032,
+                child: FittedBox(
+                  child: Text(
+                    "${data[key1].round()}  ",
+                    style: GoogleFonts.alfaSlabOne(
+                      color: Colors.white,
+                      fontSize: height * 0.03,
                     ),
                   ),
                 ),
@@ -281,29 +314,26 @@ class QuickView extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Padding(
-                padding: EdgeInsets.fromLTRB(width * 0.05, 0, 0, 0),
-                child: Text(
-                  key2,
-                  style: GoogleFonts.alfaSlabOne(
-                    color: Colors.white,
-                    fontSize: height * 0.02,
+              SizedBox(
+                height: height * 0.032,
+                child: FittedBox(
+                  child: Text(
+                    "  $key2",
+                    style: GoogleFonts.alfaSlabOne(
+                      color: Colors.white,
+                      fontSize: height * 0.023,
+                    ),
                   ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, width * 0.05, 0),
-                child: SizedBox(
-                  width: width * 0.26,
-                  height: height * 0.032,
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      data[key2].round().toString(),
-                      style: GoogleFonts.alfaSlabOne(
-                        color: Colors.white,
-                        fontSize: height * 0.03,
-                      ),
+              SizedBox(
+                height: height * 0.032,
+                child: FittedBox(
+                  child: Text(
+                    "${data[key2].round()}  ",
+                    style: GoogleFonts.alfaSlabOne(
+                      color: Colors.white,
+                      fontSize: height * 0.03,
                     ),
                   ),
                 ),

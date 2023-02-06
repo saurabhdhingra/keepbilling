@@ -4,12 +4,18 @@ import '../../../utils/constants.dart';
 
 class QuickLink extends StatefulWidget {
   final String text;
-
   final Widget screen;
+  final VoidCallback? function;
+  final bool isButton;
+  final IconData icon;
+
   const QuickLink({
     Key? key,
     required this.text,
     required this.screen,
+    required this.isButton,
+    this.function,
+    required this.icon,
   }) : super(key: key);
 
   @override
@@ -23,10 +29,14 @@ class _QuickLinkState extends State<QuickLink> {
     var width = SizeConfig.getWidth(context);
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => widget.screen),
-        );
+        if (!widget.isButton) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => widget.screen),
+          );
+        } else {
+          widget.function!();
+        }
       },
       child: Padding(
         padding: EdgeInsets.symmetric(
@@ -41,16 +51,24 @@ class _QuickLinkState extends State<QuickLink> {
             ),
           ),
           child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: Row(
               children: [
-                Text(
-                  widget.text,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: width * 0.04,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.blue,
+                SizedBox(width: width * 0.03),
+                Icon(widget.icon),
+                SizedBox(width: width * 0.03),
+                SizedBox(
+                  width: width * 0.7,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      widget.text,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: width * 0.05,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.blue,
+                      ),
+                    ),
                   ),
                 ),
               ],

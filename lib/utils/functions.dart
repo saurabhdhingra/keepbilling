@@ -9,7 +9,8 @@ ScrollController? getCurrentController(int index) {
       return controller1;
     case 2:
       return controller2;
-    case 3  : return controller3;
+    case 3:
+      return controller3;
     default:
       return null;
   }
@@ -80,6 +81,17 @@ int? getBankValue(Map data) {
     value = value! + v.value as int;
   }
   return value;
+}
+
+String partyName(List partyList, int partyId) {
+  String ans = "Party not found";
+  for (Map m in partyList) {
+    if (m["id"] == partyId) {
+      ans = m["party_name"];
+      break;
+    }
+  }
+  return ans;
 }
 
 String formatDate(DateTime selectedDate) {

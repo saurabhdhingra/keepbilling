@@ -10,6 +10,7 @@ import '../../api/master.dart';
 import '../../provider/authenticationProvider.dart';
 import '../../widgets/infoPages/CustomExpansionTile.dart';
 import '../../widgets/infoPages/paddedText.dart';
+import '../pdfView.dart';
 import '../searchBarDelegate.dart';
 import 'editPages/editBill.dart';
 
@@ -77,6 +78,7 @@ class _SaleTransactionState extends State<SaleTransaction> {
     final Map propeties = {
       "title": "totalamount",
       "subtitle": "inv_date",
+       
       "entries": [
         {"fieldName": "Tax Amount", "fieldValue": "tax_amount"},
         {"fieldName": "Discount Amount", "fieldValue": "disc_amount"},
@@ -180,6 +182,9 @@ class _SaleTransactionState extends State<SaleTransaction> {
                                   getUpdatedData();
                                 }
                               },
+                              pdfAction: () async {
+                                await generatePDF(e["id"]);
+                              },
                             ),
                           ),
                         );
@@ -202,6 +207,48 @@ class _SaleTransactionState extends State<SaleTransaction> {
     );
     try {
       return await service.fetchBillById(compId, bill);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+  }
+
+  Future generatePDF(String billID) async {
+    final TransactionsService service = TransactionsService();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Please wait...."),
+      ),
+    );
+    try {
+      return await service.fetchBillPDF('S', userId, companyId, billID).then(
+        (value) async {
+          if (value["type"] == "success") {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("PDF genereated successfully."),
+              ),
+            );
+            await TransactionsService.loadPDF(value["response_data"]).then(
+              (value) => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PdfViewPage(file: value),
+                ),
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Error : ${value["message"]}"),
+              ),
+            );
+          }
+        },
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

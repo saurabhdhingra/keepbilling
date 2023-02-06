@@ -4,6 +4,7 @@ import '../../utils/constants.dart';
 
 class SearchBar extends SearchDelegate<String> {
   final List searchList;
+
   final Map properties;
 
   SearchBar(this.searchList, this.properties);
@@ -34,7 +35,9 @@ class SearchBar extends SearchDelegate<String> {
     var width = SizeConfig.getWidth(context);
     List<Map> matchQuery = [];
     for (var item in searchList) {
-      if (item["${properties["title"]}"].toLowerCase().contains(query.toLowerCase())) {
+      if (item["${properties["title"]}"]
+          .toLowerCase()
+          .contains(query.toLowerCase())) {
         matchQuery.add(item);
       }
     }
@@ -46,6 +49,7 @@ class SearchBar extends SearchDelegate<String> {
           child: Theme(
             data: theme,
             child: CustomExpansionTile(
+             
               data: result,
               properties: properties,
             ),
@@ -61,7 +65,9 @@ class SearchBar extends SearchDelegate<String> {
     List<Map> matchQuery = [];
 
     for (var item in searchList) {
-      if (item["${properties["title"]}"].toLowerCase().contains(query.toLowerCase())) {
+      if (item["${properties["title"]}"]
+          .toLowerCase()
+          .contains(query.toLowerCase())) {
         matchQuery.add(item);
       }
     }

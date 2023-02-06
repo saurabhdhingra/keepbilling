@@ -55,12 +55,12 @@ class _BankMasterState extends State<BankMaster> {
     var width = SizeConfig.getWidth(context);
 
     final Map propeties = {
-      "title": "bank_name",
-      "subtitle": "bank_ifsc",
+      "title": "account_name",
+      "subtitle": "balance",
+     
       "entries": [
-        {"fieldName": "Account Name", "fieldValue": "account_name"},
+        {"fieldName": "IFSC", "fieldValue": "bank_ifsc"},
         {"fieldName": "Account Number", "fieldValue": "account_no"},
-        {"fieldName": "Opening Balance", "fieldValue": "opening_bal"},
       ]
     };
     return isLoading
@@ -90,7 +90,7 @@ class _BankMasterState extends State<BankMaster> {
                   onPressed: () {
                     showSearch(
                       context: context,
-                      delegate: SearchBar(dataList, propeties),
+                      delegate: SearchBar(dataList, propeties,),
                     );
                   },
                   icon: const Icon(Icons.search),

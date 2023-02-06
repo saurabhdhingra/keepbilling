@@ -128,22 +128,28 @@ class _VoucherTransactionState extends State<VoucherTransaction> {
                         return Padding(
                           padding: EdgeInsets.fromLTRB(width * 0.02, 0, 0, 0),
                           child: Theme(
-                              data: theme,
-                              child: CustomExpansionTile(
-                                  data: e, properties: propeties, editAction: () async {
+                            data: theme,
+                            child: CustomExpansionTile(
+                              data: e,
+                              properties: propeties,
+                              editAction: () async {
                                 var navigationResult = await Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => EditVoucherTransaction(
-                                      
-                                      data: e, ledgerList: ledgerList, partyList: parties,
+                                    builder: (context) =>
+                                        EditVoucherTransaction(
+                                      data: e,
+                                      ledgerList: ledgerList,
+                                      partyList: parties,
                                     ),
                                   ),
                                 );
                                 if (navigationResult == "update") {
                                   getUpdatedData();
                                 }
-                              },),),
+                              },
+                            ),
+                          ),
                         );
                       },
                     ),
