@@ -9,6 +9,7 @@ import '../../../widgets/formPages/dropdownSelector.dart';
 import '../../../widgets/formPages/customField.dart';
 import '../../../widgets/formPages/rowText.dart';
 import '../../../widgets/formPages/statusButton.dart';
+import '../../../widgets/formPages/submitButton.dart';
 
 class EditPartyMaster extends StatefulWidget {
   final Map data;
@@ -157,7 +158,9 @@ class _EditPartyMasterState extends State<EditPartyMaster> {
                   }
                   return null;
                 },
-                initialValue: widget.data["party_phone"] ?? "",
+                initialValue: widget.data["party_phone"] == '0'
+                    ? ""
+                    : widget.data["party_phone"],
               ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Mobile"),
@@ -339,33 +342,28 @@ class _EditPartyMasterState extends State<EditPartyMaster> {
               //     ),
               //   ],
               // ),
-              Row(
-                children: [
-                  SizedBox(width: width * 0.8),
-                  TextButton(
-                    onPressed: () {
-                      edit().then(
-                        (value) {
-                          if (value["type"] == "success") {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                            Navigator.pop(context, "update");
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                          }
-                        },
-                      );
+              SizedBox(height: height * 0.02),
+              SubmitButton(
+                onSubmit: () {
+                  edit().then(
+                    (value) {
+                      if (value["type"] == "success") {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(value["message"]),
+                          ),
+                        );
+                        Navigator.pop(context, "update");
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(value["message"]),
+                          ),
+                        );
+                      }
                     },
-                    child: const Text("Submit"),
-                  )
-                ],
+                  );
+                },
               ),
             ],
           ),

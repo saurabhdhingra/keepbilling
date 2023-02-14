@@ -10,6 +10,7 @@ import '../../../widgets/formPages/dropdownSelector.dart';
 import '../../../widgets/formPages/customField.dart';
 import '../../../widgets/formPages/rowText.dart';
 import '../../../widgets/formPages/statusButton.dart';
+import '../../../widgets/formPages/submitButton.dart';
 
 class AddPartyMaster extends StatefulWidget {
   const AddPartyMaster({Key? key}) : super(key: key);
@@ -330,33 +331,28 @@ class _AddPartyMasterState extends State<AddPartyMaster> {
               //     ),
               //   ],
               // ),
-              Row(
-                children: [
-                  SizedBox(width: width * 0.8),
-                  TextButton(
-                    onPressed: () {
-                      add().then(
-                        (value) {
-                          if (value["type"] == "success") {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                            Navigator.pop(context, "update");
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                          }
-                        },
-                      );
+              SizedBox(height: height * 0.02),
+              SubmitButton(
+                onSubmit: () {
+                  add().then(
+                    (value) {
+                      if (value["type"] == "success") {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(value["message"]),
+                          ),
+                        );
+                        Navigator.pop(context, "update");
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(value["message"]),
+                          ),
+                        );
+                      }
                     },
-                    child: const Text("Submit"),
-                  )
-                ],
+                  );
+                },
               ),
             ],
           ),

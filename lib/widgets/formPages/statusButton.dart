@@ -52,7 +52,7 @@ class _StatusButtonState extends State<StatusButton> {
           borderRadius: const BorderRadius.all(Radius.circular(10)),
         ),
         child: Center(
-          child: Text(widget.text),
+          child: FittedBox(child: Text(widget.text)),
         ),
       ),
     );

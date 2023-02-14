@@ -61,7 +61,7 @@ class _VoucherTransactionState extends State<VoucherTransaction> {
     var width = SizeConfig.getWidth(context);
 
     final Map propeties = {
-      "title": "narration",
+      "title": "party_name",
       "subtitle": "inv_date",
       "entries": [
         {"fieldName": "Amount", "fieldValue": "amount"},
@@ -126,7 +126,8 @@ class _VoucherTransactionState extends State<VoucherTransaction> {
                     ...dataList.map(
                       (e) {
                         return Padding(
-                          padding: EdgeInsets.fromLTRB(width * 0.02, 0, 0, 0),
+                          padding: EdgeInsets.fromLTRB(
+                              width * 0.02, 0, width * 0.02, 0),
                           child: Theme(
                             data: theme,
                             child: CustomExpansionTile(

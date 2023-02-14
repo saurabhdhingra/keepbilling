@@ -74,4 +74,7 @@ class ApiService {
   String get extraFields => "settings.php?type=set_extrafields";
   String get otpChangePin => "settings.php?type=otpfor_pin";
   String get verifyChange => "settings.php?type=verify_pinotp";
+
+  //Send Feedback
+  String get contact => "connect.php?type=contactsupport";
 }

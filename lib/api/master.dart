@@ -101,6 +101,7 @@ class MasterService {
   Future addMaster(Map data, String category) async {
     dynamic responseJson;
     try {
+      print(data);
       final response = await http.post(
         addUri(category),
         encoding: Encoding.getByName('gzip, deflate, br'),
@@ -112,7 +113,7 @@ class MasterService {
         body: jsonEncode(data),
       );
       responseJson = returnResponse(response);
-      print(jsonEncode(data));
+     
     } on SocketException {
       throw FetchDataException('No Internet Connection');
     }
@@ -122,6 +123,7 @@ class MasterService {
   Future editMaster(Map data, String category) async {
     dynamic responseJson;
     try {
+      print(data);
       final response = await http.post(
         editUri(category),
         encoding: Encoding.getByName('gzip, deflate, br'),

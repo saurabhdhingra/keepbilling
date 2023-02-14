@@ -6,18 +6,22 @@ class ItemExpansionTile extends StatelessWidget {
   final Map data;
   final VoidCallback deleteFunc;
   final VoidCallback updateFunc;
+  final String itemName;
   const ItemExpansionTile(
       {Key? key,
       required this.properties,
       required this.data,
       required this.deleteFunc,
-      required this.updateFunc})
+      required this.updateFunc,
+      this.itemName = ""})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
-      title: Text(data["${properties["title"]}"]),
+      title: properties["title"] == "item"
+          ? Text(itemName)
+          : Text(data["${properties["title"]}"]),
       subtitle: Text(data["${properties["subtitle"]}"]),
       textColor: Colors.black87,
       iconColor: Colors.black87,
@@ -47,9 +51,8 @@ class ItemExpansionTile extends StatelessWidget {
     for (int i = 0; i < properties.length; i++) {
       widgets.add(
         Description(
-          text: properties[i]["fieldName"] +
-              " : " +
-              data["${properties[i]["fieldValue"]}"],
+          property: properties[i]["fieldName"] + " : ",
+          value: data["${properties[i]["fieldValue"]}"].toString(),
         ),
       );
     }

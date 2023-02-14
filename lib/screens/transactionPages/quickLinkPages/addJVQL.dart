@@ -11,6 +11,7 @@ import '../../../widgets/formPages/customField.dart';
 import '../../../widgets/formPages/dropdownSelector.dart';
 import '../../../widgets/formPages/itemExpansionTile.dart';
 import '../../../widgets/formPages/rowText.dart';
+import '../../../widgets/formPages/submitButton.dart';
 import '../../loadingScreens.dart';
 
 class AddJVTransactionQL extends StatefulWidget {
@@ -90,49 +91,74 @@ class _AddJVTransactionQLState extends State<AddJVTransactionQL> {
 
     return isLoading
         ? quickLinksLoading(context, 5, "Create Bill")
-        :Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  SizedBox(width: width * 0.8),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text("Cancel"),
-                  )
-                ],
-              ),
-              const TitleText(text: "New Journal Voucher"),
-              SizedBox(height: height * 0.02),
-              const RowText(text: "Item Array"),
-              ...jvEntryList.map(
-                (e) {
-                  return Padding(
-                    padding: EdgeInsets.fromLTRB(width * 0.02, 0, 0, 0),
-                    child: Theme(
-                      data: theme,
-                      child: ItemExpansionTile(
-                        data: e,
-                        properties: propeties,
-                        deleteFunc: () => setState(() => jvEntryList.remove(e)),
-                        updateFunc: () {
-                          setState(() {
-                            jvNo = e["jv_no"];
-                            transferDate = DateTime.parse(e["transfer_date"]);
-                            narration = e["narration"];
-                            credit = e["credit"];
-                            creditIndex = findJVInputIndex(e["credit"]);
-                            debit = e["debit"];
-                            debitIndex = findJVInputIndex(e["debit"]);
-                            amount = e["amount"];
-                            amountController.text = e["amount"];
-                            narrationController.text = e["narration"];
-                          });
+        : Scaffold(
+            body: SafeArea(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        SizedBox(width: width * 0.8),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text("Cancel"),
+                        )
+                      ],
+                    ),
+                    const TitleText(text: "New Journal Voucher"),
+                    SizedBox(height: height * 0.02),
+                    const RowText(text: "Item Array"),
+                    ...jvEntryList.map(
+                      (e) {
+                        return Padding(
+                          padding: EdgeInsets.fromLTRB(width * 0.02, 0, 0, 0),
+                          child: Theme(
+                            data: theme,
+                            child: ItemExpansionTile(
+                              data: e,
+                              properties: propeties,
+                              deleteFunc: () =>
+                                  setState(() => jvEntryList.remove(e)),
+                              updateFunc: () {
+                                setState(() {
+                                  jvNo = e["jv_no"];
+                                  transferDate =
+                                      DateTime.parse(e["transfer_date"]);
+                                  narration = e["narration"];
+                                  credit = e["credit"];
+                                  creditIndex = findJVInputIndex(e["credit"]);
+                                  debit = e["debit"];
+                                  debitIndex = findJVInputIndex(e["debit"]);
+                                  amount = e["amount"];
+                                  amountController.text = e["amount"];
+                                  narrationController.text = e["narration"];
+                                });
+                                showModalBottomSheet(
+                                  isScrollControlled: true,
+                                  enableDrag: false,
+                                  isDismissible: true,
+                                  backgroundColor: Colors.transparent,
+                                  context: context,
+                                  builder: (context) => addOrEditEntry(
+                                    context,
+                                    (Map value) => setState(() =>
+                                        jvEntryList = [...jvEntryList, value]),
+                                    false,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    Center(
+                      child: TextButton(
+                        onPressed: () {
+                          setJvNo();
                           showModalBottomSheet(
                             isScrollControlled: true,
                             enableDrag: false,
@@ -140,71 +166,44 @@ class _AddJVTransactionQLState extends State<AddJVTransactionQL> {
                             backgroundColor: Colors.transparent,
                             context: context,
                             builder: (context) => addOrEditEntry(
-                              context,
-                              (Map value) => setState(
-                                  () => jvEntryList = [...jvEntryList, value]),
-                              false,
-                            ),
+                                context,
+                                (Map value) => setState(() =>
+                                    jvEntryList = [...jvEntryList, value]),
+                                true),
                           );
                         },
+                        child: const Text("Add item"),
                       ),
                     ),
-                  );
-                },
-              ),
-              Center(
-                child: TextButton(
-                  onPressed: () {
-                    setJvNo();
-                    showModalBottomSheet(
-                      isScrollControlled: true,
-                      enableDrag: false,
-                      isDismissible: true,
-                      backgroundColor: Colors.transparent,
-                      context: context,
-                      builder: (context) => addOrEditEntry(
-                          context,
-                          (Map value) => setState(
-                              () => jvEntryList = [...jvEntryList, value]),
-                          true),
-                    );
-                  },
-                  child: const Text("Add item"),
+                    SizedBox(height: height * 0.02),
+                    SubmitButton(
+                      text: "Add Entry",
+                      onSubmit: () {
+                        add().then(
+                          (value) {
+                            if (value["type"] == "success") {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(value["message"]),
+                                ),
+                              );
+                              Navigator.pop(context, "update");
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(value["message"]),
+                                ),
+                              );
+                            }
+                          },
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
-              Row(
-                children: [
-                  SizedBox(width: width * 0.75),
-                  TextButton(
-                    onPressed: () {
-                      add().then(
-                        (value) {
-                          if (value["type"] == "success") {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                            Navigator.pop(context, "update");
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                          }
-                        },
-                      );
-                    },
-                    child: const Text("Add Entry"),
-                  )
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          );
   }
 
   Future add() async {
@@ -347,35 +346,30 @@ class _AddJVTransactionQLState extends State<AddJVTransactionQL> {
                       controller: narrationController,
                     ),
                     SizedBox(height: height * 0.02),
-                    Row(
-                      children: [
-                        SizedBox(width: width * 0.7),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            setState(
-                              () {
-                                function(
-                                  {
-                                    "jv_no": jvNo,
-                                    "transfer_date": formatDate(transferDate),
-                                    "amount": amount,
-                                    "credit": credit,
-                                    "debit": debit,
-                                    "narration": narration,
-                                  },
-                                );
-                                jvNo = "";
-                                transferDate = DateTime.now();
-                                narration = "";
-                                credit = "";
-                                debit = "";
+                    SubmitButton(
+                      text: addOrEdit ? "Add Entry" : "Edit Entry",
+                      onSubmit: () {
+                        Navigator.pop(context);
+                        setState(
+                          () {
+                            function(
+                              {
+                                "jv_no": jvNo,
+                                "transfer_date": formatDate(transferDate),
+                                "amount": amount,
+                                "credit": credit,
+                                "debit": debit,
+                                "narration": narration,
                               },
                             );
+                            jvNo = "";
+                            transferDate = DateTime.now();
+                            narration = "";
+                            credit = "";
+                            debit = "";
                           },
-                          child: Text(addOrEdit ? "Add Entry" : "Edit Entry"),
-                        )
-                      ],
+                        );
+                      },
                     ),
                   ],
                 ),

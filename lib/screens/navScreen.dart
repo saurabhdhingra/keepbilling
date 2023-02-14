@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
@@ -7,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:keepbilling/screens/dumy.dart';
 import 'package:keepbilling/screens/selector.dart';
+import 'package:keepbilling/screens/settings/changePIN.dart';
 import 'package:keepbilling/screens/settings/quickLinks.dart';
 import 'package:keepbilling/screens/support.dart';
 import 'package:keepbilling/widgets/formPages/titleText.dart';
@@ -33,6 +35,7 @@ class NavScreen extends StatefulWidget {
 
 class _NavScreenState extends State<NavScreen> {
   bool isLoading = false;
+  bool isQLLoading = false;
   String userId = "";
   String companyName = "";
   String companyId = "";
@@ -49,9 +52,6 @@ class _NavScreenState extends State<NavScreen> {
 
   String subject = "";
   String query = "";
-
-  final _formKey1 = GlobalKey<FormState>();
-  final _formKey2 = GlobalKey<FormState>();
 
   removeUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -90,6 +90,14 @@ class _NavScreenState extends State<NavScreen> {
     }
   }
 
+  var period = const Duration(seconds: 15);
+
+  Future updateQuickLinks() async {
+    setState(() => isQLLoading = true);
+    quickLinks = await service.fetchQuickLinks(userId, companyId);
+    setState(() => isQLLoading = false);
+  }
+
   final List<List> _screensData = [
     [
       CupertinoIcons.arrow_up_circle,
@@ -116,6 +124,11 @@ class _NavScreenState extends State<NavScreen> {
     super.initState();
     _currentIndex = widget.currentIndex;
     getData();
+    Timer.periodic(period, (arg) async {
+      toDoData = await service.fetchToDoList(userId, companyId);
+      chequeData = await service.fetchChequeList(userId, companyId);
+      quickViewData = await service.fetchAllAccounts(userId, companyId);
+    });
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
 
@@ -157,61 +170,69 @@ class _NavScreenState extends State<NavScreen> {
   }
 
   Widget quickLinksPage(double height, double width) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 243, 243, 243),
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const TitleText(text: "Quick Links"),
-            ...quickLinks.map(
-              (e) {
-                return QuickLink(
-                  icon: Icons.abc,
-                  text: e,
-                  screen: quickLinksScreens[e],
-                  isButton: false,
-                );
-              },
+    return isQLLoading
+        ? infoLoading(context)
+        : Scaffold(
+            backgroundColor: const Color.fromARGB(255, 243, 243, 243),
+            body: SafeArea(
+              child: SingleChildScrollView(
+                controller: controller0,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const TitleText(text: "Quick Links"),
+                    ...quickLinks.map(
+                      (e) {
+                        return QuickLink(
+                          icon: quickLinksIcons[e],
+                          text: e,
+                          screen: quickLinksScreens[e],
+                          isButton: false,
+                        );
+                      },
+                    ),
+                    Divider(
+                      thickness: 2,
+                      height: height * 0.02,
+                      indent: width * 0.05,
+                      endIndent: width * 0.05,
+                      color: Colors.black87,
+                    ),
+                    const QuickLink(
+                      icon: Icons.edit,
+                      text: "Edit Quick Links",
+                      screen: QuickLinksSettings(),
+                      isButton: false,
+                    ),
+                  ],
+                ),
+              ),
             ),
-            Divider(
-              thickness: 2,
-              height: height * 0.02,
-              indent: width * 0.05,
-              endIndent: width * 0.05,
-              color: Colors.black87,
-            ),
-            const QuickLink(
-              icon: Icons.abc,
-              text: "Edit Quick Links",
-              screen: QuickLinksSettings(),
-              isButton: false,
-            ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 
   Widget reportsPage() {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 243, 243, 243),
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const TitleText(text: "Reports"),
-            ...links[2]["subLinks"].map(
-              (e) {
-                return QuickLink(
-                  icon: Icons.abc,
-                  text: e["title"],
-                  screen: e["screen"],
-                  isButton: false,
-                );
-              },
-            ),
-          ],
+        child: SingleChildScrollView(
+          controller: controller2,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const TitleText(text: "Reports"),
+              ...links[2]["subLinks"].map(
+                (e) {
+                  return QuickLink(
+                    icon: e["icon"],
+                    text: e["title"],
+                    screen: e["screen"],
+                    isButton: false,
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -221,89 +242,172 @@ class _NavScreenState extends State<NavScreen> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 243, 243, 243),
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const TitleText(text: "Settings"),
-            ...settingsTabs.map(
-              (e) {
-                return QuickLink(
-                  icon: Icons.abc,
-                  text: e["title"],
-                  screen: e["screen"],
-                  isButton: false,
-                );
-              },
-            ),
-            QuickLink(
-              icon: Icons.abc,
-              text: "Remove Account",
-              screen: const DumyScreen(),
-              isButton: true,
-              function: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Platform.isIOS
-                        ? CupertinoAlertDialog(
-                            title: const Text('Remove account ?'),
-                            content: const Text(
-                                'You will have to add the account again by verifying it through OTP sent over text.'),
-                            actions: [
-                              CupertinoDialogAction(
-                                child: const Text('Yes'),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  removeUserData().then((value) {
-                                    setSwipeStatus();
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: ((context) =>
-                                                const SelectorPage())));
-                                  });
-                                },
-                              ),
-                              CupertinoDialogAction(
-                                child: const Text('Cancel'),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                              ),
-                            ],
-                          )
-                        : AlertDialog(
-                            title: const Text('Remove account ?'),
-                            content: const Text(
-                                'You will have to add the account again by verifying it through OTP sent over text.'),
-                            actions: [
-                              TextButton(
-                                child: const Text('Yes'),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  removeUserData().then((value) {
-                                    setSwipeStatus();
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: ((context) =>
-                                                const SelectorPage())));
-                                  });
-                                },
-                              ),
-                              TextButton(
-                                child: const Text('Cancel'),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                              ),
-                            ],
-                          );
-                  },
-                );
-              },
-            ),
-          ],
+        child: SingleChildScrollView(
+          controller: controller3,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const TitleText(text: "Settings"),
+              ...settingsTabs.map(
+                (e) {
+                  return QuickLink(
+                    icon: e["icon"],
+                    text: e["title"],
+                    screen: e["screen"],
+                    isButton: false,
+                  );
+                },
+              ),
+              QuickLink(
+                icon: Icons.password,
+                text: "Change Login PIN",
+                screen: const DumyScreen(),
+                isButton: true,
+                function: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Platform.isIOS
+                          ? CupertinoAlertDialog(
+                              title: const Text('Change Login PIN ?'),
+                              content:
+                                  const Text('An OTP will be sent over text.'),
+                              actions: [
+                                CupertinoDialogAction(
+                                  child: const Text('Yes'),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const ChangePINSetings()),
+                                    );
+                                  },
+                                ),
+                                CupertinoDialogAction(
+                                  child: const Text('Cancel'),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            )
+                          : AlertDialog(
+                              title: const Text('Change Login PIN ?'),
+                              content:
+                                  const Text('An OTP will be sent over text.'),
+                              actions: [
+                                TextButton(
+                                  child: const Text('Yes'),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const ChangePINSetings()),
+                                    );
+                                  },
+                                ),
+                                TextButton(
+                                  child: const Text('Cancel'),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            );
+                    },
+                  );
+                },
+              ),
+              QuickLink(
+                icon: CupertinoIcons.arrow_up_circle,
+                text: "Set Quick Links",
+                screen: const DumyScreen(),
+                isButton: true,
+                function: () async {
+                  var navigationResult = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const QuickLinksSettings()),
+                  );
+                  if (navigationResult == "updated") {
+                    updateQuickLinks();
+                  }
+                },
+              ),
+              QuickLink(
+                icon: Icons.person_remove,
+                text: "Remove Account",
+                screen: const DumyScreen(),
+                isButton: true,
+                function: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Platform.isIOS
+                          ? CupertinoAlertDialog(
+                              title: const Text('Remove account ?'),
+                              content: const Text(
+                                  'You will have to add the account again by verifying it through OTP sent over text.'),
+                              actions: [
+                                CupertinoDialogAction(
+                                  child: const Text('Yes'),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    removeUserData().then((value) {
+                                      setSwipeStatus();
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: ((context) =>
+                                                  const SelectorPage())));
+                                    });
+                                  },
+                                ),
+                                CupertinoDialogAction(
+                                  child: const Text('Cancel'),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            )
+                          : AlertDialog(
+                              title: const Text('Remove account ?'),
+                              content: const Text(
+                                  'You will have to add the account again by verifying it through OTP sent over text.'),
+                              actions: [
+                                TextButton(
+                                  child: const Text('Yes'),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    removeUserData().then((value) {
+                                      setSwipeStatus();
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: ((context) =>
+                                                  const SelectorPage())));
+                                    });
+                                  },
+                                ),
+                                TextButton(
+                                  child: const Text('Cancel'),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -614,16 +718,17 @@ class _NavScreenState extends State<NavScreen> {
               (e) => Theme(
                 data: theme,
                 child: ExpansionTile(
-                  leading: const Icon(Icons.abc),
+                  leading: Icon(e["icon"]),
                   key: PageStorageKey<String>(e["title"]),
-                  title: Text(e["title"]),
+                  title: Text(e["title"],
+                      style: GoogleFonts.mukta(fontSize: height * 0.02)),
                   textColor: Colors.black87,
                   iconColor: Colors.black87,
                   childrenPadding: EdgeInsets.fromLTRB(width * 0.02, 0, 0, 0),
                   children: e["subLinks"]
                       .map<Widget>(
                         (i) => ListTile(
-                          leading: const Icon(Icons.abc),
+                          leading: Icon(i["icon"]),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -632,9 +737,9 @@ class _NavScreenState extends State<NavScreen> {
                               ),
                             );
                           },
-                          title: Text(
-                            i["title"],
-                          ),
+                          title: Text(i["title"],
+                              style:
+                                  GoogleFonts.mukta(fontSize: height * 0.02)),
                         ),
                       )
                       .toList(),
@@ -642,7 +747,7 @@ class _NavScreenState extends State<NavScreen> {
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.abc),
+              leading: const Icon(Icons.message),
               title: const Text("Send Feedback"),
               onTap: () {
                 Navigator.push(context,

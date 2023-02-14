@@ -68,20 +68,20 @@ class _LicenseDetailsState extends State<LicenseDetails> {
           );
   }
 
-  // Container renewLink(double height, double width, String date) {
-  //   return Container(
-  //     height: height * 0.2,
-  //     width: width * 0.9,
-  //     child: Column(
-  //       children: [
-  //         SizedBox(
-  //           height: height * 0.1,
-  //           child: FittedBox(
-  //             child: RichText(),
-  //           ),
-  //         )
-  //       ],
-  //     ),
-  //   );
-  // }
+  Container renewLink(double height, double width, String date) {
+    return Container(
+      height: height * 0.2,
+      width: width * 0.9,
+      child: Column(
+        children: [
+          SizedBox(
+            height: height * 0.1,
+            child: FittedBox(
+              child: RichText(text: TextSpan(text: ""),),
+            ),
+          )
+        ],
+      ),
+    );
+  }
 }

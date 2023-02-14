@@ -11,6 +11,7 @@ import '../../../widgets/formPages/dropdownSelector.dart';
 import '../../../widgets/formPages/customField.dart';
 import '../../../widgets/formPages/itemExpansionTile.dart';
 import '../../../widgets/formPages/rowText.dart';
+import '../../../widgets/formPages/submitButton.dart';
 
 class EditQuotationMaster extends StatefulWidget {
   final List partyList;
@@ -69,7 +70,7 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
   FixedExtentScrollController itemController = FixedExtentScrollController();
 
   final Map propeties = {
-    "title": "item_name",
+    "title": "item",
     "subtitle": "qntty",
     "entries": [
       {"fieldName": "Description", "fieldValue": "description"},
@@ -94,6 +95,7 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
     grandQuantity = findField("qntty");
     gQuantityController = TextEditingController(text: findField("qntty"));
     gTotalController = TextEditingController(text: findField("totalamount"));
+    print(items);
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
 
@@ -180,6 +182,8 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
                       child: ItemExpansionTile(
                         data: e,
                         properties: propeties,
+                        itemName: widget.itemList[findItemIndex(e["item_name"])]
+                            ["item_name"],
                         deleteFunc: () {
                           setState(() => items.remove(e));
                           updateMainValues();
@@ -188,7 +192,7 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
                           setState(
                             () {
                               itemName = e["item_name"];
-                              itemNameIndex = findItemIndex(e["id"]);
+                              itemNameIndex = findItemIndex(e["item_name"]);
                               itemQty = e["qntty"];
                               itemDescription = e["description"];
                               itemAmount = e["totalamount"];
@@ -268,33 +272,28 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
                 controller: gTotalController,
                 readOnly: true,
               ),
-              Row(
-                children: [
-                  SizedBox(width: width * 0.8),
-                  TextButton(
-                    onPressed: () {
-                      add().then(
-                        (value) {
-                          if (value["type"] == "success") {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                            Navigator.pop(context, "update");
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                          }
-                        },
-                      );
+              SizedBox(height: height * 0.02),
+              SubmitButton(
+                onSubmit: () {
+                  edit().then(
+                    (value) {
+                      if (value["type"] == "success") {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(value["message"]),
+                          ),
+                        );
+                        Navigator.pop(context, "update");
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(value["message"]),
+                          ),
+                        );
+                      }
                     },
-                    child: const Text("Submit"),
-                  )
-                ],
+                  );
+                },
               ),
             ],
           ),
@@ -488,27 +487,25 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
     );
   }
 
-  Future add() async {
+  Future edit() async {
     final MasterService service = MasterService();
     ScaffoldMessenger.of(context)
         .showSnackBar(const SnackBar(content: Text("Processing")));
     try {
-      print(itemArrayQuot(items));
+      print(itemArrayEditQuot(items));
       return await service.editMaster({
         "userid": widget.data["user_id"],
         "companyid": widget.data["company_id"],
         "product": "1",
         "quot_id": widget.data["quot_no"],
-        "sr_no": widget.data["prefix_id"],
         "oldparty_id": widget.data["party_id"],
         "party_id": partyId,
         "build_date": formatDate(buildDate),
         "subject": subject,
         "grandtotal": grandTotal,
-        "otherCharges": otherCharges,
         "extra_comment": extraComment,
         "grand_qty": grandQuantity,
-        "item_array": itemArrayQuot(items),
+        "item_array": itemArrayEditQuot(items),
       }, 'quotation');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -517,6 +514,22 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
         ),
       );
     }
+  }
+
+  Map itemArrayEditQuot(List items) {
+    Map<String, Map> answer = {};
+    for (int i = 0; i < items.length; i++) {
+      answer["item$i"] = {
+        "name": items[i]["item_name"],
+        "qty": items[i]["qntty"],
+        "descrip": items[i][""],
+        "rate": items[i]["rate"],
+        "amt": items[i]["amt"],
+        "discount": items[i]["disc"],
+        "tax": items[i]["gst"],
+      };
+    }
+    return answer;
   }
 
   int findItemIndex(String itemName) {

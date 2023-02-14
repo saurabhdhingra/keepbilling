@@ -9,6 +9,7 @@ import '../../../utils/functions.dart';
 import '../../../widgets/formPages/dropdownSelector.dart';
 import '../../../widgets/formPages/itemExpansionTile.dart';
 import '../../../widgets/formPages/rowText.dart';
+import '../../../widgets/formPages/submitButton.dart';
 
 class EditBill extends StatefulWidget {
   final Map data;
@@ -438,33 +439,28 @@ class _EditBillState extends State<EditBill> {
                   child: const Text("Add item"),
                 ),
               ),
-              Row(
-                children: [
-                  SizedBox(width: width * 0.8),
-                  TextButton(
-                    onPressed: () {
-                      add().then(
-                        (value) {
-                          if (value["type"] == "success") {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                            Navigator.pop(context, "update");
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                          }
-                        },
-                      );
+              SizedBox(height: height * 0.02),
+              SubmitButton(
+                onSubmit: () {
+                  add().then(
+                    (value) {
+                      if (value["type"] == "success") {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(value["message"]),
+                          ),
+                        );
+                        Navigator.pop(context, "update");
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(value["message"]),
+                          ),
+                        );
+                      }
                     },
-                    child: const Text("Submit"),
-                  )
-                ],
+                  );
+                },
               ),
             ],
           ),
@@ -511,7 +507,7 @@ class _EditBillState extends State<EditBill> {
         "extra_discount": extraDiscount,
         "other_charges": otherCharges,
         "round": "on",
-        "item_array": itemArray(items)
+        "item_array": itemArrayBill(items)
       }, "bill");
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -775,6 +771,14 @@ class _EditBillState extends State<EditBill> {
         int days = int.parse(paymentTerm);
         return orderDate.add(Duration(days: days));
     }
+  }
+
+  Map itemArrayBill(List items) {
+    Map<String, Map> answer = {};
+    for (int i = 0; i < items.length; i++) {
+      answer["item$i"] = items[i];
+    }
+    return answer;
   }
 
   void updateMainValues() {

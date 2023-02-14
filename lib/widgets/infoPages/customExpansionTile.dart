@@ -10,26 +10,31 @@ class CustomExpansionTile extends StatelessWidget {
   final VoidCallback? editAction;
   final VoidCallback? pdfAction;
   final Map data;
+  final String partyName;
   const CustomExpansionTile({
     Key? key,
     required this.properties,
     required this.data,
     this.editAction,
     this.pdfAction,
-
+    this.partyName = "",
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var width = SizeConfig.getWidth(context);
-    return ExpansionTile(
-      title:  Text(data["${properties["title"]}"]),
-      subtitle: Text(data["${properties["subtitle"]}"]),
-      textColor: Colors.black87,
-      iconColor: Colors.black87,
-      expandedAlignment: Alignment.centerLeft,
-      expandedCrossAxisAlignment: CrossAxisAlignment.start,
-      children: fields(properties["entries"], width),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20.0),
+      child: ExpansionTile(
+        title: Text(data["${properties["title"]}"] ?? ""),
+        subtitle: Text(data["${properties["subtitle"]}"]),
+        textColor: Colors.black87,
+        iconColor: Colors.black87,
+        backgroundColor: const Color.fromARGB(255, 16, 196, 160),
+        expandedAlignment: Alignment.centerLeft,
+        expandedCrossAxisAlignment: CrossAxisAlignment.start,
+        children: fields(properties["entries"], width),
+      ),
     );
   }
 
@@ -71,9 +76,8 @@ class CustomExpansionTile extends StatelessWidget {
       } else {
         widgets.add(
           Description(
-            text: properties[i]["fieldName"] +
-                " : " +
-                data["${properties[i]["fieldValue"]}"],
+            property: properties[i]["fieldName"] + " : ",
+            value: data["${properties[i]["fieldValue"]}"].toString(),
           ),
         );
       }

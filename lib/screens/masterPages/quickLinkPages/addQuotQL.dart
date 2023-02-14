@@ -11,6 +11,7 @@ import '../../../widgets/formPages/dropdownSelector.dart';
 import '../../../widgets/formPages/customField.dart';
 import '../../../widgets/formPages/itemExpansionTile.dart';
 import '../../../widgets/formPages/rowText.dart';
+import '../../../widgets/formPages/submitButton.dart';
 import '../../loadingScreens.dart';
 
 class AddQuotationMasterQL extends StatefulWidget {
@@ -68,7 +69,7 @@ class _AddQuotationMasterQLState extends State<AddQuotationMasterQL> {
   TextEditingController gTotalController = TextEditingController(text: "0");
 
   final Map propeties = {
-    "title": "name",
+    "title": "item",
     "subtitle": "qty",
     "entries": [
       {"fieldName": "Description", "fieldValue": "descrip"},
@@ -271,33 +272,28 @@ class _AddQuotationMasterQLState extends State<AddQuotationMasterQL> {
                       controller: gTotalController,
                       readOnly: true,
                     ),
-                    Row(
-                      children: [
-                        SizedBox(width: width * 0.8),
-                        TextButton(
-                          onPressed: () {
-                            add().then(
-                              (value) {
-                                if (value["type"] == "success") {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(value["message"]),
-                                    ),
-                                  );
-                                  Navigator.pop(context, "update");
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(value["message"]),
-                                    ),
-                                  );
-                                }
-                              },
-                            );
+                    SizedBox(height: height * 0.02),
+                    SubmitButton(
+                      onSubmit: () {
+                        add().then(
+                          (value) {
+                            if (value["type"] == "success") {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(value["message"]),
+                                ),
+                              );
+                              Navigator.pop(context, "update");
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(value["message"]),
+                                ),
+                              );
+                            }
                           },
-                          child: const Text("Submit"),
-                        )
-                      ],
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -362,7 +358,7 @@ class _AddQuotationMasterQLState extends State<AddQuotationMasterQL> {
                     const RowText(text: "Item Name"),
                     DropdownSelector(
                       setState: (value) => setState(() {
-                        itemName = itemListValues[value]["item_name"];
+                        itemName = itemListValues[value]["id"];
                         itemRate = itemListValues[value]["s_rate"];
                         itemTax = itemListValues[value]["tax"];
                         rateController.text = itemListValues[value]["s_rate"];
@@ -502,7 +498,7 @@ class _AddQuotationMasterQLState extends State<AddQuotationMasterQL> {
             extraComment: extraComment,
             grandQty: grandQuantity,
             grandtotal: grandTotal,
-            itemArray: itemArray(items),
+            itemArray: itemArrayQuot(items),
             otherCharges: otherCharges,
             party: partyId,
             subject: subject,

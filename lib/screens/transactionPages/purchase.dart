@@ -74,9 +74,8 @@ class _PurchaseTransactionState extends State<PurchaseTransaction> {
     var width = SizeConfig.getWidth(context);
 
     final Map propeties = {
-      "title": "totalamount",
+      "title": "party_name",
       "subtitle": "inv_date",
-       
       "entries": [
         {"fieldName": "Tax Amount", "fieldValue": "tax_amount"},
         {"fieldName": "Discount Amount", "fieldValue": "disc_amount"},
@@ -108,10 +107,10 @@ class _PurchaseTransactionState extends State<PurchaseTransaction> {
                     builder: (context) => CreateBill(
                       extraFieldData: extraFieldsData,
                       billType: 'P',
-                      partyList: partyList,
+                      partyList: parties,
                       paymentTerms: pTerms,
                       invoiceNo: '',
-                      itemList: itemList,
+                      itemList: items,
                     ),
                   ),
                 );
@@ -152,7 +151,8 @@ class _PurchaseTransactionState extends State<PurchaseTransaction> {
                     ...dataList.map(
                       (e) {
                         return Padding(
-                          padding: EdgeInsets.fromLTRB(width * 0.02, 0, 0, 0),
+                          padding: EdgeInsets.fromLTRB(
+                              width * 0.02, 0, width * 0.02, 0),
                           child: Theme(
                             data: theme,
                             child: CustomExpansionTile(

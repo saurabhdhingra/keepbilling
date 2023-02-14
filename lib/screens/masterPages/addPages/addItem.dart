@@ -10,6 +10,7 @@ import '../../../utils/constants.dart';
 import '../../../widgets/formPages/customField.dart';
 import '../../../widgets/formPages/rowText.dart';
 import '../../../widgets/formPages/statusButton.dart';
+import '../../../widgets/formPages/submitButton.dart';
 import '../item.dart';
 
 class AddItemMaster extends StatefulWidget {
@@ -170,13 +171,13 @@ class _AddItemMasterState extends State<AddItemMaster> {
                   StatusButton(
                     isSelected: itemType == "Goods" ? true : false,
                     setState: (String value) =>
-                        setState(() => itemType == "Goods"),
+                        setState(() => itemType = "Goods"),
                     text: "Goods",
                   ),
                   StatusButton(
                     isSelected: itemType == "Services" ? true : false,
                     setState: (String value) =>
-                        setState(() => itemType == "Services"),
+                        setState(() => itemType = "Services"),
                     text: "Services",
                   ),
                 ],
@@ -204,33 +205,28 @@ class _AddItemMasterState extends State<AddItemMaster> {
                 setValue: (value) => setState(() => stockLimit = value),
                 formKey: _formKey13,
               ),
-              Row(
-                children: [
-                  SizedBox(width: width * 0.8),
-                  TextButton(
-                    onPressed: () {
-                      add().then(
-                        (value) {
-                          if (value["type"] == "success") {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                            Navigator.pop(context, "update");
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                          }
-                        },
-                      );
+              SizedBox(height: height * 0.02),
+              SubmitButton(
+                onSubmit: () {
+                  add().then(
+                    (value) {
+                      if (value["type"] == "success") {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(value["message"]),
+                          ),
+                        );
+                        Navigator.pop(context, "update");
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(value["message"]),
+                          ),
+                        );
+                      }
                     },
-                    child: const Text("Submit"),
-                  )
-                ],
+                  );
+                },
               ),
             ],
           ),
@@ -251,7 +247,7 @@ class _AddItemMasterState extends State<AddItemMaster> {
             hsnSac: hsnSac,
             itemName: itemName,
             itemStock: itemStock,
-            itemType: itemStock,
+            itemType: itemType,
             opRate: opRate,
             opStock: opStock,
             pRate: pRate,

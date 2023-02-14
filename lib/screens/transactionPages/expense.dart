@@ -21,7 +21,6 @@ class _ExpensesTransactionState extends State<ExpensesTransaction> {
   bool isLoading = false;
   List dataList = [];
 
-
   TransactionsService service = TransactionsService();
 
   String companyId = "";
@@ -29,10 +28,10 @@ class _ExpensesTransactionState extends State<ExpensesTransaction> {
 
   Future getData() async {
     setState(() => isLoading = true);
-     SharedPreferences prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     userId = prefs.getString('userId') ?? "";
     companyId = prefs.getString('companyId') ?? "";
-    
+
     dataList = await service.fetchDataList("expense", userId, companyId);
 
     setState(() => isLoading = false);
@@ -54,7 +53,6 @@ class _ExpensesTransactionState extends State<ExpensesTransaction> {
     final Map propeties = {
       "title": "delivery_note",
       "subtitle": "order_date",
-      
       "entries": [
         {"fieldName": "Total Amount", "fieldValue": "totalamount"},
         {"fieldName": "Tax Amount", "fieldValue": "tax_amount"},
@@ -99,14 +97,16 @@ class _ExpensesTransactionState extends State<ExpensesTransaction> {
                     ...dataList.map(
                       (e) {
                         return Padding(
-                          padding: EdgeInsets.fromLTRB(width * 0.02, 0, 0, 0),
+                          padding: EdgeInsets.fromLTRB(
+                              width * 0.02, 0, width * 0.02, 0),
                           child: Theme(
                               data: theme,
                               child: CustomExpansionTile(
                                   data: e, properties: propeties)),
                         );
                       },
-                    ), SizedBox(height:height*0.1),
+                    ),
+                    SizedBox(height: height * 0.1),
                   ],
                 ),
               ),

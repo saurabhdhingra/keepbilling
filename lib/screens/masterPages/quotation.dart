@@ -57,9 +57,8 @@ class _QuotationMasterState extends State<QuotationMaster> {
     var width = SizeConfig.getWidth(context);
 
     final Map propeties = {
-      "title": "subject",
+      "title": "party_name",
       "subtitle": "subject",
-      
       "entries": [
         {"fieldName": "Date", "fieldValue": "build_date"},
         {"fieldName": "Amount", "fieldValue": "grandtotal"}
@@ -131,7 +130,8 @@ class _QuotationMasterState extends State<QuotationMaster> {
                     ...dataList.map(
                       (e) {
                         return Padding(
-                          padding: EdgeInsets.fromLTRB(width * 0.02, 0, 0, 0),
+                          padding: EdgeInsets.fromLTRB(
+                              width * 0.02, 0, width * 0.02, 0),
                           child: Theme(
                             data: theme,
                             child: CustomExpansionTile(

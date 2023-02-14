@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:keepbilling/utils/constants.dart';
 
 class RowText extends StatelessWidget {
@@ -22,7 +23,7 @@ class RowText extends StatelessWidget {
           child: Text(
             text,
             textAlign: TextAlign.start,
-            style: TextStyle(
+            style: GoogleFonts.mukta(
               color: color,
               fontSize: width * 0.055,
               fontWeight: FontWeight.w500,

@@ -62,8 +62,10 @@ class _QuickLinkState extends State<QuickLink> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       widget.text,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: GoogleFonts.mukta(
                         fontSize: width * 0.05,
                         fontWeight: FontWeight.w700,
                         color: Colors.blue,

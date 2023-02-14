@@ -10,6 +10,7 @@ import '../../../widgets/formPages/customField.dart';
 import '../../../widgets/formPages/dropdownSelector.dart';
 import '../../../widgets/formPages/rowText.dart';
 import '../../../widgets/formPages/statusButton.dart';
+import '../../../widgets/formPages/submitButton.dart';
 
 class EditBankMaster extends StatefulWidget {
   final Map data;
@@ -59,16 +60,16 @@ class _EditBankMasterState extends State<EditBankMaster> {
   @override
   void initState() {
     super.initState();
-    bankName = widget.data["bank_name"]?? "";
-    accountName = widget.data["account_name"]?? "";
-    accountNo = widget.data["account_no"]?? "";
-    bankBranch = widget.data["bank_branch"]?? "";
-    acType = widget.data["ac_type"]?? "";
-    acTypeIndex = acTypeValues.indexOf(widget.data["ac_type"]?? "");
-    bankIfsc = widget.data["bank_ifsc"]?? "";
-    bankMicr = widget.data["bank_micr"]?? "";
-    balance = widget.data["balance"]?? "";
-    defaultt = widget.data["def"]?? "";
+    bankName = widget.data["bank_name"] ?? "";
+    accountName = widget.data["account_name"] ?? "";
+    accountNo = widget.data["account_no"] ?? "";
+    bankBranch = widget.data["bank_branch"] ?? "";
+    acType = widget.data["ac_type"] ?? "";
+    acTypeIndex = acTypeValues.indexOf(widget.data["ac_type"] ?? "");
+    bankIfsc = widget.data["bank_ifsc"] ?? "";
+    bankMicr = widget.data["bank_micr"] ?? "";
+    balance = widget.data["balance"] ?? "";
+    defaultt = widget.data["def"] ?? "";
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
 
@@ -99,28 +100,28 @@ class _EditBankMasterState extends State<EditBankMaster> {
               CustomField(
                 setValue: (value) => setState(() => bankName = value),
                 formKey: _formKey1,
-                initialValue: widget.data["bank_name"]?? "",
+                initialValue: widget.data["bank_name"] ?? "",
               ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Account Name"),
               CustomField(
                 setValue: (value) => setState(() => accountName = value),
                 formKey: _formKey2,
-                initialValue: widget.data["account_name"]?? "",
+                initialValue: widget.data["account_name"] ?? "",
               ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Account No."),
               CustomField(
                 setValue: (value) => setState(() => accountNo = value),
                 formKey: _formKey3,
-                initialValue: widget.data["account_no"]?? "",
+                initialValue: widget.data["account_no"] ?? "",
               ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Branch"),
               CustomField(
                 setValue: (value) => setState(() => bankBranch = value),
                 formKey: _formKey4,
-                initialValue: widget.data["bank_branch"]?? "",
+                initialValue: widget.data["bank_branch"] ?? "",
               ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Account Type"),
@@ -140,14 +141,14 @@ class _EditBankMasterState extends State<EditBankMaster> {
               CustomField(
                 setValue: (value) => setState(() => bankIfsc = value),
                 formKey: _formKey6,
-                initialValue: widget.data["bank_ifsc"]?? "",
+                initialValue: widget.data["bank_ifsc"] ?? "",
               ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Bank MICR"),
               CustomField(
                 setValue: (value) => setState(() => bankMicr = value),
                 formKey: _formKey7,
-                initialValue: widget.data["bank_micr"]?? "",
+                initialValue: widget.data["bank_micr"] ?? "",
               ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Set as default ? "),
@@ -166,34 +167,28 @@ class _EditBankMasterState extends State<EditBankMaster> {
                   ),
                 ],
               ),
-              Row(
-                children: [
-                  SizedBox(width: width * 0.8),
-                  TextButton(
-                    onPressed: () {
-                      edit().then(
-                        (value) {
-                          if (value["type"] == "success") {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                            Navigator.pop(context, "update");
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                            
-                          }
-                        },
-                      );
+              SizedBox(height: height * 0.02),
+              SubmitButton(
+                onSubmit: () {
+                  edit().then(
+                    (value) {
+                      if (value["type"] == "success") {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(value["message"]),
+                          ),
+                        );
+                        Navigator.pop(context, "update");
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(value["message"]),
+                          ),
+                        );
+                      }
                     },
-                    child: const Text("Submit"),
-                  )
-                ],
+                  );
+                },
               ),
             ],
           ),
@@ -222,7 +217,7 @@ class _EditBankMasterState extends State<EditBankMaster> {
         "old_balance": widget.data["balance"],
         "balance": balance,
         "default": defaultt,
-      },"bank");
+      }, "bank");
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:keepbilling/widgets/formPages/submitButton.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../api/settings.dart';
@@ -99,35 +100,32 @@ class _ChangePINSetingsState extends State<ChangePINSetings> {
                     formKey: _formKey3,
                     keyboardType: TextInputType.number,
                   ),
-                  Row(
-                    children: [
-                      SizedBox(width: width * 0.75),
-                      TextButton(
-                        onPressed: () {
-                          apiCall().then(
-                            (value) {
-                              print(value);
-                              if (value["type"] == "success") {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(value["message"]),
-                                  ),
-                                );
-                                Navigator.pop(context);
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(value["message"]),
-                                  ),
-                                );
-                              }
-                            },
-                          );
+                  SizedBox(height: height * 0.02),
+                  SubmitButton(
+                    onSubmit: () {
+                      apiCall().then(
+                        (value) {
+                          print(value);
+                          if (value["type"] == "success") {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(value["message"]),
+                              ),
+                            );
+                            Navigator.pop(context);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(value["message"]),
+                              ),
+                            );
+                          }
                         },
-                        child: const Text("Submit"),
-                      )
-                    ],
+                      );
+                    },
                   ),
+                 
+                 
                 ],
               ),
             ),

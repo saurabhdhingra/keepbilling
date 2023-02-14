@@ -11,6 +11,7 @@ import '../../../widgets/formPages/customField.dart';
 import '../../../widgets/formPages/dropdownSelector.dart';
 import '../../../widgets/formPages/itemExpansionTile.dart';
 import '../../../widgets/formPages/rowText.dart';
+import '../../../widgets/formPages/submitButton.dart';
 
 class EditJVTransaction extends StatefulWidget {
   final Map data;
@@ -59,7 +60,7 @@ class _EditJVTransactionState extends State<EditJVTransaction> {
         findJVInputIndex(widget.data["c_type"] + "-" + widget.data["c_id"]);
     debitIndex =
         findJVInputIndex(widget.data["d_type"] + "-" + widget.data["d_id"]);
-        SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
 
   @override
@@ -141,33 +142,28 @@ class _EditJVTransactionState extends State<EditJVTransaction> {
                 initialValue: widget.data["narration"] ?? "",
               ),
               SizedBox(height: height * 0.02),
-              Row(
-                children: [
-                  SizedBox(width: width * 0.75),
-                  TextButton(
-                    onPressed: () {
-                      edit().then(
-                        (value) {
-                          if (value["type"] == "success") {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                            Navigator.pop(context, "update");
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                          }
-                        },
-                      );
+              SubmitButton(
+                text: "Edit Entry",
+                onSubmit: () {
+                  edit().then(
+                    (value) {
+                      if (value["type"] == "success") {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(value["message"]),
+                          ),
+                        );
+                        Navigator.pop(context, "update");
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(value["message"]),
+                          ),
+                        );
+                      }
                     },
-                    child: const Text("Edit Entry"),
-                  )
-                ],
+                  );
+                },
               ),
             ],
           ),

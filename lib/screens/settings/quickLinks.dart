@@ -6,6 +6,7 @@ import '../../api/settings.dart';
 import '../../utils/constants.dart';
 import '../../widgets/formPages/dropdownSelector.dart';
 import '../../widgets/formPages/rowText.dart';
+import '../../widgets/formPages/submitButton.dart';
 import '../../widgets/infoPages/paddedText.dart';
 import '../loadingScreens.dart';
 
@@ -55,12 +56,23 @@ class _QuickLinksSettingsState extends State<QuickLinksSettings> {
   void initState() {
     super.initState();
     getData().then((value) {
-      index1 = quickLinks.indexOf(data[0]);
-      index2 = quickLinks.indexOf(data[1]);
-      index3 = quickLinks.indexOf(data[2]);
-      index4 = quickLinks.indexOf(data[3]);
-      index5 = quickLinks.indexOf(data[4]);
-      index6 = quickLinks.indexOf(data[5]);
+      index1 = data.isNotEmpty ? quickLinks.indexOf(data[0]) : 0;
+      index2 =
+          data.length > 1 ? quickLinks.indexOf(data[1] ?? "Unselected") : 0;
+      index3 =
+          data.length > 2 ? quickLinks.indexOf(data[2] ?? "Unselected") : 0;
+      index4 =
+          data.length > 3 ? quickLinks.indexOf(data[3] ?? "Unselected") : 0;
+      index5 =
+          data.length > 4 ? quickLinks.indexOf(data[4] ?? "Unselected") : 0;
+      index6 =
+          data.length > 5 ? quickLinks.indexOf(data[5] ?? "Unselected") : 0;
+      fav1 = data.isNotEmpty ? data[0] : "";
+      fav2 = data.length > 1 ? data[1] : "";
+      fav3 = data.length > 2 ? data[2] : "";
+      fav4 = data.length > 3 ? data[3] : "";
+      fav5 = data.length > 4 ? data[4] : "";
+      fav6 = data.length > 5 ? data[5] : "";
     });
   }
 
@@ -167,33 +179,29 @@ class _QuickLinksSettingsState extends State<QuickLinksSettings> {
                       scrollController:
                           FixedExtentScrollController(initialItem: index6),
                     ),
-                    Row(
-                      children: [
-                        SizedBox(width: width * 0.75),
-                        TextButton(
-                          onPressed: () {
-                            apiCall().then(
-                              (value) {
-                                if (value["type"] == "success") {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(value["message"]),
-                                    ),
-                                  );
-                                  Navigator.pop(context, "update");
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(value["message"]),
-                                    ),
-                                  );
-                                }
-                              },
-                            );
+                    SizedBox(height: height * 0.02),
+                    SubmitButton(
+                      onSubmit: () {
+                        apiCall().then(
+                          (value) {
+                            print(value);
+                            if (value["type"] == "success") {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(value["message"]),
+                                ),
+                              );
+                              Navigator.pop(context, "updated");
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(value["message"]),
+                                ),
+                              );
+                            }
                           },
-                          child: const Text("Submit"),
-                        )
-                      ],
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -208,7 +216,15 @@ class _QuickLinksSettingsState extends State<QuickLinksSettings> {
         .showSnackBar(const SnackBar(content: Text("Processing")));
     try {
       return await service.setQuickLinks(
-          userId, companyId, cashId, fav1, fav2, fav3, fav4, fav5, fav6);
+          userId,
+          companyId,
+          cashId,
+          fav1 == "Unselected" ? "" : fav1,
+          fav2 == "Unselected" ? "" : fav2,
+          fav3 == "Unselected" ? "" : fav3,
+          fav4 == "Unselected" ? "" : fav4,
+          fav5 == "Unselected" ? "" : fav5,
+          fav6 == "Unselected" ? "" : fav6);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

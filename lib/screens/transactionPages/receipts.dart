@@ -28,7 +28,7 @@ class _RecieptsTransactionState extends State<RecieptsTransaction> {
 
   Future getData() async {
     setState(() => isLoading = true);
-     SharedPreferences prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     userId = prefs.getString('userId') ?? "";
     companyId = prefs.getString('companyId') ?? "";
     dataList = await service.fetchDataList("reciept", userId, companyId);
@@ -52,7 +52,6 @@ class _RecieptsTransactionState extends State<RecieptsTransaction> {
     final Map propeties = {
       "title": "narration",
       "subtitle": "inv_date",
-       
       "entries": [
         {"fieldName": "Amount", "fieldValue": "amount"},
         {"fieldName": "Transaction Date", "fieldValue": "trans_date"},
@@ -93,10 +92,11 @@ class _RecieptsTransactionState extends State<RecieptsTransaction> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                     ...dataList.map(
+                    ...dataList.map(
                       (e) {
                         return Padding(
-                          padding: EdgeInsets.fromLTRB(width * 0.02, 0, 0, 0),
+                          padding: EdgeInsets.fromLTRB(
+                              width * 0.02, 0, width * 0.02, 0),
                           child: Theme(
                               data: theme,
                               child: CustomExpansionTile(

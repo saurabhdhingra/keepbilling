@@ -56,7 +56,6 @@ class _PartyMasterState extends State<PartyMaster> {
     final Map propeties = {
       "title": "party_name",
       "subtitle": "party_mobile",
-   
       "entries": [
         {"fieldName": "Address", "fieldValue": "party_address"},
         {"fieldName": "Email", "fieldValue": "party_email"},
@@ -70,7 +69,7 @@ class _PartyMasterState extends State<PartyMaster> {
             floatingActionButton: FloatingActionButton(
               child: const Icon(Icons.add),
               onPressed: () async {
-                 var navigationResult = await Navigator.push(
+                var navigationResult = await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const AddPartyMaster(),
@@ -113,7 +112,8 @@ class _PartyMasterState extends State<PartyMaster> {
                     ...dataList.map(
                       (e) {
                         return Padding(
-                          padding: EdgeInsets.fromLTRB(width * 0.02, 0, 0, 0),
+                          padding: EdgeInsets.fromLTRB(
+                              width * 0.02, 0, width * 0.02, 0),
                           child: Theme(
                             data: theme,
                             child: CustomExpansionTile(

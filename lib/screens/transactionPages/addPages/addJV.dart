@@ -11,6 +11,7 @@ import '../../../widgets/formPages/customField.dart';
 import '../../../widgets/formPages/dropdownSelector.dart';
 import '../../../widgets/formPages/itemExpansionTile.dart';
 import '../../../widgets/formPages/rowText.dart';
+import '../../../widgets/formPages/submitButton.dart';
 
 class AddJVTransaction extends StatefulWidget {
   final int jvNo;
@@ -158,33 +159,29 @@ class _AddJVTransactionState extends State<AddJVTransaction> {
                   child: const Text("Add item"),
                 ),
               ),
-              Row(
-                children: [
-                  SizedBox(width: width * 0.75),
-                  TextButton(
-                    onPressed: () {
-                      add().then(
-                        (value) {
-                          if (value["type"] == "success") {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                            Navigator.pop(context, "update");
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                          }
-                        },
-                      );
+              SizedBox(height: height * 0.02),
+              SubmitButton(
+                text: "Add Entry",
+                onSubmit: () {
+                  add().then(
+                    (value) {
+                      if (value["type"] == "success") {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(value["message"]),
+                          ),
+                        );
+                        Navigator.pop(context, "update");
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(value["message"]),
+                          ),
+                        );
+                      }
                     },
-                    child: const Text("Add Entry"),
-                  )
-                ],
+                  );
+                },
               ),
             ],
           ),
@@ -333,35 +330,30 @@ class _AddJVTransactionState extends State<AddJVTransaction> {
                       controller: narrationController,
                     ),
                     SizedBox(height: height * 0.02),
-                    Row(
-                      children: [
-                        SizedBox(width: width * 0.7),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            setState(
-                              () {
-                                function(
-                                  {
-                                    "jv_no": jvNo,
-                                    "transfer_date": formatDate(transferDate),
-                                    "amount": amount,
-                                    "credit": credit,
-                                    "debit": debit,
-                                    "narration": narration,
-                                  },
-                                );
-                                jvNo = "";
-                                transferDate = DateTime.now();
-                                narration = "";
-                                credit = "";
-                                debit = "";
+                    SubmitButton(
+                      text: addOrEdit ? "Add Entry" : "Edit Entry",
+                      onSubmit: () {
+                        Navigator.pop(context);
+                        setState(
+                          () {
+                            function(
+                              {
+                                "jv_no": jvNo,
+                                "transfer_date": formatDate(transferDate),
+                                "amount": amount,
+                                "credit": credit,
+                                "debit": debit,
+                                "narration": narration,
                               },
                             );
+                            jvNo = "";
+                            transferDate = DateTime.now();
+                            narration = "";
+                            credit = "";
+                            debit = "";
                           },
-                          child: Text(addOrEdit ? "Add Entry" : "Edit Entry"),
-                        )
-                      ],
+                        );
+                      },
                     ),
                   ],
                 ),

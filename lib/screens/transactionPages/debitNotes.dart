@@ -52,7 +52,6 @@ class _DebitNoteTransactionState extends State<DebitNoteTransaction> {
     final Map propeties = {
       "title": "invoice_no",
       "subtitle": "inv_date",
-   
       "entries": [
         {"fieldName": "Amount", "fieldValue": "amount"},
         {"fieldName": "Bill Type", "fieldValue": "bill_type"},
@@ -72,7 +71,10 @@ class _DebitNoteTransactionState extends State<DebitNoteTransaction> {
                   onPressed: () {
                     showSearch(
                       context: context,
-                      delegate: SearchBar(dataList, propeties,),
+                      delegate: SearchBar(
+                        dataList,
+                        propeties,
+                      ),
                     );
                   },
                   icon: const Icon(Icons.search),
@@ -94,14 +96,16 @@ class _DebitNoteTransactionState extends State<DebitNoteTransaction> {
                     ...dataList.map(
                       (e) {
                         return Padding(
-                          padding: EdgeInsets.fromLTRB(width * 0.02, 0, 0, 0),
+                          padding: EdgeInsets.fromLTRB(
+                              width * 0.02, 0, width * 0.02, 0),
                           child: Theme(
                               data: theme,
                               child: CustomExpansionTile(
                                   data: e, properties: propeties)),
                         );
                       },
-                    ), SizedBox(height:height*0.1),
+                    ),
+                    SizedBox(height: height * 0.1),
                   ],
                 ),
               ),

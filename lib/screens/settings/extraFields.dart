@@ -7,6 +7,7 @@ import '../../api/transaction.dart';
 import '../../utils/constants.dart';
 import '../../widgets/formPages/customField.dart';
 import '../../widgets/formPages/rowText.dart';
+import '../../widgets/formPages/submitButton.dart';
 import '../../widgets/infoPages/paddedText.dart';
 import '../loadingScreens.dart';
 
@@ -156,32 +157,31 @@ class _ExtraFieldsSetingsState extends State<ExtraFieldsSetings> {
                     ],
                   ),
                   SizedBox(width: width * 0.75),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {
-                        apiCall().then(
-                          (value) {
-                            if (value["type"] == "success") {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(value["message"]),
-                                ),
-                              );
-                              Navigator.pop(context, "update");
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(value["message"]),
-                                ),
-                              );
-                            }
-                          },
-                        );
-                      },
-                      child: const Text("Submit  "),
-                    ),
+                  SizedBox(height: height * 0.02),
+                  SubmitButton(
+                    onSubmit: () {
+                      apiCall().then(
+                        (value) {
+                          print(value);
+                          if (value["type"] == "success") {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(value["message"]),
+                              ),
+                            );
+                            Navigator.pop(context);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(value["message"]),
+                              ),
+                            );
+                          }
+                        },
+                      );
+                    },
                   ),
+                 
                 ],
               ),
             ),

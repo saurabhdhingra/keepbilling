@@ -115,7 +115,7 @@ class _StockSummaryFiltersState extends State<StockSummaryFilters> {
                         SizedBox(width: width * 0.8),
                         TextButton(
                           onPressed: () {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => StockSummary(

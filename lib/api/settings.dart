@@ -7,6 +7,41 @@ import 'exceptions.dart';
 class SettingsService {
   final ApiService service = ApiService();
 
+  Future sendFeedback(
+    String userId,
+    String companyId,
+    String subject,
+    String description,
+  ) async {
+    dynamic responseJson;
+    try {
+      final response = await http.post(
+        Uri.parse(service.backend + service.contact),
+        encoding: Encoding.getByName('gzip, deflate, br'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Accept': '*/*',
+          'Connection': 'keep-alive'
+        },
+        body: jsonEncode(
+          <String, String>{
+            "userid": userId,
+            "companyid": companyId,
+            "product": "1",
+            "subject": subject,
+            "description": description
+          },
+        ),
+      );
+      
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException('No Internet Connection');
+    }
+
+    return responseJson;
+  }
+
   Future changeReferenceNo(
     String userId,
     String companyId,
@@ -79,6 +114,7 @@ class SettingsService {
           },
         ),
       );
+
       responseJson = returnResponse(response);
       print(responseJson);
     } on SocketException {

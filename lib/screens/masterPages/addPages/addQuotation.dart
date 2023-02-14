@@ -11,6 +11,7 @@ import '../../../widgets/formPages/dropdownSelector.dart';
 import '../../../widgets/formPages/customField.dart';
 import '../../../widgets/formPages/itemExpansionTile.dart';
 import '../../../widgets/formPages/rowText.dart';
+import '../../../widgets/formPages/submitButton.dart';
 
 class AddQuotationMaster extends StatefulWidget {
   final List partyList;
@@ -66,7 +67,7 @@ class _AddQuotationMasterState extends State<AddQuotationMaster> {
   TextEditingController gTotalController = TextEditingController(text: "0");
 
   final Map propeties = {
-    "title": "name",
+    "title": "item",
     "subtitle": "qty",
     "entries": [
       {"fieldName": "Description", "fieldValue": "descrip"},
@@ -168,6 +169,8 @@ class _AddQuotationMasterState extends State<AddQuotationMaster> {
                       child: ItemExpansionTile(
                         data: e,
                         properties: propeties,
+                        itemName: widget.itemList[findItemIndex(e["name"])]
+                            ["item_name"],
                         deleteFunc: () {
                           setState(() => items.remove(e));
                           updateMainValues();
@@ -176,8 +179,7 @@ class _AddQuotationMasterState extends State<AddQuotationMaster> {
                           setState(
                             () {
                               itemName = e["name"];
-                              itemNameIndex =
-                                  findItemIndex(widget.itemList, e["name"]);
+                              itemNameIndex = findItemIndex(e["name"]);
 
                               itemQty = e["qty"];
                               itemDescription = e["descrip"];
@@ -258,33 +260,28 @@ class _AddQuotationMasterState extends State<AddQuotationMaster> {
                 controller: gTotalController,
                 readOnly: true,
               ),
-              Row(
-                children: [
-                  SizedBox(width: width * 0.8),
-                  TextButton(
-                    onPressed: () {
-                      add().then(
-                        (value) {
-                          if (value["type"] == "success") {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                            Navigator.pop(context, "update");
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                          }
-                        },
-                      );
+              SizedBox(height: height * 0.02),
+              SubmitButton(
+                onSubmit: () {
+                  add().then(
+                    (value) {
+                      if (value["type"] == "success") {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(value["message"]),
+                          ),
+                        );
+                        Navigator.pop(context, "update");
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(value["message"]),
+                          ),
+                        );
+                      }
                     },
-                    child: const Text("Submit"),
-                  )
-                ],
+                  );
+                },
               ),
             ],
           ),
@@ -349,7 +346,7 @@ class _AddQuotationMasterState extends State<AddQuotationMaster> {
                     const RowText(text: "Item Name"),
                     DropdownSelector(
                       setState: (value) => setState(() {
-                        itemName = itemListValues[value]["item_name"];
+                        itemName = itemListValues[value]["id"];
                         itemRate = itemListValues[value]["s_rate"];
                         itemTax = itemListValues[value]["tax"];
                         rateController.text = itemListValues[value]["s_rate"];
@@ -480,6 +477,7 @@ class _AddQuotationMasterState extends State<AddQuotationMaster> {
     ScaffoldMessenger.of(context)
         .showSnackBar(const SnackBar(content: Text("Processing")));
     try {
+      print(items);
       return await service.addMaster(
           Quotation(
             userid: userId,
@@ -489,7 +487,7 @@ class _AddQuotationMasterState extends State<AddQuotationMaster> {
             extraComment: extraComment,
             grandQty: grandQuantity,
             grandtotal: grandTotal,
-            itemArray: itemArray(items),
+            itemArray: itemArrayQuot(items),
             otherCharges: otherCharges,
             party: partyId,
             subject: subject,
@@ -504,10 +502,10 @@ class _AddQuotationMasterState extends State<AddQuotationMaster> {
     }
   }
 
-  int findItemIndex(List itemList, String itemName) {
+  int findItemIndex(String itemName) {
     int ans = 1;
-    for (int i = 0; i < itemList.length; i++) {
-      if (itemList[i]["item_name"] == itemName) {
+    for (int i = 0; i < widget.itemList.length; i++) {
+      if (widget.itemList[i]["item_name"] == itemName) {
         ans += i;
         break;
       }

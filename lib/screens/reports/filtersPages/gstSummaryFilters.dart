@@ -139,7 +139,7 @@ class _GSTSummaryFiltersState extends State<GSTSummaryFilters> {
                         SizedBox(width: width * 0.8),
                         TextButton(
                           onPressed: () {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => GSTreport(

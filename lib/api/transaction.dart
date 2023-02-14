@@ -260,6 +260,7 @@ class TransactionsService {
   Future editTransaction(Map data, String category) async {
     dynamic responseJson;
     try {
+      print(data);
       final response = await http.post(
         editUri(category),
         encoding: Encoding.getByName('gzip, deflate, br'),
@@ -282,6 +283,7 @@ class TransactionsService {
   Future addJournalVoucher(JournalVoucher journalVoucher) async {
     dynamic responseJson;
     try {
+      print(journalVoucher.toMap());
       final response = await http.post(
         Uri.parse(service.backend + service.addJournalVoucher),
         encoding: Encoding.getByName('gzip, deflate, br'),
@@ -304,6 +306,7 @@ class TransactionsService {
   Future createBill(Bill bill) async {
     dynamic responseJson;
     try {
+      print(bill.toMap());
       final response = await http.post(
         Uri.parse(service.backend + service.createBill),
         encoding: Encoding.getByName('gzip, deflate, br'),

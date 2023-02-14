@@ -122,7 +122,8 @@ class _OutstandingTransactionState extends State<OutstandingTransaction> {
                     ...dataList.map(
                       (e) {
                         return Padding(
-                          padding: EdgeInsets.fromLTRB(width * 0.02, 0, 0, 0),
+                          padding: EdgeInsets.fromLTRB(
+                              width * 0.02, 0, width * 0.02, 0),
                           child: Theme(
                               data: theme,
                               child: CustomExpansionTile(

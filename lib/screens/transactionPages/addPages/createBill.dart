@@ -11,6 +11,7 @@ import '../../../utils/functions.dart';
 import '../../../widgets/formPages/dropdownSelector.dart';
 import '../../../widgets/formPages/itemExpansionTile.dart';
 import '../../../widgets/formPages/rowText.dart';
+import '../../../widgets/formPages/submitButton.dart';
 
 class CreateBill extends StatefulWidget {
   final String billType;
@@ -126,6 +127,7 @@ class _CreateBillState extends State<CreateBill> {
   @override
   void initState() {
     super.initState();
+    invoiceNo = widget.invoiceNo;
     getUserData();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
@@ -403,33 +405,28 @@ class _CreateBillState extends State<CreateBill> {
                   child: const Text("Add item"),
                 ),
               ),
-              Row(
-                children: [
-                  SizedBox(width: width * 0.8),
-                  TextButton(
-                    onPressed: () {
-                      add().then(
-                        (value) {
-                          if (value["type"] == "success") {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                            Navigator.pop(context, "update");
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                          }
-                        },
-                      );
+              SizedBox(height: height * 0.02),
+              SubmitButton(
+                onSubmit: () {
+                  add().then(
+                    (value) {
+                      if (value["type"] == "success") {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(value["message"]),
+                          ),
+                        );
+                        Navigator.pop(context, "update");
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(value["message"]),
+                          ),
+                        );
+                      }
                     },
-                    child: const Text("Submit"),
-                  )
-                ],
+                  );
+                },
               ),
             ],
           ),
@@ -467,10 +464,10 @@ class _CreateBillState extends State<CreateBill> {
           grandTotal: grandTotal,
           invoiceDate: invoiceDate,
           invoiceNo: invoiceNo,
-          itemArray: itemArray(items),
+          itemArray: itemArrayBill(items),
           orderDate: orderDate,
           orderNo: orderNo,
-          orderby: orderNo,
+          orderby: orderBy,
           otherCharges: otherCharges,
           party: party,
           paymentTerms: paymentTerm,
@@ -612,50 +609,45 @@ class _CreateBillState extends State<CreateBill> {
                       readOnly: true,
                     ),
                     SizedBox(height: height * 0.02),
-                    Row(
-                      children: [
-                        SizedBox(width: width * 0.7),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            if (int.parse(itemAmount == "" ? "0" : itemAmount) <
-                                0) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          "Amount can't be zero or negative")));
-                            } else {
-                              setState(
-                                () {
-                                  function(
-                                    {
-                                      "name": itemName,
-                                      "qty": itemQty,
-                                      "descrip": itemDescription,
-                                      "rate": itemRate,
-                                      "amt": itemAmount,
-                                      "discount": itemDiscount,
-                                      "tax": itemTax,
-                                    },
-                                  );
-                                  itemName = "";
-                                  itemDescription = "";
-                                  itemQty = "0";
-                                  itemAmount = "0";
-                                  itemDiscount = "0";
-                                  itemRate = "";
-                                  itemTax = "";
-                                  rateController.text = "0";
-                                  taxController.text = "0";
-                                  amountController.text = "0";
+                    SubmitButton(
+                      text: addOrEdit ? "Add Entry" : "Edit Entry",
+                      onSubmit: () {
+                        Navigator.pop(context);
+                        if (int.parse(itemAmount == "" ? "0" : itemAmount) <
+                            0) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      "Amount can't be zero or negative")));
+                        } else {
+                          setState(
+                            () {
+                              function(
+                                {
+                                  "name": itemName,
+                                  "qty": itemQty,
+                                  "descrip": itemDescription,
+                                  "rate": itemRate,
+                                  "amt": itemAmount,
+                                  "discount": itemDiscount,
+                                  "tax": itemTax,
                                 },
                               );
-                              updateMainValues();
-                            }
-                          },
-                          child: Text(addOrEdit ? "Add Entry" : "Edit Entry"),
-                        )
-                      ],
+                              itemName = "";
+                              itemDescription = "";
+                              itemQty = "0";
+                              itemAmount = "0";
+                              itemDiscount = "0";
+                              itemRate = "";
+                              itemTax = "";
+                              rateController.text = "0";
+                              taxController.text = "0";
+                              amountController.text = "0";
+                            },
+                          );
+                          updateMainValues();
+                        }
+                      },
                     ),
                   ],
                 ),
@@ -701,6 +693,14 @@ class _CreateBillState extends State<CreateBill> {
         int days = int.parse(term);
         return orderDate.add(Duration(days: days));
     }
+  }
+
+  Map itemArrayBill(List items) {
+    Map<String, Map> answer = {};
+    for (int i = 0; i < items.length; i++) {
+      answer["item$i"] = items[i];
+    }
+    return answer;
   }
 
   void updateMainValues() {

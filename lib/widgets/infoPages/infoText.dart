@@ -19,18 +19,28 @@ class InfoText extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text(
-            "$title : ",
-            style: TextStyle(
-              fontSize: height * 0.025,
-              fontWeight: FontWeight.bold,
+          SizedBox(
+            height: height * 0.03,
+            child: FittedBox(
+              child: Text(
+                "$title : ",
+                style: TextStyle(
+                  fontSize: height * 0.025,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
-          Text(
-            info,
-            style: TextStyle(
-              fontSize: height * 0.022,
-              fontWeight: FontWeight.w400,
+          SizedBox(
+            height: height * 0.03,
+            child: FittedBox(
+              child: Text(
+                info,
+                style: TextStyle(
+                  fontSize: height * 0.022,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
             ),
           ),
         ],

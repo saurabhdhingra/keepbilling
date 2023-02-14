@@ -12,6 +12,7 @@ import '../../../utils/functions.dart';
 import '../../../widgets/formPages/dropdownSelector.dart';
 import '../../../widgets/formPages/itemExpansionTile.dart';
 import '../../../widgets/formPages/rowText.dart';
+import '../../../widgets/formPages/submitButton.dart';
 import '../../loadingScreens.dart';
 
 class CreateBillQL extends StatefulWidget {
@@ -172,6 +173,7 @@ class _CreateBillQLState extends State<CreateBillQL> {
       },
       ...itemList
     ];
+    List pTerms = ["Unseleceted", ...paymentTerms];
     return isLoading
         ? quickLinksLoading(context, 5, "Create Bill")
         : Scaffold(
@@ -256,9 +258,9 @@ class _CreateBillQLState extends State<CreateBillQL> {
                         paymentTerm = paymentTerms[value];
                         paymentTermIndex = value;
                       }),
-                      items: List.generate(paymentTerms.length - 1,
-                          (index) => paymentTerms[index]),
-                      dropDownValue: paymentTerms[paymentTermIndex],
+                      items: List.generate(
+                          pTerms.length - 1, (index) => pTerms[index]),
+                      dropDownValue: pTerms[paymentTermIndex],
                     ),
                     // SizedBox(height: height * 0.02),
                     // const RowText(text: "Due Date"),
@@ -438,33 +440,28 @@ class _CreateBillQLState extends State<CreateBillQL> {
                         child: const Text("Add item"),
                       ),
                     ),
-                    Row(
-                      children: [
-                        SizedBox(width: width * 0.8),
-                        TextButton(
-                          onPressed: () {
-                            add().then(
-                              (value) {
-                                if (value["type"] == "success") {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(value["message"]),
-                                    ),
-                                  );
-                                  Navigator.pop(context, "update");
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(value["message"]),
-                                    ),
-                                  );
-                                }
-                              },
-                            );
+                    SizedBox(height: height * 0.02),
+                    SubmitButton(
+                      onSubmit: () {
+                        add().then(
+                          (value) {
+                            if (value["type"] == "success") {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(value["message"]),
+                                ),
+                              );
+                              Navigator.pop(context, "update");
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(value["message"]),
+                                ),
+                              );
+                            }
                           },
-                          child: const Text("Submit"),
-                        )
-                      ],
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -502,7 +499,7 @@ class _CreateBillQLState extends State<CreateBillQL> {
           grandTotal: grandTotal,
           invoiceDate: invoiceDate,
           invoiceNo: invoiceNo,
-          itemArray: itemArray(items),
+          itemArray: itemArrayBill(items),
           orderDate: orderDate,
           orderNo: orderNo,
           orderby: orderNo,
@@ -724,6 +721,14 @@ class _CreateBillQLState extends State<CreateBillQL> {
           .toString();
       amountController.text = itemAmount;
     });
+  }
+
+  Map itemArrayBill(List items) {
+    Map<String, Map> answer = {};
+    for (int i = 0; i < items.length; i++) {
+      answer["item$i"] = items[i];
+    }
+    return answer;
   }
 
   DateTime dueDateCalc(DateTime orderDate, String term) {

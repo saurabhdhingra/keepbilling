@@ -12,6 +12,7 @@ import '../../../widgets/formPages/dropdownSelector.dart';
 import '../../../widgets/formPages/customField.dart';
 import '../../../widgets/formPages/rowText.dart';
 import '../../../widgets/formPages/statusButton.dart';
+import '../../../widgets/formPages/submitButton.dart';
 import '../../loadingScreens.dart';
 
 class AddVoucherTransactionQL extends StatefulWidget {
@@ -158,9 +159,9 @@ class _AddVoucherTransactionQLState extends State<AddVoucherTransactionQL> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         StatusButton(
-                          isSelected: gstApplicable == "Y" ? true : false,
+                          isSelected: gstApplicable == "Yes" ? true : false,
                           setState: (String value) =>
-                              setState(() => gstApplicable = "Y"),
+                              setState(() => gstApplicable = "Yes"),
                           text: "Yes",
                         ),
                         StatusButton(
@@ -175,13 +176,13 @@ class _AddVoucherTransactionQLState extends State<AddVoucherTransactionQL> {
                         ),
                       ],
                     ),
-                    gstApplicable == "Y"
+                    gstApplicable == "Yes"
                         ? SizedBox(height: height * 0.02)
                         : const SizedBox(),
-                    gstApplicable == "Y"
+                    gstApplicable == "Yes"
                         ? const RowText(text: "GST %")
                         : const SizedBox(),
-                    gstApplicable == "Y"
+                    gstApplicable == "Yes"
                         ? CustomField(
                             setValue: (value) {
                               setState(() => gstPercent = value);
@@ -205,34 +206,28 @@ class _AddVoucherTransactionQLState extends State<AddVoucherTransactionQL> {
                       setValue: (value) => setState(() => narration = value),
                       formKey: _formKey4,
                     ),
-                    Row(
-                      children: [
-                        SizedBox(width: width * 0.8),
-                        TextButton(
-                          onPressed: () {
-                            add().then(
-                              (value) {
-                                print(value);
-                                if (value["type"] == "success") {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(value["message"]),
-                                    ),
-                                  );
-                                  Navigator.pop(context, "update");
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(value["message"]),
-                                    ),
-                                  );
-                                }
-                              },
-                            );
+                    SizedBox(height: height * 0.02),
+                    SubmitButton(
+                      onSubmit: () {
+                        add().then(
+                          (value) {
+                            if (value["type"] == "success") {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(value["message"]),
+                                ),
+                              );
+                              Navigator.pop(context, "update");
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(value["message"]),
+                                ),
+                              );
+                            }
                           },
-                          child: const Text("Submit"),
-                        )
-                      ],
+                        );
+                      },
                     ),
                   ],
                 ),

@@ -148,7 +148,7 @@ class _GeneralFiltersState extends State<GeneralFilters> {
                         SizedBox(width: width * 0.7),
                         TextButton(
                           onPressed: () {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => GeneralReport(

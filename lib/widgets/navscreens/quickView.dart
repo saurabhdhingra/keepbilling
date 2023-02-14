@@ -181,13 +181,18 @@ class QuickView extends StatelessWidget {
                     SizedBox(
                       width: width * 0.03,
                     ),
-                    Text(
-                      title,
-                      style: GoogleFonts.alfaSlabOne(
-                        color: color == Colors.blue
-                            ? const Color.fromRGBO(16, 196, 161, 1)
-                            : Colors.blue,
-                        fontSize: height * 0.028,
+                    SizedBox(
+                      height: height * 0.032,
+                      child: FittedBox(
+                        child: Text(
+                          title,
+                          style: GoogleFonts.alfaSlabOne(
+                            color: color == Colors.blue
+                                ? const Color.fromRGBO(16, 196, 161, 1)
+                                : Colors.blue,
+                            fontSize: height * 0.028,
+                          ),
+                        ),
                       ),
                     ),
                   ],
