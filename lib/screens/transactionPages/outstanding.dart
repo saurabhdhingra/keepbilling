@@ -29,17 +29,29 @@ class _OutstandingTransactionState extends State<OutstandingTransaction> {
 
   String companyId = "";
   String userId = "";
+  String product = "";
 
   TransactionsService service = TransactionsService();
 
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    saleList = await service.fetchOutstanding("S", userId, companyId);
-    purchaseList = await service.fetchOutstanding("P", userId, companyId);
-    dataList = saleList;
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+    try {
+      saleList = await service.fetchOutstanding("S", userId, companyId,product);
+      purchaseList = await service.fetchOutstanding("P", userId, companyId,product);
+      dataList = saleList;
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+    
     setState(() => isLoading = false);
   }
 

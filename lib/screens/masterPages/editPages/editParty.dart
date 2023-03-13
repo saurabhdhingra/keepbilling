@@ -13,7 +13,8 @@ import '../../../widgets/formPages/submitButton.dart';
 
 class EditPartyMaster extends StatefulWidget {
   final Map data;
-  const EditPartyMaster({Key? key, required this.data}) : super(key: key);
+  final String product;
+  const EditPartyMaster({Key? key, required this.data, required this.product}) : super(key: key);
 
   @override
   State<EditPartyMaster> createState() => _EditPartyMasterState();
@@ -152,6 +153,7 @@ class _EditPartyMasterState extends State<EditPartyMaster> {
                 keyboardType: TextInputType.phone,
                 validator: (value) {
                   if (partyPhone != "" &&
+                      partyPhone != "0" &&
                       !RegExp(r'((\+*)((0[ -]*)*|((91 )*))((\d{12})+|(\d{10})+))|\d{5}([- ]*)\d{6}')
                           .hasMatch(partyPhone)) {
                     return 'Please enter a valid phone number';
@@ -170,13 +172,16 @@ class _EditPartyMasterState extends State<EditPartyMaster> {
                 keyboardType: TextInputType.phone,
                 validator: (value) {
                   if (partyMobile != "" &&
+                      partyMobile != "0" &&
                       !RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)')
                           .hasMatch(partyMobile)) {
                     return 'Please enter a valid mobile number';
                   }
                   return null;
                 },
-                initialValue: widget.data["party_mobile"] ?? "",
+                initialValue: widget.data["party_mobile"] == '0'
+                    ? ""
+                    : widget.data["party_mobile"],
               ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Email"),
@@ -190,6 +195,7 @@ class _EditPartyMasterState extends State<EditPartyMaster> {
                           .hasMatch(partyEmail1)) {
                     return 'Please enter a valid email address';
                   }
+
                   return null;
                 },
                 initialValue: widget.data["party_email"] ?? "",
@@ -347,6 +353,7 @@ class _EditPartyMasterState extends State<EditPartyMaster> {
                 onSubmit: () {
                   edit().then(
                     (value) {
+                      print(value);
                       if (value["type"] == "success") {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -384,7 +391,7 @@ class _EditPartyMasterState extends State<EditPartyMaster> {
         return await service.editMaster({
           "userid": widget.data["user_id"],
           "companyid": widget.data["company_id"],
-          "product": "1",
+          "product": widget.product,
           "party_id": widget.data["id"],
           "party_name": partyName,
           "party_address": partyAddress,

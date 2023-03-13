@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/widgets/formPages/titleText.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../api/master.dart';
 import '../../../model/quotation.dart';
+import '../../../provider/authenticationProvider.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/functions.dart';
 import '../../../widgets/formPages/datePicker.dart';
@@ -26,10 +28,11 @@ class _AddQuotationMasterQLState extends State<AddQuotationMasterQL> {
 
   String userId = "";
   String companyId = "";
+  String product = "";
 
   String partyId = "";
   int partyIndex = 0;
-  DateTime buildDate = DateTime.now();
+  dynamic buildDate = "";
   String subject = "";
   String grandTotal = "";
   String otherCharges = "";
@@ -85,11 +88,25 @@ class _AddQuotationMasterQLState extends State<AddQuotationMasterQL> {
 
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    partyList = await service.fetchDataList(userId, companyId, "party");
-    itemList = await service.fetchDataList(userId, companyId, "item");
+
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+    try {
+      partyList = await service.fetchDataList(userId, companyId, "party",product);
+      itemList = await service.fetchDataList(userId, companyId, "item",product);
+    } catch (e) {
+      partyList = [];
+      itemList = [];
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
     setState(() => isLoading = false);
   }
 
@@ -157,6 +174,7 @@ class _AddQuotationMasterQLState extends State<AddQuotationMasterQL> {
                     CupertinoDateSelector(
                       initialDate: buildDate,
                       setFunction: (value) => setState(() => buildDate = value),
+                      showReset: false,
                     ),
                     SizedBox(height: height * 0.02),
                     const RowText(text: "Subject"),
@@ -429,50 +447,45 @@ class _AddQuotationMasterQLState extends State<AddQuotationMasterQL> {
                       readOnly: true,
                     ),
                     SizedBox(height: height * 0.02),
-                    Row(
-                      children: [
-                        SizedBox(width: width * 0.7),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            if (int.parse(itemAmount == "" ? "0" : itemAmount) <
-                                0) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          "Amount can't be zero or negative")));
-                            } else {
-                              setState(
-                                () {
-                                  function(
-                                    {
-                                      "name": itemName,
-                                      "qty": itemQty,
-                                      "descrip": itemDescription,
-                                      "rate": itemRate,
-                                      "amt": itemAmount,
-                                      "discount": itemDiscount,
-                                      "tax": itemTax,
-                                    },
-                                  );
-                                  itemName = "";
-                                  itemDescription = "";
-                                  itemQty = "0";
-                                  itemAmount = "0";
-                                  itemDiscount = "0";
-                                  itemRate = "";
-                                  itemTax = "";
-                                  rateController.text = "0";
-                                  taxController.text = "0";
-                                  amountController.text = "0";
+                    SubmitButton(
+                      text: addOrEdit ? "Add Entry" : "Edit Entry",
+                      onSubmit: () {
+                        Navigator.pop(context);
+                        if (int.parse(itemAmount == "" ? "0" : itemAmount) <
+                            0) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      "Amount can't be zero or negative")));
+                        } else {
+                          setState(
+                            () {
+                              function(
+                                {
+                                  "name": itemName,
+                                  "qty": itemQty,
+                                  "descrip": itemDescription,
+                                  "rate": itemRate,
+                                  "amt": itemAmount,
+                                  "discount": itemDiscount,
+                                  "tax": itemTax,
                                 },
                               );
-                              updateMainValues();
-                            }
-                          },
-                          child: Text(addOrEdit ? "Add Entry" : "Edit Entry"),
-                        )
-                      ],
+                              itemName = "";
+                              itemDescription = "";
+                              itemQty = "0";
+                              itemAmount = "0";
+                              itemDiscount = "0";
+                              itemRate = "";
+                              itemTax = "";
+                              rateController.text = "0";
+                              taxController.text = "0";
+                              amountController.text = "0";
+                            },
+                          );
+                          updateMainValues();
+                        }
+                      },
                     ),
                   ],
                 ),
@@ -493,7 +506,7 @@ class _AddQuotationMasterQLState extends State<AddQuotationMasterQL> {
           Quotation(
             userid: userId,
             companyid: companyId,
-            product: '1',
+            product: product,
             buildDate: buildDate,
             extraComment: extraComment,
             grandQty: grandQuantity,
@@ -516,7 +529,7 @@ class _AddQuotationMasterQLState extends State<AddQuotationMasterQL> {
   int findItemIndex(List itemList, String itemName) {
     int ans = 1;
     for (int i = 0; i < itemList.length; i++) {
-      if (itemList[i]["item_name"] == itemName) {
+      if (itemList[i]["id"] == itemName) {
         ans += i;
         break;
       }
@@ -525,10 +538,10 @@ class _AddQuotationMasterQLState extends State<AddQuotationMasterQL> {
   }
 
   void updateItemValues() {
-    int quantity = int.parse(itemQty == "" ? "0" : itemQty);
-    int rate = int.parse(itemRate == "" ? "0" : itemRate);
-    int discount = int.parse(itemDiscount == "" ? "0" : itemDiscount);
-    int tax = int.parse(itemTax == "" ? "0" : itemTax);
+    double quantity = double.parse(itemQty == "" ? "0" : itemQty);
+    double rate = double.parse(itemRate == "" ? "0" : itemRate);
+    double discount = double.parse(itemDiscount == "" ? "0" : itemDiscount);
+    double tax = double.parse(itemTax == "" ? "0" : itemTax);
     setState(() {
       itemAmount = (quantity * (rate * (1 - discount / 100)) * (1 + tax / 100))
           .toInt()
@@ -538,12 +551,12 @@ class _AddQuotationMasterQLState extends State<AddQuotationMasterQL> {
   }
 
   void updateMainValues() {
-    int oCharges = int.parse(otherCharges == "" ? "0" : otherCharges);
-    int qtySum = 0;
-    int totalSum = 0;
+    double oCharges = double.parse(otherCharges == "" ? "0" : otherCharges);
+    double qtySum = 0;
+    double totalSum = 0;
     for (int i = 0; i < items.length; i++) {
-      int qty = int.parse(items[i]["qty"]);
-      int amt = int.parse(items[i]["amt"]);
+      double qty = double.parse(items[i]["qty"]);
+      double amt = double.parse(items[i]["amt"]);
       qtySum += qty;
       totalSum += amt;
     }

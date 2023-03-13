@@ -5,11 +5,13 @@ import 'package:flutter/services.dart';
 import 'package:keepbilling/api/transaction.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
 import 'package:keepbilling/screens/pdfView.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../utils/constants.dart';
 
 import '../../api/master.dart';
+import '../../provider/authenticationProvider.dart';
 import '../../widgets/infoPages/CustomExpansionTile.dart';
 import '../../widgets/infoPages/paddedText.dart';
 import '../searchBarDelegate.dart';
@@ -38,25 +40,45 @@ class _PurchaseTransactionState extends State<PurchaseTransaction> {
   String userId = "";
   String companyId = "";
   String cashId = "";
+  String product = "";
 
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    cashId = prefs.getString('cashId') ?? "";
-    dataList = await service.fetchBills("P", userId, companyId);
-    partyList = await serviceM.fetchDataList(userId, companyId, "party");
-    paymentTerms =
-        await service.fetchDataList('payment_term', userId, companyId);
-    extraFieldsData = await service.fetchExtraFieldData(userId, companyId);
-    itemList = await serviceM.fetchDataList(userId, companyId, "item");
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+    cashId = Provider.of<AuthenticationProvider>(context, listen: false).cashid;
+    try {
+      dataList = await service.fetchBills("P", userId, companyId,product);
+      partyList = await serviceM.fetchDataList(userId, companyId, "party",product);
+      paymentTerms =
+          await service.fetchDataList('payment_term', userId, companyId,product);
+      extraFieldsData = await service.fetchExtraFieldData(userId, companyId,product);
+      itemList = await serviceM.fetchDataList(userId, companyId, "item",product);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
     setState(() => isLoading = false);
   }
 
   Future getUpdatedData() async {
     setState(() => isLoading = true);
-    dataList = await service.fetchBills("P", userId, companyId);
+    try {
+      dataList = await service.fetchBills("P", userId, companyId,product);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
     setState(() => isLoading = false);
   }
 
@@ -85,15 +107,7 @@ class _PurchaseTransactionState extends State<PurchaseTransaction> {
       {"id": "", "party_name": "Unselected"},
       ...partyList
     ];
-    List items = [
-      {
-        "id": "",
-        "item_name": "Unselected",
-        "s_rate": "",
-        "tax": "",
-      },
-      ...itemList
-    ];
+
     List pTerms = ["Unseleceted", ...paymentTerms];
     return isLoading
         ? infoLoading(context)
@@ -110,7 +124,8 @@ class _PurchaseTransactionState extends State<PurchaseTransaction> {
                       partyList: parties,
                       paymentTerms: pTerms,
                       invoiceNo: '',
-                      itemList: items,
+                      itemList: itemList,
+                      product: product,
                     ),
                   ),
                 );
@@ -161,21 +176,25 @@ class _PurchaseTransactionState extends State<PurchaseTransaction> {
                               editAction: () async {
                                 var navigationResult =
                                     await getBillData(e).then(
-                                  (value) => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => EditBill(
-                                        data: value,
-                                        cashId: cashId,
-                                        companyId: companyId,
-                                        extraFieldData: extraFieldsData,
-                                        itemList: items,
-                                        partyList: parties,
-                                        paymentTerms: pTerms,
-                                        userId: userId,
+                                  (value) {
+                                    print(value);
+                                    return Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => EditBill(
+                                          data: value,
+                                          cashId: cashId,
+                                          companyId: companyId,
+                                          extraFieldData: extraFieldsData,
+                                          itemList: itemList,
+                                          partyList: parties,
+                                          paymentTerms: pTerms,
+                                          userId: userId,
+                                          product: product,
+                                        ),
                                       ),
-                                    ),
-                                  ),
+                                    );
+                                  },
                                 );
                                 if (navigationResult == "update") {
                                   getUpdatedData();
@@ -205,7 +224,7 @@ class _PurchaseTransactionState extends State<PurchaseTransaction> {
       ),
     );
     try {
-      return await service.fetchBillPDF('P', userId, companyId, billID).then(
+      return await service.fetchBillPDF('P', userId, companyId, billID,product).then(
         (value) async {
           if (value["type"] == "success") {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -247,7 +266,7 @@ class _PurchaseTransactionState extends State<PurchaseTransaction> {
       ),
     );
     try {
-      return await service.fetchBillById(companyId, bill);
+      return await service.fetchBillById(companyId, bill,product);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

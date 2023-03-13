@@ -14,7 +14,8 @@ import '../../../widgets/formPages/submitButton.dart';
 import '../bank.dart';
 
 class AddBankMaster extends StatefulWidget {
-  const AddBankMaster({Key? key}) : super(key: key);
+  final String product;
+  const AddBankMaster({Key? key, required this.product}) : super(key: key);
 
   @override
   State<AddBankMaster> createState() => _AddBankMasterState();
@@ -212,7 +213,7 @@ class _AddBankMasterState extends State<AddBankMaster> {
           bankIfsc: bankIfsc,
           bankName: bankName,
           bankMicr: bankMicr,
-          product: '1',
+          product: widget.product,
         ).toMap(),
         "bank",
       );

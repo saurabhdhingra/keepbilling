@@ -17,12 +17,13 @@ class EditItemMaster extends StatefulWidget {
   final List groups;
   final List units;
   final Map data;
+  final String product;
 
   const EditItemMaster({
     Key? key,
     required this.groups,
     required this.units,
-    required this.data,
+    required this.data, required this.product,
   }) : super(key: key);
 
   @override
@@ -269,7 +270,7 @@ class _EditItemMasterState extends State<EditItemMaster> {
       return await service.editMaster({
         "userid": widget.data["user_id"],
         "companyid": widget.data["company_id"],
-        "product": "1",
+        "product": widget.product,
         "item_id": itemId,
         "item_name": itemName,
         "under": under,

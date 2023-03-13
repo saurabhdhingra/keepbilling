@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
 import 'package:keepbilling/screens/reports/tdsReport.dart';
+import 'package:keepbilling/widgets/formPages/submitButton.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../api/master.dart';
+import '../../../provider/authenticationProvider.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/functions.dart';
 import '../../../widgets/formPages/datePicker.dart';
@@ -26,22 +29,36 @@ class _TDSFiltersState extends State<TDSFilters> {
 
   String party = "";
   int partyIndex = 0;
-  DateTime fromDate = DateTime.now();
-  DateTime toDate = DateTime.now();
+  dynamic fromDate = "";
+  dynamic toDate = "";
 
   List gstList = ["Payble", "Receivable"];
   List partyList = [];
 
   String userId = "";
   String companyId = "";
+  String product = "";
   MasterService service = MasterService();
 
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    partyList = await service.fetchDataList(userId, companyId, "party");
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+    try {
+      partyList = await service.fetchDataList(userId, companyId, "party",product);
+    } catch (e) {
+      partyList = [];
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
     setState(() => isLoading = false);
   }
 
@@ -108,36 +125,36 @@ class _TDSFiltersState extends State<TDSFilters> {
                     SizedBox(height: height * 0.02),
                     const RowText(text: "Start Date"),
                     CupertinoDateSelector(
-                      initialDate: fromDate,
+                      initialDate: DateTime.now(),
                       setFunction: (value) => setState(() => fromDate = value),
+                      reset: () => setState(() => fromDate = ""),
                     ),
                     SizedBox(height: height * 0.02),
                     const RowText(text: "End Date"),
                     CupertinoDateSelector(
-                      initialDate: toDate,
+                      initialDate: DateTime.now(),
                       setFunction: (value) => setState(() => toDate = value),
+                      reset: () => setState(() => toDate = ""),
                     ),
                     SizedBox(height: height * 0.02),
-                    Row(
-                      children: [
-                        SizedBox(width: width * 0.8),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => TDSreport(
-                                  party: party,
-                                  type: type,
-                                  fromDate: formatDate(fromDate),
-                                  toDate: formatDate(toDate),
-                                ),
-                              ),
-                            );
-                          },
-                          child: const Text("Submit"),
-                        )
-                      ],
+                    SubmitButton(
+                      text: "Get Report",
+                      onSubmit: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TDSreport(
+                              party: party,
+                              type: type,
+                              fromDate: fromDate == ""
+                                  ? fromDate
+                                  : formatDate(fromDate),
+                              toDate:
+                                  toDate == "" ? toDate : formatDate(toDate),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),

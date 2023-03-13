@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:keepbilling/api/master.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
 import 'package:keepbilling/screens/masterPages/addPages/addParty.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../utils/constants.dart';
+import '../../provider/authenticationProvider.dart';
 import '../../widgets/infoPages/CustomExpansionTile.dart';
 import '../../widgets/infoPages/paddedText.dart';
 import '../searchBarDelegate.dart';
@@ -24,19 +26,45 @@ class _PartyMasterState extends State<PartyMaster> {
 
   String userId = "";
   String companyId = "";
+  String product = "";
+
   MasterService service = MasterService();
+  
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    dataList = await service.fetchDataList(userId, companyId, "party");
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+    try {
+      dataList = await service.fetchDataList(userId, companyId, "party",product);
+    } catch (e) {
+      dataList = [];
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
     setState(() => isLoading = false);
   }
 
   Future getUpdatedData() async {
     setState(() => isLoading = true);
-    dataList = await service.fetchDataList(userId, companyId, "party");
+    try {
+      dataList = await service.fetchDataList(userId, companyId, "party",product);
+    } catch (e) {
+      dataList = [];
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
     setState(() => isLoading = false);
   }
 
@@ -72,7 +100,7 @@ class _PartyMasterState extends State<PartyMaster> {
                 var navigationResult = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const AddPartyMaster(),
+                    builder: (context) =>  AddPartyMaster(product: product),
                   ),
                 );
                 if (navigationResult == "update") {
@@ -125,6 +153,7 @@ class _PartyMasterState extends State<PartyMaster> {
                                   MaterialPageRoute(
                                     builder: (context) => EditPartyMaster(
                                       data: e,
+                                      product: product,
                                     ),
                                   ),
                                 );

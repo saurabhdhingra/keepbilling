@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/api/master.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../utils/constants.dart';
+import '../../provider/authenticationProvider.dart';
 import '../../widgets/infoPages/CustomExpansionTile.dart';
 import '../../widgets/infoPages/paddedText.dart';
 import '../searchBarDelegate.dart';
@@ -24,20 +26,44 @@ class _BankMasterState extends State<BankMaster> {
 
   String userId = "";
   String companyId = "";
+  String product = "";
 
   MasterService service = MasterService();
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    dataList = await service.fetchDataList(userId, companyId, "bank");
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+    try {
+      dataList = await service.fetchDataList(userId, companyId, "bank",product);
+    } catch (e) {
+      dataList = [];
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
     setState(() => isLoading = false);
   }
 
   Future getUpdatedData() async {
     setState(() => isLoading = true);
-    dataList = await service.fetchDataList(userId, companyId, "bank");
+    try {
+      dataList = await service.fetchDataList(userId, companyId, "bank",product);
+    } catch (e) {
+      dataList = [];
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
     setState(() => isLoading = false);
   }
 
@@ -57,7 +83,6 @@ class _BankMasterState extends State<BankMaster> {
     final Map propeties = {
       "title": "account_name",
       "subtitle": "balance",
-     
       "entries": [
         {"fieldName": "IFSC", "fieldValue": "bank_ifsc"},
         {"fieldName": "Account Number", "fieldValue": "account_no"},
@@ -72,7 +97,7 @@ class _BankMasterState extends State<BankMaster> {
                 var navigationResult = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const AddBankMaster(),
+                    builder: (context) => AddBankMaster(product: product,),
                   ),
                 );
                 if (navigationResult == "update") {
@@ -90,7 +115,10 @@ class _BankMasterState extends State<BankMaster> {
                   onPressed: () {
                     showSearch(
                       context: context,
-                      delegate: SearchBar(dataList, propeties,),
+                      delegate: SearchBar(
+                        dataList,
+                        propeties,
+                      ),
                     );
                   },
                   icon: const Icon(Icons.search),
@@ -124,7 +152,7 @@ class _BankMasterState extends State<BankMaster> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        EditBankMaster(data: e),
+                                        EditBankMaster(data: e,product: product,),
                                   ),
                                 );
                                 if (navigationResult == "update") {

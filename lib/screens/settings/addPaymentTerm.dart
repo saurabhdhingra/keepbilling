@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:keepbilling/widgets/formPages/submitButton.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../api/settings.dart';
+import '../../provider/authenticationProvider.dart';
 import '../../utils/constants.dart';
 import '../../widgets/formPages/customField.dart';
 import '../../widgets/infoPages/paddedText.dart';
@@ -18,16 +20,19 @@ class _AddPaymentTermSettingsState extends State<AddPaymentTermSettings> {
   String userId = "";
   String companyId = "";
   String cashId = "";
+  String product = "";
 
   String term = "";
 
   final _formKey1 = GlobalKey<FormState>();
 
   Future getUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    cashId = prefs.getString('cashId') ?? "";
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    cashId = Provider.of<AuthenticationProvider>(context, listen: false).cashid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
   }
 
   @override
@@ -97,7 +102,8 @@ class _AddPaymentTermSettingsState extends State<AddPaymentTermSettings> {
     ScaffoldMessenger.of(context)
         .showSnackBar(const SnackBar(content: Text("Processing")));
     try {
-      return await service.setPaymentTerm(userId, companyId, cashId, term);
+      return await service.setPaymentTerm(
+          userId, companyId, cashId, term, product);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

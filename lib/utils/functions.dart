@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../utils/constants.dart';
 
 ScrollController? getCurrentController(int index) {
@@ -95,5 +96,6 @@ String partyName(List partyList, int partyId) {
 }
 
 String formatDate(DateTime selectedDate) {
-  return '${selectedDate.year}-${selectedDate.month}-${selectedDate.day}';
+  // return '${selectedDate.year}-${selectedDate.month}-${selectedDate.day}';
+  return DateFormat('yyyy-MM-dd').format(selectedDate);
 }

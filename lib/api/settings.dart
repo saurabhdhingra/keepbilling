@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
@@ -11,7 +12,7 @@ class SettingsService {
     String userId,
     String companyId,
     String subject,
-    String description,
+    String description,String product
   ) async {
     dynamic responseJson;
     try {
@@ -32,11 +33,13 @@ class SettingsService {
             "description": description
           },
         ),
-      );
+      ) .timeout(const Duration(seconds: 10));
       
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
     return responseJson;
@@ -47,7 +50,7 @@ class SettingsService {
     String companyId,
     String cashId,
     String type,
-    String number,
+    String number,String product
   ) async {
     dynamic responseJson;
     try {
@@ -69,10 +72,12 @@ class SettingsService {
             "No": number,
           },
         ),
-      );
+      ) .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
     return responseJson;
@@ -81,7 +86,7 @@ class SettingsService {
   Future setQuickLinks(
     String userId,
     String companyId,
-    String cashId,
+    String cashId,String product,
     String fav1,
     String fav2,
     String fav3,
@@ -113,12 +118,14 @@ class SettingsService {
             "fav6": fav6,
           },
         ),
-      );
+      ) .timeout(const Duration(seconds: 10));
 
       responseJson = returnResponse(response);
       print(responseJson);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
     return responseJson;
@@ -126,7 +133,7 @@ class SettingsService {
 
   Future adjustExtrafields(
     String userId,
-    String companyId,
+    String companyId,String product,
     String cashId,
     String extra1,
     String extra2,
@@ -151,7 +158,7 @@ class SettingsService {
           "userid": userId,
           "companyid": companyId,
           "cash_id": cashId,
-          "product": "1",
+          "product": product,
           "extra_1": extra1,
           "extra_1_switch": flag1,
           "extra_2": extra2,
@@ -161,10 +168,12 @@ class SettingsService {
           "extra_4": extra4,
           "extra_4_switch": flag4,
         }),
-      );
+      ) .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
     return responseJson;
@@ -174,7 +183,7 @@ class SettingsService {
     String userId,
     String companyId,
     String cashId,
-    String term,
+    String term,String product
   ) async {
     dynamic responseJson;
     try {
@@ -191,14 +200,16 @@ class SettingsService {
             "userid": userId,
             "companyid": companyId,
             "cash_id": cashId,
-            "product": "1",
+            "product": product,
             "term": term
           },
         ),
-      );
+      ) .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
     return responseJson;
@@ -206,7 +217,7 @@ class SettingsService {
 
   Future sendOTPforPIN(
     String userId,
-    String companyId,
+    String companyId,String product
   ) async {
     dynamic responseJson;
     try {
@@ -222,14 +233,16 @@ class SettingsService {
           <String, String>{
             "userid": userId,
             "companyid": companyId,
-            "product": "1",
+            "product": product,
           },
         ),
-      );
+      ) .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
       print(responseJson);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
     return responseJson;
   }
@@ -240,7 +253,7 @@ class SettingsService {
     String otp,
     String oldPIN,
     String newPIN,
-    String timeKey,
+    String timeKey,String product
   ) async {
     dynamic responseJson;
     try {
@@ -256,18 +269,20 @@ class SettingsService {
           <String, String>{
             "userid": userId,
             "companyid": companyId,
-            "product": "1",
+            "product": product,
             "otp": otp,
             "old_pin": oldPIN,
             "new_pin": newPIN,
             "timekey": timeKey
           },
         ),
-      );
+      ) .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
       print(responseJson);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
     return responseJson;

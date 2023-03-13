@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 // ignore: depend_on_referenced_packages
@@ -8,7 +9,7 @@ import 'exceptions.dart';
 class ProfileService {
   final ApiService service = ApiService();
 
-  Future fetchLicenseDetails(String userId) async {
+  Future fetchLicenseDetails(String userId,String product) async {
     dynamic responseJson;
     try {
       final response = await http.post(
@@ -22,19 +23,21 @@ class ProfileService {
         body: jsonEncode(
           <String, String>{
             "userid": userId,
-            "product": "1",
+            "product": product,
           },
         ),
-      );
+      ) .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
     return responseJson["response_data"];
   }
 
-  Future fetchTransactions(String userId, String companyId) async {
+  Future fetchTransactions(String userId, String companyId,String product) async {
     dynamic responseJson;
     try {
       final response = await http.post(
@@ -48,14 +51,16 @@ class ProfileService {
         body: jsonEncode(<String, String>{
           "userid": userId,
           "companyid": companyId,
-          "product": "1",
+          "product": product,
           "from_date": "",
           "to_date": ""
         }),
-      );
+      ) .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
     if (responseJson["type"] == "error") {
       [];
@@ -64,7 +69,7 @@ class ProfileService {
     }
   }
 
-  Future fetchCompanyDetails(String userId, String companyId) async {
+  Future fetchCompanyDetails(String userId, String companyId,String product) async {
     dynamic responseJson;
     try {
       final response = await http.post(
@@ -78,12 +83,14 @@ class ProfileService {
         body: jsonEncode(<String, String>{
           "userid": userId,
           "companyid": companyId,
-          "product": "1"
+          "product": product
         }),
-      );
+      ) .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
     return responseJson["response_data"];

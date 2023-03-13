@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
@@ -66,33 +67,44 @@ class MasterService {
     }
   }
 
-  Future fetchDataList(String userId, String companyId, String category) async {
+  Future fetchDataList(
+      String userId, String companyId, String category, String product) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        fetchUri(category),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(
-          <String, String>{
-            "userid": userId,
-            "companyid": companyId,
-            "product": "1",
-          },
-        ),
-      );
+      final response = await http
+          .post(
+            fetchUri(category),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": product,
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
-    if (responseJson["type"] == "success" && category != "quotation") {
+    if (responseJson["type"] == "success" &&
+        category != "quotation" &&
+        responseJson["response_data"] != "") {
       return responseJson["response_data"] as List;
-    } else if (responseJson["type"] == "success" && category == "quotation") {
+    } else if (responseJson["type"] == "success" &&
+        category == "quotation" &&
+        responseJson["response_data"] != "") {
       return decodeMapData(responseJson["response_data"]);
+    } else if (responseJson["response_data"] == "") {
+      return [];
     } else {
       return [];
     }
@@ -102,20 +114,23 @@ class MasterService {
     dynamic responseJson;
     try {
       print(data);
-      final response = await http.post(
-        addUri(category),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(data),
-      );
+      final response = await http
+          .post(
+            addUri(category),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(data),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
-     
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
     return responseJson;
   }
@@ -124,51 +139,63 @@ class MasterService {
     dynamic responseJson;
     try {
       print(data);
-      final response = await http.post(
-        editUri(category),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(data),
-      );
+      final response = await http
+          .post(
+            editUri(category),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(data),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
       print(responseJson);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
     return responseJson;
   }
 
-  Future fetchCredDeb(String type, String userId, String companyId) async {
+  Future fetchCredDeb(
+      String type, String userId, String companyId, String product) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse(service.backend + service.credDeb),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(
-          <String, String>{
-            "userid": userId,
-            "companyid": companyId,
-            "product": "1",
-            "party_type": type
-          },
-        ),
-      );
+      final response = await http
+          .post(
+            Uri.parse(service.backend + service.credDeb),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": product,
+                "party_type": type
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
-    if (responseJson["type"] == "success") {
+    if (responseJson["type"] == "success" &&
+        responseJson["response_data"] != "") {
       return responseJson["response_data"] as List;
+    } else if (responseJson["response_data"] == "") {
+      return [];
     } else {
       return [];
     }

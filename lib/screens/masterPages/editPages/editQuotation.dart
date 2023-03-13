@@ -17,11 +17,12 @@ class EditQuotationMaster extends StatefulWidget {
   final List partyList;
   final List itemList;
   final Map data;
+  final String product;
   const EditQuotationMaster(
       {Key? key,
       required this.partyList,
       required this.itemList,
-      required this.data})
+      required this.data, required this.product})
       : super(key: key);
 
   @override
@@ -31,7 +32,7 @@ class EditQuotationMaster extends StatefulWidget {
 class _EditQuotationMasterState extends State<EditQuotationMaster> {
   String partyId = "";
   int partyIndex = 0;
-  DateTime buildDate = DateTime.now();
+  dynamic buildDate = "";
   String subject = "";
   String grandTotal = "";
   String otherCharges = "";
@@ -67,15 +68,13 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
   TextEditingController gQuantityController = TextEditingController();
   TextEditingController gTotalController = TextEditingController();
 
-  FixedExtentScrollController itemController = FixedExtentScrollController();
-
   final Map propeties = {
     "title": "item",
     "subtitle": "qntty",
     "entries": [
       {"fieldName": "Description", "fieldValue": "description"},
       {"fieldName": "Rate", "fieldValue": "rate"},
-      {"fieldName": "Amount", "fieldValue": "totalamount"},
+      {"fieldName": "Amount", "fieldValue": "amt"},
       {"fieldName": "Discount", "fieldValue": "disc"},
       {"fieldName": "GST", "fieldValue": "gst"}
     ]
@@ -91,10 +90,12 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
     subject = widget.data["subject"] ?? "";
     extraComment = widget.data["comment"] ?? "";
     items = widget.data["item_arr"];
-    grandTotal = findField("totalamount");
-    grandQuantity = findField("qntty");
-    gQuantityController = TextEditingController(text: findField("qntty"));
-    gTotalController = TextEditingController(text: findField("totalamount"));
+    grandTotal = widget.data["grandtotal"].toString();
+    grandQuantity = widget.data["grand_qty"].toString();
+    gQuantityController = TextEditingController(
+        text: widget.data["grand_qty"].toDouble().toString());
+    gTotalController =
+        TextEditingController(text: widget.data["grandtotal"].toString());
     print(items);
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
@@ -156,6 +157,7 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
                 initialDate: DateTime.parse(
                     widget.data["build_date"] ?? formatDate(DateTime.now())),
                 setFunction: (value) => setState(() => buildDate = value),
+                showReset: false,
               ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Subject"),
@@ -195,13 +197,13 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
                               itemNameIndex = findItemIndex(e["item_name"]);
                               itemQty = e["qntty"];
                               itemDescription = e["description"];
-                              itemAmount = e["totalamount"];
+                              itemAmount = e["amt"];
                               itemDiscount = e["disc"];
                               itemRate = e["rate"];
                               itemTax = e["gst"];
                               rateController.text = e["rate"];
                               taxController.text = e["gst"];
-                              amountController.text = e["totalamount"];
+                              amountController.text = e["amt"];
                             },
                           );
                           showModalBottomSheet(
@@ -358,7 +360,7 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
                     const RowText(text: "Item Name"),
                     DropdownSelector(
                       setState: (value) => setState(() {
-                        itemName = itemListValues[value]["item_name"];
+                        itemName = itemListValues[value]["id"];
                         itemRate = itemListValues[value]["s_rate"];
                         itemTax = itemListValues[value]["tax"];
                         rateController.text = itemListValues[value]["s_rate"];
@@ -369,7 +371,8 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
                       items: List.generate(itemListValues.length,
                           (index) => itemListValues[index]["item_name"]),
                       dropDownValue: itemListValues[itemNameIndex]["item_name"],
-                      scrollController: itemController,
+                      scrollController: FixedExtentScrollController(
+                          initialItem: itemNameIndex),
                     ),
                     SizedBox(height: height * 0.02),
                     const RowText(text: "Quantity"),
@@ -428,55 +431,46 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
                       readOnly: true,
                     ),
                     SizedBox(height: height * 0.02),
-                    Row(
-                      children: [
-                        SizedBox(width: width * 0.7),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            if (double.parse(
-                                    itemAmount == "" ? "0" : itemAmount) <
-                                0) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          "Amount can't be zero or negative")));
-                            } else {
-                              setState(
-                                () {
-                                  function(
-                                    {
-                                      "item_name": itemName,
-                                      "qntty": itemQty,
-                                      "description": itemDescription,
-                                      "rate": itemRate,
-                                      "totalamount": itemAmount,
-                                      "disc": itemDiscount,
-                                      "gst": itemTax,
-                                    },
-                                  );
-                                  itemName = "";
-                                  itemDescription = "";
-                                  itemQty = "0";
-                                  itemAmount = "0";
-                                  itemDiscount = "0";
-                                  itemRate = "";
-                                  itemTax = "";
-                                  rateController.text = "0";
-                                  taxController.text = "0";
-                                  amountController.text = "0";
-                                  itemController.animateTo(0,
-                                      duration: const Duration(seconds: 1),
-                                      curve: const Cubic(1, 1, 1, 1));
+                    SubmitButton(
+                      onSubmit: () {
+                        Navigator.pop(context);
+                        if (double.parse(itemAmount == "" ? "0" : itemAmount) <
+                            0) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      "Amount can't be zero or negative")));
+                        } else {
+                          setState(
+                            () {
+                              function(
+                                {
+                                  "item_name": itemName,
+                                  "qntty": itemQty,
+                                  "description": itemDescription,
+                                  "rate": itemRate,
+                                  "amt": itemAmount,
+                                  "disc": itemDiscount,
+                                  "gst": itemTax,
                                 },
                               );
-                              updateMainValues();
-                            }
-                          },
-                          child: Text(addOrEdit ? "Add Entry" : "Edit Entry"),
-                        )
-                      ],
-                    ),
+                              itemName = "";
+                              itemDescription = "";
+                              itemQty = "0";
+                              itemAmount = "0";
+                              itemDiscount = "0";
+                              itemRate = "";
+                              itemTax = "";
+                              rateController.text = "0";
+                              taxController.text = "0";
+                              amountController.text = "0";
+                            },
+                          );
+                          updateMainValues();
+                        }
+                      },
+                      text: addOrEdit ? "Add Entry" : "Edit Entry",
+                    )
                   ],
                 ),
               ),
@@ -492,15 +486,14 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
     ScaffoldMessenger.of(context)
         .showSnackBar(const SnackBar(content: Text("Processing")));
     try {
-      print(itemArrayEditQuot(items));
       return await service.editMaster({
         "userid": widget.data["user_id"],
         "companyid": widget.data["company_id"],
-        "product": "1",
+        "product": widget.product,
         "quot_id": widget.data["quot_no"],
         "oldparty_id": widget.data["party_id"],
         "party_id": partyId,
-        "build_date": formatDate(buildDate),
+        "build_date": buildDate == "" ? buildDate : formatDate(buildDate),
         "subject": subject,
         "grandtotal": grandTotal,
         "extra_comment": extraComment,
@@ -544,7 +537,7 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
   }
 
   int findPartyIndex(String partyId) {
-    int ans = 0;
+    int ans = 1;
     for (int i = 0; i < widget.partyList.length; i++) {
       if (widget.partyList[i]["id"] == partyId) {
         ans += i;
@@ -580,9 +573,9 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
   }
 
   String findField(String field) {
-    int ans = 0;
+    double ans = 0;
     for (int i = 0; i < widget.data["item_arr"].length; i++) {
-      ans += int.parse(widget.data["item_arr"][i][field]);
+      ans += double.parse(widget.data["item_arr"][i][field]);
     }
     return ans.toString();
   }
@@ -593,7 +586,7 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
     double totalSum = 0;
     for (int i = 0; i < items.length; i++) {
       double qty = double.parse(items[i]["qntty"]);
-      double amt = double.parse(items[i]["totalamount"]);
+      double amt = double.parse(items[i]["amt"]);
       qtySum += qty;
       totalSum += amt;
     }

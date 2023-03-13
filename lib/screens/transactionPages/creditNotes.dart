@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/api/transaction.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../utils/constants.dart';
+import '../../provider/authenticationProvider.dart';
 import '../../widgets/infoPages/CustomExpansionTile.dart';
 import '../../widgets/infoPages/paddedText.dart';
 import '../searchBarDelegate.dart';
@@ -23,13 +25,26 @@ class _CreditNoteTransactionState extends State<CreditNoteTransaction> {
 
   String companyId = "";
   String userId = "";
+  String product = "";
 
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    dataList = await service.fetchDataList("creditnote", userId, companyId);
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+    try {
+      dataList = await service.fetchDataList("creditnote", userId, companyId,product);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
     setState(() => isLoading = false);
   }
 

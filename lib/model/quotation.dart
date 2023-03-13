@@ -1,3 +1,5 @@
+import '../utils/functions.dart';
+
 class Quotation {
   Quotation({
     required this.userid,
@@ -17,7 +19,7 @@ class Quotation {
   String companyid;
   String product;
   String party;
-  DateTime buildDate;
+  dynamic buildDate;
   String subject;
   String grandtotal;
   String otherCharges;
@@ -44,8 +46,7 @@ class Quotation {
         "companyid": companyid,
         "product": product,
         "party": party,
-        "build_date":
-            "${buildDate.year.toString().padLeft(4, '0')}-${buildDate.month.toString().padLeft(2, '0')}-${buildDate.day.toString().padLeft(2, '0')}",
+        "build_date": buildDate == "" ? "" : formatDate(buildDate),
         "subject": subject,
         "grandtotal": grandtotal,
         "otherCharges": otherCharges,
@@ -54,4 +55,3 @@ class Quotation {
         "item_array": itemArray,
       };
 }
-

@@ -4,8 +4,10 @@ import 'package:keepbilling/api/master.dart';
 import 'package:keepbilling/model/item.dart';
 import 'package:keepbilling/widgets/formPages/dropdownSelector.dart';
 import 'package:keepbilling/widgets/formPages/titleText.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../provider/authenticationProvider.dart';
 import '../../../utils/constants.dart';
 import '../../../widgets/formPages/customField.dart';
 import '../../../widgets/formPages/rowText.dart';
@@ -25,6 +27,7 @@ class _AddItemMasterQLState extends State<AddItemMasterQL> {
 
   String userId = "";
   String companyId = "";
+  String product = "";
 
   List groups = [];
   List units = [];
@@ -59,11 +62,24 @@ class _AddItemMasterQLState extends State<AddItemMasterQL> {
 
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    groups = await service.fetchDataList(userId, companyId, "allgroup");
-    units = await service.fetchDataList(userId, companyId, "allunit");
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+    try {
+      groups = await service.fetchDataList(userId, companyId, "allgroup",product);
+      units = await service.fetchDataList(userId, companyId, "allunit",product);
+    } catch (e) {
+      groups = [];
+      units = []; 
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
     setState(() => isLoading = false);
   }
 
@@ -269,7 +285,7 @@ class _AddItemMasterQLState extends State<AddItemMasterQL> {
             opStock: opStock,
             pRate: pRate,
             per: per,
-            product: '1',
+            product: product,
             sRate: sRate,
             stockLimit: stockLimit,
             tax: tax,

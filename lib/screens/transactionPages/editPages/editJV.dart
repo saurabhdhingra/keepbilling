@@ -16,7 +16,8 @@ import '../../../widgets/formPages/submitButton.dart';
 class EditJVTransaction extends StatefulWidget {
   final Map data;
   final List jvInput;
-  const EditJVTransaction({Key? key, required this.data, required this.jvInput})
+  final String product;
+  const EditJVTransaction({Key? key, required this.data, required this.jvInput, required this.product})
       : super(key: key);
 
   @override
@@ -27,7 +28,7 @@ class _EditJVTransactionState extends State<EditJVTransaction> {
   String cashId = "";
 
   String jvNo = "";
-  DateTime transferDate = DateTime.now();
+  dynamic transferDate = "";
   String narration = "";
   String credit = "";
   int creditIndex = 0;
@@ -126,6 +127,7 @@ class _EditJVTransactionState extends State<EditJVTransaction> {
               CupertinoDateSelector(
                 initialDate: transferDate,
                 setFunction: (value) => setState(() => transferDate = value),
+                showReset: false,
               ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Amount"),
@@ -184,9 +186,10 @@ class _EditJVTransactionState extends State<EditJVTransaction> {
         "userid": widget.data["user_id"],
         "companyid": widget.data["company_id"],
         "cash_id": cashId,
-        "product": "1",
+        "product": widget.product,
         "id": widget.data["id"],
-        "transfer_date": formatDate(transferDate),
+        "transfer_date":
+            transferDate == "" ? transferDate : formatDate(transferDate),
         "amount": amount,
         "credit": credit,
         "debit": debit,

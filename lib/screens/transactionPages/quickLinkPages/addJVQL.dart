@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/widgets/formPages/titleText.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../api/transaction.dart';
 import '../../../model/journalVoucher.dart';
+import '../../../provider/authenticationProvider.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/functions.dart';
 import '../../../widgets/formPages/datePicker.dart';
@@ -27,12 +29,13 @@ class _AddJVTransactionQLState extends State<AddJVTransactionQL> {
   String userId = "";
   String companyId = "";
   String cashId = "";
+  String product = "";
   List jvInput = [];
   String jvNoAPI = "";
   int jvNum = 0;
 
   String jvNo = "";
-  DateTime transferDate = DateTime.now();
+  dynamic transferDate = "";
   String narration = "";
   String credit = "";
   int creditIndex = 0;
@@ -50,6 +53,9 @@ class _AddJVTransactionQLState extends State<AddJVTransactionQL> {
   TextEditingController amountController = TextEditingController(text: "0");
   TextEditingController narrationController = TextEditingController();
 
+  FixedExtentScrollController creditController = FixedExtentScrollController();
+  FixedExtentScrollController debitController = FixedExtentScrollController();
+
   final Map propeties = {
     "title": "narration",
     "subtitle": "amount",
@@ -65,13 +71,24 @@ class _AddJVTransactionQLState extends State<AddJVTransactionQL> {
 
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    cashId = prefs.getString('cashId') ?? "";
-    jvNoAPI = await service.fetchJVInvNo(userId, companyId);
-    jvNum = int.parse(jvNoAPI);
-    jvInput = await service.fetchDataList("jv_input", userId, companyId);
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    cashId = Provider.of<AuthenticationProvider>(context, listen: false).cashid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+    try {
+      jvNoAPI = await service.fetchJVInvNo(userId, companyId,product);
+      jvNum = int.parse(jvNoAPI);
+      jvInput = await service.fetchDataList("jv_input", userId, companyId, product);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
     setState(() => isLoading = false);
   }
 
@@ -143,11 +160,16 @@ class _AddJVTransactionQLState extends State<AddJVTransactionQL> {
                                   backgroundColor: Colors.transparent,
                                   context: context,
                                   builder: (context) => addOrEditEntry(
-                                    context,
-                                    (Map value) => setState(() =>
-                                        jvEntryList = [...jvEntryList, value]),
-                                    false,
-                                  ),
+                                      context,
+                                      (Map value) => setState(() =>
+                                          jvEntryList = [
+                                            ...jvEntryList,
+                                            value
+                                          ]),
+                                      false,
+                                      creditIndex,
+                                      debitIndex,
+                                      DateTime.parse(e["transfer_date"])),
                                 );
                               },
                             ),
@@ -169,7 +191,10 @@ class _AddJVTransactionQLState extends State<AddJVTransactionQL> {
                                 context,
                                 (Map value) => setState(() =>
                                     jvEntryList = [...jvEntryList, value]),
-                                true),
+                                true,
+                                0,
+                                0,
+                                DateTime.now()),
                           );
                         },
                         child: const Text("Add item"),
@@ -218,7 +243,7 @@ class _AddJVTransactionQLState extends State<AddJVTransactionQL> {
         JournalVoucher(
           userid: userId,
           companyid: companyId,
-          product: '1',
+          product: product,
           cashId: cashId,
           jvEntry: jvArray(jvEntryList),
         ),
@@ -250,7 +275,8 @@ class _AddJVTransactionQLState extends State<AddJVTransactionQL> {
     return ans;
   }
 
-  Widget addOrEditEntry(context, Function(Map) function, bool addOrEdit) {
+  Widget addOrEditEntry(context, Function(Map) function, bool addOrEdit,
+      int creditInd, int debitInd, dynamic currentDate) {
     return StatefulBuilder(
       builder: (BuildContext context, StateSetter setState) {
         return DraggableScrollableSheet(
@@ -284,8 +310,15 @@ class _AddJVTransactionQLState extends State<AddJVTransactionQL> {
                               jvNo = "";
                               transferDate = DateTime.now();
                               narration = "";
+                              narrationController.text = "";
                               credit = "";
+                              creditController.animateTo(0,
+                                  duration: const Duration(seconds: 2),
+                                  curve: Curves.decelerate);
                               debit = "";
+                              debitController.animateTo(0,
+                                  duration: const Duration(seconds: 2),
+                                  curve: Curves.decelerate);
                             },
                           );
                         },
@@ -307,9 +340,9 @@ class _AddJVTransactionQLState extends State<AddJVTransactionQL> {
                       }),
                       items: List.generate(jvInputList.length,
                           (index) => jvInputList[index]["name"]),
-                      dropDownValue: jvInputList[creditIndex]["name"],
+                      dropDownValue: jvInputList[creditInd]["name"],
                       scrollController:
-                          FixedExtentScrollController(initialItem: creditIndex),
+                          FixedExtentScrollController(initialItem: creditInd),
                     ),
                     SizedBox(height: height * 0.02),
                     const RowText(text: "Debit"),
@@ -320,16 +353,17 @@ class _AddJVTransactionQLState extends State<AddJVTransactionQL> {
                       }),
                       items: List.generate(jvInputList.length,
                           (index) => jvInputList[index]["name"]),
-                      dropDownValue: jvInputList[debitIndex]["name"],
+                      dropDownValue: jvInputList[debitInd]["name"],
                       scrollController:
-                          FixedExtentScrollController(initialItem: debitIndex),
+                          FixedExtentScrollController(initialItem: debitInd),
                     ),
                     SizedBox(height: height * 0.02),
                     const RowText(text: "Transfer Date"),
                     CupertinoDateSelector(
-                      initialDate: transferDate,
+                      initialDate: DateTime.now(),
                       setFunction: (value) =>
                           setState(() => transferDate = value),
+                      reset: () => setState(() => transferDate = ""),
                     ),
                     SizedBox(height: height * 0.02),
                     const RowText(text: "Amount"),
@@ -349,26 +383,57 @@ class _AddJVTransactionQLState extends State<AddJVTransactionQL> {
                     SubmitButton(
                       text: addOrEdit ? "Add Entry" : "Edit Entry",
                       onSubmit: () {
-                        Navigator.pop(context);
-                        setState(
-                          () {
-                            function(
-                              {
-                                "jv_no": jvNo,
-                                "transfer_date": formatDate(transferDate),
-                                "amount": amount,
-                                "credit": credit,
-                                "debit": debit,
-                                "narration": narration,
-                              },
-                            );
-                            jvNo = "";
-                            transferDate = DateTime.now();
-                            narration = "";
-                            credit = "";
-                            debit = "";
-                          },
-                        );
+                        if (credit == "") {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Credit is a mandatory field."),
+                            ),
+                          );
+                        } else if (debit == "") {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Debit is a mandatory field."),
+                            ),
+                          );
+                        } else if (amount == "" || amount == "0") {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Amount can't be zero."),
+                            ),
+                          );
+                        } else if (credit == debit) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  "Same Credit and Debit values are not allowed."),
+                            ),
+                          );
+                        } else {
+                          Navigator.pop(context);
+                          setState(
+                            () {
+                              function(
+                                {
+                                  "jv_no": jvNo,
+                                  "transfer_date": transferDate == ""
+                                      ? transferDate
+                                      : formatDate(transferDate),
+                                  "amount": amount,
+                                  "credit": credit,
+                                  "debit": debit,
+                                  "narration": narration,
+                                },
+                              );
+                              jvNo = "";
+                              transferDate = "";
+                              narrationController.text = "";
+                              amountController.text = "";
+                              narration = "";
+                              credit = "";
+                              debit = "";
+                            },
+                          );
+                        }
                       },
                     ),
                   ],

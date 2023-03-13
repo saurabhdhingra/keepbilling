@@ -18,11 +18,12 @@ class EditVoucherTransaction extends StatefulWidget {
   final List partyList;
   final List ledgerList;
   final Map data;
+  final String product;
   const EditVoucherTransaction(
       {Key? key,
       required this.partyList,
       required this.ledgerList,
-      required this.data})
+      required this.data, required this.product})
       : super(key: key);
 
   @override
@@ -41,7 +42,7 @@ class _EditVoucherTransactionState extends State<EditVoucherTransaction> {
   String party = "";
   int partyIndex = 0;
   String totalAmount = "";
-  DateTime voucherDate = DateTime.now();
+  dynamic voucherDate = "";
 
   final _formKey1 = GlobalKey<FormState>();
   final _formKey2 = GlobalKey<FormState>();
@@ -141,6 +142,7 @@ class _EditVoucherTransactionState extends State<EditVoucherTransaction> {
               CupertinoDateSelector(
                 initialDate: voucherDate,
                 setFunction: (value) => setState(() => voucherDate = value),
+                showReset: false,
               ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Amount"),
@@ -276,10 +278,11 @@ class _EditVoucherTransactionState extends State<EditVoucherTransaction> {
         "userid": widget.data["user_id"],
         "companyid": widget.data["company_id"],
         "cash_id": cashId,
-        "product": "1",
+        "product": widget.product,
         "party": party,
         "id": widget.data["id"],
-        "voucher_date": formatDate(voucherDate),
+        "voucher_date":
+            voucherDate == "" ? voucherDate : formatDate(voucherDate),
         "ledger": ledger,
         "amount": amount,
         "gst_applicable": gstApplicable,

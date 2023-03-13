@@ -4,10 +4,12 @@ import 'package:keepbilling/api/transaction.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
 import 'package:keepbilling/screens/transactionPages/addPages/addJV.dart';
 import 'package:keepbilling/screens/transactionPages/editPages/editJV.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../utils/constants.dart';
 
+import '../../provider/authenticationProvider.dart';
 import '../../widgets/infoPages/CustomExpansionTile.dart';
 import '../../widgets/infoPages/paddedText.dart';
 import '../searchBarDelegate.dart';
@@ -26,26 +28,50 @@ class _JournalVoucherTransactionState extends State<JournalVoucherTransaction> {
   List jvInput = [];
 
   TransactionsService service = TransactionsService();
+
   String companyId = "";
   String userId = "";
+  String product = "";
+
   String jvNo = "";
 
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    dataList = await service.fetchDataList("JV", userId, companyId);
-    jvNo = await service.fetchJVInvNo(userId, companyId);
-    jvInput = await service.fetchDataList("jv_input", userId, companyId);
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+    try {
+      dataList = await service.fetchDataList("JV", userId, companyId, product);
+      jvNo = await service.fetchJVInvNo(userId, companyId, product);
+      jvInput =
+          await service.fetchDataList("jv_input", userId, companyId, product);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
 
     setState(() => isLoading = false);
   }
 
   Future getUpdatedData() async {
     setState(() => isLoading = true);
-    jvNo = await service.fetchJVInvNo(userId, companyId);
-    dataList = await service.fetchDataList("JV", userId, companyId);
+    try {
+      jvNo = await service.fetchJVInvNo(userId, companyId,product);
+      dataList = await service.fetchDataList("JV", userId, companyId,product);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
     setState(() => isLoading = false);
   }
 
@@ -80,7 +106,10 @@ class _JournalVoucherTransactionState extends State<JournalVoucherTransaction> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => AddJVTransaction(
-                        jvInput: jvInput, jvNo: int.parse(jvNo)),
+                      jvInput: jvInput,
+                      jvNo: int.parse(jvNo),
+                      product: product,
+                    ),
                   ),
                 );
                 if (navigationResult == "update") {
@@ -134,6 +163,7 @@ class _JournalVoucherTransactionState extends State<JournalVoucherTransaction> {
                                     builder: (context) => EditJVTransaction(
                                       jvInput: jvInput,
                                       data: e,
+                                      product: product,
                                     ),
                                   ),
                                 );

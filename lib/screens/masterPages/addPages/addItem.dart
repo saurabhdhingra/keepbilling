@@ -16,11 +16,13 @@ import '../item.dart';
 class AddItemMaster extends StatefulWidget {
   final List groups;
   final List units;
+  final String product;
 
   const AddItemMaster({
     Key? key,
     required this.groups,
     required this.units,
+    required this.product,
   }) : super(key: key);
 
   @override
@@ -252,7 +254,7 @@ class _AddItemMasterState extends State<AddItemMaster> {
             opStock: opStock,
             pRate: pRate,
             per: per,
-            product: '1',
+            product: widget.product,
             sRate: sRate,
             stockLimit: stockLimit,
             tax: tax,

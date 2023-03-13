@@ -12,10 +12,12 @@ import 'package:keepbilling/screens/settings/changePIN.dart';
 import 'package:keepbilling/screens/settings/quickLinks.dart';
 import 'package:keepbilling/screens/support.dart';
 import 'package:keepbilling/widgets/formPages/titleText.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../api/dashboard.dart';
 import '../model/cheque.dart';
 import '../model/toDoTask.dart';
+import '../provider/authenticationProvider.dart';
 import '../widgets/navscreens/quickLink.dart';
 import '../widgets/navscreens/quickView.dart';
 import '../widgets/navscreens/rowText.dart';
@@ -36,9 +38,12 @@ class NavScreen extends StatefulWidget {
 class _NavScreenState extends State<NavScreen> {
   bool isLoading = false;
   bool isQLLoading = false;
+
   String userId = "";
   String companyName = "";
   String companyId = "";
+  String product = "";
+
   List<ToDoTask> toDoData = [];
   List<Cheque> chequeData = [];
   List quickLinks = [];
@@ -69,20 +74,47 @@ class _NavScreenState extends State<NavScreen> {
     //show Loading indicator
     setState(() => isLoading = true);
 
+    //Get user credentials
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+
     //set swipeStatus
     SharedPreferences prefs = await SharedPreferences.getInstance();
     swipeStatus = prefs.getBool('swipeStatus') ?? false;
-
-    //Get user credentials
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
     companyName = prefs.getString('companyName') ?? "";
 
     //set Data
-    toDoData = await service.fetchToDoList(userId, companyId);
-    chequeData = await service.fetchChequeList(userId, companyId);
-    quickViewData = await service.fetchAllAccounts(userId, companyId);
-    quickLinks = await service.fetchQuickLinks(userId, companyId);
+    try {
+      toDoData = await service.fetchToDoList(userId, companyId,product);
+      chequeData = await service.fetchChequeList(userId, companyId,product);
+      quickViewData = await service.fetchAllAccounts(userId, companyId,product);
+      quickLinks = await service.fetchQuickLinks(userId, companyId,product);
+      if (quickLinks == [""]) {
+        quickLinks = [];
+      }
+    } catch (e) {
+      toDoData = [];
+      chequeData = [];
+      quickLinks = [];
+      quickViewData = {
+        "Cash": [
+          {"name": "CashBal", "balance": 0}
+        ],
+        "Bank": [],
+        "Purchase": {"Total": 0, "Outstanding": 0},
+        "Sales": {"Total": 0, "Outstanding": 0},
+        "Expenses": {"Total": 0},
+        "Post Dated Cheque": {"Recievable": 0, "Payable": 0}
+      };
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
 
     //stop Loading indicator
     if (mounted) {
@@ -94,7 +126,10 @@ class _NavScreenState extends State<NavScreen> {
 
   Future updateQuickLinks() async {
     setState(() => isQLLoading = true);
-    quickLinks = await service.fetchQuickLinks(userId, companyId);
+    quickLinks = await service.fetchQuickLinks(userId, companyId,product);
+    if (quickLinks == [""]) {
+      quickLinks = [];
+    }
     setState(() => isQLLoading = false);
   }
 
@@ -125,9 +160,9 @@ class _NavScreenState extends State<NavScreen> {
     _currentIndex = widget.currentIndex;
     getData();
     Timer.periodic(period, (arg) async {
-      toDoData = await service.fetchToDoList(userId, companyId);
-      chequeData = await service.fetchChequeList(userId, companyId);
-      quickViewData = await service.fetchAllAccounts(userId, companyId);
+      toDoData = await service.fetchToDoList(userId, companyId,product);
+      chequeData = await service.fetchChequeList(userId, companyId,product);
+      quickViewData = await service.fetchAllAccounts(userId, companyId,product);
     });
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
@@ -198,11 +233,21 @@ class _NavScreenState extends State<NavScreen> {
                       endIndent: width * 0.05,
                       color: Colors.black87,
                     ),
-                    const QuickLink(
-                      icon: Icons.edit,
-                      text: "Edit Quick Links",
-                      screen: QuickLinksSettings(),
-                      isButton: false,
+                    QuickLink(
+                      icon: CupertinoIcons.arrow_up_circle,
+                      text: "Set Quick Links",
+                      screen: const DumyScreen(),
+                      isButton: true,
+                      function: () async {
+                        var navigationResult = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const QuickLinksSettings()),
+                        );
+                        if (navigationResult == "updated") {
+                          updateQuickLinks();
+                        }
+                      },
                     ),
                   ],
                 ),
@@ -547,7 +592,7 @@ class _NavScreenState extends State<NavScreen> {
                                       onPressed: () async {
                                         await service
                                             .deleteToDo(deletedItem.id, userId,
-                                                companyId)
+                                                companyId,product)
                                             .then((value) {
                                           if (value["type"] == "success") {
                                             if (swipeStatus == false) {
@@ -590,7 +635,7 @@ class _NavScreenState extends State<NavScreen> {
                                       onPressed: () async {
                                         await service
                                             .deleteToDo(deletedItem.id, userId,
-                                                companyId)
+                                                companyId,product)
                                             .then((value) {
                                           if (value["type"] == "success") {
                                             if (swipeStatus == false) {

@@ -4,9 +4,12 @@ import 'package:intl/intl.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
 import 'package:keepbilling/screens/reports/general.dart';
 import 'package:keepbilling/utils/functions.dart';
+import 'package:keepbilling/widgets/formPages/submitButton.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../api/master.dart';
+import '../../../provider/authenticationProvider.dart';
 import '../../../utils/constants.dart';
 import '../../../widgets/formPages/datePicker.dart';
 import '../../../widgets/formPages/dropdownSelector.dart';
@@ -29,8 +32,8 @@ class _GeneralFiltersState extends State<GeneralFilters> {
   int sDebtorIndex = 0;
   String itemId = "";
   int itemIndex = 0;
-  DateTime fromDate = DateTime.now();
-  DateTime toDate = DateTime.now();
+  dynamic fromDate = "";
+  dynamic toDate = "";
 
   List sCreditorList = [];
   List sDebtorList = [];
@@ -38,6 +41,8 @@ class _GeneralFiltersState extends State<GeneralFilters> {
 
   String userId = "";
   String companyId = "";
+  String product = "";
+
   MasterService service = MasterService();
 
   FixedExtentScrollController creditorController =
@@ -46,12 +51,32 @@ class _GeneralFiltersState extends State<GeneralFilters> {
 
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    sCreditorList = await service.fetchCredDeb("creditors", userId, companyId);
-    sDebtorList = await service.fetchCredDeb("debitors", userId, companyId);
-    itemList = await service.fetchDataList(userId, companyId, "item");
+
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+
+    try {
+      sCreditorList =
+          await service.fetchCredDeb("creditors", userId, companyId, product);
+      sDebtorList =
+          await service.fetchCredDeb("debitors", userId, companyId, product);
+      itemList =
+          await service.fetchDataList(userId, companyId, "item", product);
+    } catch (e) {
+      sCreditorList = [];
+      sDebtorList = [];
+      itemList = [];
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
     setState(() => isLoading = false);
   }
 
@@ -104,10 +129,15 @@ class _GeneralFiltersState extends State<GeneralFilters> {
                       setState: (value) => setState(() {
                         sundryCreditor = sCreditors[value]["id"];
                         sCreditorIndex = value;
+                        sDebtorIndex = 0;
+                        debtorController.animateTo(0,
+                            duration: const Duration(seconds: 1),
+                            curve: Curves.decelerate);
                       }),
                       items: List.generate(sCreditors.length,
                           (index) => sCreditors[index]["party_name"]),
                       dropDownValue: sCreditors[sCreditorIndex]["party_name"],
+                      scrollController: creditorController,
                     ),
                     SizedBox(height: height * 0.02),
                     const RowText(text: "Sundry Debitor"),
@@ -115,10 +145,15 @@ class _GeneralFiltersState extends State<GeneralFilters> {
                       setState: (value) => setState(() {
                         sundryDebtor = sDebtors[value]["id"];
                         sDebtorIndex = value;
+                        sCreditorIndex = 0;
+                        creditorController.animateTo(0,
+                            duration: const Duration(seconds: 1),
+                            curve: Curves.decelerate);
                       }),
                       items: List.generate(sDebtors.length,
                           (index) => sDebtors[index]["party_name"]),
                       dropDownValue: sDebtors[sDebtorIndex]["party_name"],
+                      scrollController: debtorController,
                     ),
                     SizedBox(height: height * 0.02),
                     const RowText(text: "Select Item"),
@@ -134,38 +169,36 @@ class _GeneralFiltersState extends State<GeneralFilters> {
                     SizedBox(height: height * 0.02),
                     const RowText(text: "From Date"),
                     CupertinoDateSelector(
-                      initialDate: fromDate,
+                      initialDate: DateTime.now(),
                       setFunction: (value) => setState(() => fromDate = value),
+                      reset: () => setState(() => fromDate = ""),
                     ),
                     SizedBox(height: height * 0.02),
                     const RowText(text: "To Date"),
                     CupertinoDateSelector(
-                      initialDate: toDate,
+                      initialDate: DateTime.now(),
                       setFunction: (value) => setState(() => toDate = value),
+                      reset: () => setState(() => toDate = ""),
                     ),
-                    Row(
-                      children: [
-                        SizedBox(width: width * 0.7),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => GeneralReport(
-                                  sundryCreditor: sundryCreditor,
-                                  sundryDebitor: sundryDebtor,
-                                  itemId: itemId,
-                                  fromDate:
-                                      DateFormat("yyyy-MM-dd").format(fromDate),
-                                  toDate:
-                                      DateFormat("yyyy-MM-dd").format(toDate),
-                                ),
-                              ),
-                            );
-                          },
-                          child: const Text("Get Report"),
-                        )
-                      ],
+                    SubmitButton(
+                      text: "Get Report",
+                      onSubmit: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => GeneralReport(
+                              sundryCreditor: sundryCreditor,
+                              sundryDebitor: sundryDebtor,
+                              itemId: itemId,
+                              fromDate: fromDate == ""
+                                  ? fromDate
+                                  : formatDate(fromDate),
+                              toDate:
+                                  toDate == "" ? toDate : formatDate(toDate),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),

@@ -31,14 +31,14 @@ class SizeConfig {
 List<String> quickLinks = [
   "Unselected",
   "Party List",
-  "New Party",
+  // "New Party",
   "Banks",
-  "New Bank",
+  // "New Bank",
   "Item List",
   "New Item",
   "Quotations",
   "New Quotation",
-  "Bill Prefix",
+  // "Bill Prefix",
   "Sales",
   "New Sale",
   "Purchase List",
@@ -66,14 +66,14 @@ List<String> quickLinks = [
 Map quickLinksIcons = {
   "Unselected": Icons.abc,
   "Party List": Icons.business,
-  "New Party": Icons.business,
+  // "New Party": Icons.business,
   "Banks": Icons.corporate_fare_outlined,
-  "New Bank": Icons.corporate_fare_outlined,
+  // "New Bank": Icons.corporate_fare_outlined,
   "Item List": Icons.emoji_objects,
   "New Item": Icons.emoji_objects,
   "Quotations": CupertinoIcons.text_justifyleft,
   "New Quotation": CupertinoIcons.text_justifyleft,
-  "Bill Prefix": Icons.abc,
+  // "Bill Prefix": Icons.abc,
   "Sales": CupertinoIcons.cube_box,
   "New Sale": CupertinoIcons.cube_box,
   "Purchase List": CupertinoIcons.purchased,
@@ -100,14 +100,14 @@ Map quickLinksIcons = {
 
 Map quickLinksScreens = {
   "Party List": const PartyMaster(),
-  "New Party": const AddPartyMaster(),
+  // "New Party": const AddPartyMaster(),
   "Banks": const BankMaster(),
-  "New Bank": const AddBankMaster(),
+  // "New Bank": const AddBankMaster(),
   "Item List": const ItemMaster(),
   "New Item": const AddItemMasterQL(), //Change this after correction
   "Quotations": const QuotationMaster(),
   "New Quotation": const AddQuotationMasterQL(),
-  "Bill Prefix": const BillMaster(),
+  // "Bill Prefix": const BillMaster(),
 
   "Sales": const SaleTransaction(),
   "New Sale": const CreateBillQL(billType: 'S'),
@@ -176,13 +176,6 @@ final List states = [
   "West Bengal"
 ];
 
-final List banks = [
-  "ABHYUDAYA CO-OP BANK LTD",
-  "ABU DHABI COMMERCIAL BANK",
-  "AKOLA DISTRICT CENTRAL CO-OPERATIVE BANK",
-  "HDFC"
-];
-
 final List<Map> links = [
   {
     "title": "Master",
@@ -204,7 +197,7 @@ final List<Map> links = [
         "screen": const QuotationMaster(),
         "icon": CupertinoIcons.text_justifyleft
       },
-      {"title": "Bill Prefix", "screen": const BillMaster(), "icon": Icons.abc}
+      // {"title": "Bill Prefix", "screen": const BillMaster(), "icon": Icons.abc}
     ]
   },
   {
@@ -344,3 +337,7 @@ final List<Map> settingsTabs = [
   //   "icon": Icons.password,
   // },
 ];
+
+//Notes in Settings
+const String changeRefnoNote =
+    "NOTE: Enter number with which you want to start generating record.\n\nEx 1: Starting no. required is 1 than enter 1 in the above input box\n\nEx 2: Starting no. required is 10 than enter 10 in the above input box";

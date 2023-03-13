@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../api/reports.dart';
+import '../../provider/authenticationProvider.dart';
 import '../../utils/constants.dart';
 import '../../widgets/infoPages/paddedText.dart';
 
@@ -29,20 +31,33 @@ class _HSNreportState extends State<HSNreport> {
 
   String userId = "";
   String companyId = "";
+  String product = "";
   ReportsService service = ReportsService();
 
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    data = await service.fetchHSNReport(
-      userId,
-      companyId,
-      widget.hsn,
-      widget.fromDate,
-      widget.toDate,
-    );
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+    try {
+      data = await service.fetchHSNReport(
+        userId,
+        companyId,
+        widget.hsn,
+        widget.fromDate,
+        widget.toDate,product
+      );
+    } catch (e) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
     setState(() => isLoading = false);
   }
 
@@ -81,7 +96,7 @@ class _HSNreportState extends State<HSNreport> {
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                   mainAxisSize: MainAxisSize.min,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     PaddedText(
                       text: "HSN Report",
@@ -92,7 +107,7 @@ class _HSNreportState extends State<HSNreport> {
                     ),
                     SizedBox(height: height * 0.02),
                     Flexible(
-                       fit: FlexFit.loose,
+                      fit: FlexFit.loose,
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: DataTable(

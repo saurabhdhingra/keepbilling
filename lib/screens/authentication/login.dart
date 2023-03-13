@@ -197,12 +197,9 @@ class _LoginPageState extends State<LoginPage> {
                   MaterialPageRoute(builder: ((context) => const NavScreen())));
               ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text("Logged in successfully.")));
-              // Provider.of<AuthenticationProvider>(context, listen: false)
-              //     .setCredentials(
-              //   value["companyid"],
-              //   value["cashid"],
-              //   value["userid"],
-              // );
+              Provider.of<AuthenticationProvider>(context, listen: false)
+                  .setCredentials(value["companyid"], value["cashid"],
+                      value["userid"], value["product"]);
             } else if (value["type"] == "error") {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(

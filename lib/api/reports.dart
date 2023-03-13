@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
@@ -14,39 +15,48 @@ class ReportsService {
       String sundryDebitor,
       String itemId,
       String fromDate,
-      String toDate) async {
+      String toDate,String product) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse(service.backend + service.generalReport),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(
-          <String, String>{
-            "userid": userId,
-            "companyid": companyId,
-            "product": "1",
-            "sundry_creditor": sundryCreditor,
-            "sundry_debitor": sundryDebitor,
-            "item_id": itemId,
-            "from_date": fromDate,
-            "to_date": toDate,
-          },
-        ),
-      );
+      final response = await http
+          .post(
+            Uri.parse(service.backend + service.generalReport),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": product,
+                "sundry_creditor": sundryCreditor,
+                "sundry_debitor": sundryDebitor,
+                "item_id": itemId,
+                "from_date": fromDate,
+                "to_date": toDate,
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
-
-    return {
-      "purchaseData": responseJson["response_data_Purchase"],
-      "saleData": responseJson["response_data_sale"]
-    };
+    if (responseJson["type"] == "success" &&
+        responseJson["response_data_Purchase"] != "" &&
+        responseJson["response_data_sale"] != "") {
+      return {
+        "purchaseData": responseJson["response_data_Purchase"],
+        "saleData": responseJson["response_data_sale"]
+      };
+    } else {
+      return {"purchaseData": [], "saleData": []};
+    }
   }
 
   Future fetchStockSummary(
@@ -54,36 +64,45 @@ class ReportsService {
     String companyId,
     String itemName,
     String stockLimit,
-    String stockSign,
+    String stockSign,String product
   ) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse(service.backend + service.stockSummary),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(
-          <String, String>{
-            "userid": userId,
-            "companyid": companyId,
-            "product": "1",
-            "item_name": itemName,
-            "stock_limit": stockLimit,
-            "stock_sign": stockSign,
-          },
-        ),
-      );
+      final response = await http
+          .post(
+            Uri.parse(service.backend + service.stockSummary),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": product,
+                "item_name": itemName,
+                "stock_limit": stockLimit,
+                "stock_sign": stockSign,
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
       print(responseJson);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
-    return responseJson["response_data"];
+    if (responseJson["type"] == "success" &&
+        responseJson["response_data"] != "") {
+      return responseJson["response_data"];
+    } else {
+      return [];
+    }
   }
 
   Future fetchStockStatement(
@@ -91,34 +110,43 @@ class ReportsService {
     String companyId,
     String itemName,
     String fromDate,
-    String toDate,
+    String toDate,String product
   ) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse(service.backend + service.stockStatement),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(<String, String>{
-          "userid": userId,
-          "companyid": companyId,
-          "product": "1",
-          "from_date": fromDate,
-          "to_date": toDate,
-          "item": itemName,
-        }),
-      );
+      final response = await http
+          .post(
+            Uri.parse(service.backend + service.stockStatement),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(<String, String>{
+              "userid": userId,
+              "companyid": companyId,
+              "product": product,
+              "from_date": fromDate,
+              "to_date": toDate,
+              "item": itemName,
+            }),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
       print(responseJson);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
-    return responseJson["response_data"];
+    if (responseJson["type"] == "success" &&
+        responseJson["response_data"] != "") {
+      return responseJson["response_data"];
+    } else {
+      return [];
+    }
   }
 
   Future fetchGSTStatement(
@@ -127,30 +155,32 @@ class ReportsService {
     String party,
     String gstType,
     String fromDate,
-    String toDate,
+    String toDate,String product
   ) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse(service.backend + service.gstSummary),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(
-          <String, String>{
-            "userid": userId,
-            "companyid": companyId,
-            "product": "1",
-            "party": party,
-            "gst_type": gstType,
-            "from_date": fromDate,
-            "to_date": toDate,
-          },
-        ),
-      );
+      final response = await http
+          .post(
+            Uri.parse(service.backend + service.gstSummary),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": product,
+                "party": party,
+                "gst_type": gstType,
+                "from_date": fromDate,
+                "to_date": toDate,
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
       print(responseJson["final_gst"]);
     } on SocketException {
@@ -170,36 +200,45 @@ class ReportsService {
     String party,
     String gstType,
     String fromDate,
-    String toDate,
+    String toDate,String product
   ) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse(service.backend + service.gstDetailed),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(
-          <String, String>{
-            "userid": userId,
-            "companyid": companyId,
-            "product": "1",
-            "party": party,
-            "gst_type": gstType,
-            "from_date": fromDate,
-            "to_date": toDate,
-          },
-        ),
-      );
+      final response = await http
+          .post(
+            Uri.parse(service.backend + service.gstDetailed),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": product,
+                "party": party,
+                "gst_type": gstType,
+                "from_date": fromDate,
+                "to_date": toDate,
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
-    return responseJson["response_data"];
+    if (responseJson["type"] == "success" &&
+        responseJson["response_data"] != "") {
+      return responseJson["response_data"];
+    } else {
+      return [];
+    }
   }
 
   Future fetchHSNReport(
@@ -207,35 +246,43 @@ class ReportsService {
     String companyId,
     String hsn,
     String fromDate,
-    String toDate,
+    String toDate,String product
   ) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse(service.backend + service.tdsReport),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(
-          <String, String>{
-            "userid": userId,
-            "companyid": companyId,
-            "product": "1",
-            "hsn": hsn,
-            "from_date": fromDate,
-            "to_date": toDate,
-          },
-        ),
-      );
+      final response = await http
+          .post(
+            Uri.parse(service.backend + service.tdsReport),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": product,
+                "hsn": hsn,
+                "from_date": fromDate,
+                "to_date": toDate,
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
-
-    return responseJson["response_data"];
+    if (responseJson["type"] == "success" &&
+        responseJson["response_data"] != "") {
+      return responseJson["response_data"];
+    } else {
+      return [];
+    }
   }
 
   Future fetchTDSReport(
@@ -244,36 +291,41 @@ class ReportsService {
     String party,
     String gstType,
     String fromDate,
-    String toDate,
+    String toDate,String product
   ) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse(service.backend + service.tdsReport),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(
-          <String, String>{
-            "userid": userId,
-            "companyid": companyId,
-            "product": "1",
-            "party": party,
-            "gst_type": gstType,
-            "from_date": fromDate,
-            "to_date": toDate,
-          },
-        ),
-      );
+      final response = await http
+          .post(
+            Uri.parse(service.backend + service.tdsReport),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": product,
+                "party": party,
+                "gst_type": gstType,
+                "from_date": fromDate,
+                "to_date": toDate,
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
       print(responseJson);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
-    if (responseJson["type"] == "success") {
+    if (responseJson["type"] == "success" &&
+        responseJson["response_data"] != "") {
       return responseJson["response_data"];
     } else {
       return [];

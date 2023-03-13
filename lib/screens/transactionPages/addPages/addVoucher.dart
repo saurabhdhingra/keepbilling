@@ -6,6 +6,7 @@ import 'package:keepbilling/widgets/formPages/titleText.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../model/voucher.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/functions.dart';
 import '../../../widgets/formPages/datePicker.dart';
 import '../../../widgets/formPages/dropdownSelector.dart';
 import '../../../widgets/formPages/customField.dart';
@@ -16,8 +17,9 @@ import '../../../widgets/formPages/submitButton.dart';
 class AddVoucherTransaction extends StatefulWidget {
   final List partyList;
   final List ledgerList;
+  final String product;
   const AddVoucherTransaction(
-      {Key? key, required this.partyList, required this.ledgerList})
+      {Key? key, required this.partyList, required this.ledgerList, required this.product})
       : super(key: key);
 
   @override
@@ -38,7 +40,7 @@ class _AddVoucherTransactionState extends State<AddVoucherTransaction> {
   String party = "";
   int partyIndex = 0;
   String totalAmount = "";
-  DateTime voucherDate = DateTime.now();
+  dynamic voucherDate = "";
 
   final _formKey1 = GlobalKey<FormState>();
   final _formKey2 = GlobalKey<FormState>();
@@ -115,13 +117,14 @@ class _AddVoucherTransactionState extends State<AddVoucherTransaction> {
                 }),
                 items: List.generate(widget.ledgerList.length,
                     (index) => widget.ledgerList[index]["ledger"]),
-                dropDownValue: widget.ledgerList[partyIndex]["ledger"],
+                dropDownValue: widget.ledgerList[ledgerIndex]["ledger"],
               ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Voucher Date"),
               CupertinoDateSelector(
-                initialDate: voucherDate,
+                initialDate: DateTime.now(),
                 setFunction: (value) => setState(() => voucherDate = value),
+                reset: () => setState(() => voucherDate = ""),
               ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Amount"),
@@ -216,9 +219,9 @@ class _AddVoucherTransactionState extends State<AddVoucherTransaction> {
   }
 
   void updateValues() async {
-    int gst = int.parse(gstPercent == "" ? "0" : gstPercent);
-    int amt = int.parse(amount == "" ? "0" : amount);
-    int tAmount = (amt * (1 + gst / 100)).toInt();
+    double gst = double.parse(gstPercent == "" ? "0" : gstPercent);
+    double amt = double.parse(amount == "" ? "0" : amount);
+    double tAmount = (amt * (1 + gst / 100)).toDouble();
     setState(() {
       totalAmount = tAmount.toString();
       tAmountController.text = totalAmount;
@@ -236,7 +239,7 @@ class _AddVoucherTransactionState extends State<AddVoucherTransaction> {
       return await service.addVoucher(Voucher(
         userid: userId,
         companyid: companyId,
-        product: '1',
+        product: widget.product,
         cashId: cashId,
         amount: amount,
         gstApplicable: gstApplicable,

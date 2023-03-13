@@ -5,7 +5,12 @@ import '../../utils/constants.dart';
 class SubmitButton extends StatelessWidget {
   final VoidCallback onSubmit;
   final String text;
-  const SubmitButton({Key? key, required this.onSubmit, this.text = "Submit"})
+  final bool isEndIndent;
+  const SubmitButton(
+      {Key? key,
+      required this.onSubmit,
+      this.text = "Submit",
+      this.isEndIndent = true})
       : super(key: key);
 
   @override
@@ -14,8 +19,8 @@ class SubmitButton extends StatelessWidget {
     var height = SizeConfig.getHeight(context);
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        SizedBox(width: width * 0.7),
         GestureDetector(
           onTap: onSubmit,
           child: Container(
@@ -41,13 +46,19 @@ class SubmitButton extends StatelessWidget {
             ),
             child: Center(
               child: FittedBox(
-                  child: Text(
-                text,
-                style: TextStyle(fontSize: height * 0.02),
-              )),
+                child: Text(
+                  text,
+                  style: TextStyle(fontSize: height * 0.02),
+                ),
+              ),
             ),
           ),
-        )
+        ),
+        isEndIndent
+            ? SizedBox(
+                width: width * 0.05,
+              )
+            : const SizedBox()
       ],
     );
   }

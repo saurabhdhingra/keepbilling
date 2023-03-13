@@ -3,10 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
 import 'package:keepbilling/screens/reports/export.dart';
+import 'package:keepbilling/widgets/formPages/submitButton.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../api/master.dart';
+import '../../../provider/authenticationProvider.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/functions.dart';
 import '../../../widgets/formPages/datePicker.dart';
 import '../../../widgets/formPages/dropdownSelector.dart';
 import '../../../widgets/formPages/rowText.dart';
@@ -25,8 +29,8 @@ class _GSTSummaryFiltersState extends State<GSTSummaryFilters> {
   int gstIndex = 0;
   String party = "";
   int partyIndex = 0;
-  DateTime fromDate = DateTime.now();
-  DateTime toDate = DateTime.now();
+  dynamic fromDate = "";
+  dynamic toDate = "";
 
   List gstList = [
     "Unselected",
@@ -54,15 +58,30 @@ class _GSTSummaryFiltersState extends State<GSTSummaryFilters> {
   List partyList = [];
 
   String userId = "";
+  String product = "";
   String companyId = "";
+
   MasterService service = MasterService();
 
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    partyList = await service.fetchDataList(userId, companyId, "party");
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+    try {
+      partyList = await service.fetchDataList(userId, companyId, "party",product);
+    } catch (e) {
+      partyList = [];
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
     setState(() => isLoading = false);
   }
 
@@ -86,7 +105,7 @@ class _GSTSummaryFiltersState extends State<GSTSummaryFilters> {
       ...partyList
     ];
     return isLoading
-        ?filtersLoading(context, 4)
+        ? filtersLoading(context, 4)
         : Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
@@ -124,39 +143,36 @@ class _GSTSummaryFiltersState extends State<GSTSummaryFilters> {
                     SizedBox(height: height * 0.02),
                     const RowText(text: "Start Date"),
                     CupertinoDateSelector(
-                      initialDate: fromDate,
+                      initialDate: DateTime.now(),
                       setFunction: (value) => setState(() => fromDate = value),
+                      reset: () => setState(() => fromDate = ""),
                     ),
                     SizedBox(height: height * 0.02),
                     const RowText(text: "End Date"),
                     CupertinoDateSelector(
-                      initialDate: toDate,
+                      initialDate: DateTime.now(),
                       setFunction: (value) => setState(() => toDate = value),
+                      reset: () => setState(() => toDate = ""),
                     ),
                     SizedBox(height: height * 0.02),
-                    Row(
-                      children: [
-                        SizedBox(width: width * 0.8),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => GSTreport(
-                                  party: party,
-                                  gstType: gstType,
-                                  fromDate:
-                                      DateFormat("yyyy-MM-dd").format(fromDate),
-                                  toDate:
-                                      DateFormat("yyyy-MM-dd").format(toDate),
-                                ),
-                              ),
-                            );
-                            
-                          },
-                          child: const Text("Submit"),
-                        )
-                      ],
+                    SubmitButton(
+                      text: "Get Report",
+                      onSubmit: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => GSTreport(
+                              party: party,
+                              gstType: gstType,
+                              fromDate: fromDate == ""
+                                  ? fromDate
+                                  : formatDate(fromDate),
+                              toDate:
+                                  toDate == "" ? toDate : formatDate(toDate),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),

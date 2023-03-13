@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 // ignore: depend_on_referenced_packages
@@ -14,7 +15,7 @@ import 'exceptions.dart';
 class TransactionsService {
   final ApiService service = ApiService();
 
-  Future fetchBills(String billType, String userId, String companyId) async {
+  Future fetchBills(String billType, String userId, String companyId,String product) async {
     dynamic responseJson;
     try {
       final response = await http.post(
@@ -29,21 +30,28 @@ class TransactionsService {
           <String, String>{
             "userid": userId,
             "companyid": companyId,
-            "product": "1",
+            "product": product,
             "bill_type": billType,
           },
         ),
-      );
+      ) .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
-    return responseJson["response_data"] as List;
+    if (responseJson["type"] == "success" &&
+        responseJson["response_data"] != "") {
+      return responseJson["response_data"] as List;
+    } else if (responseJson["response_data"] == "") {
+      return [];
+    }
   }
 
   Future fetchOutstanding(
-      String billType, String userId, String companyId) async {
+      String billType, String userId, String companyId,String product) async {
     dynamic responseJson;
     try {
       final response = await http.post(
@@ -58,20 +66,27 @@ class TransactionsService {
           <String, String>{
             "userid": userId,
             "companyid": companyId,
-            "product": "1",
+            "product": product,
             "bill_type": billType,
           },
         ),
-      );
+      ) .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    }on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
-    return responseJson["response_data"] as List;
+    if (responseJson["type"] == "success" &&
+        responseJson["response_data"] != "") {
+      return responseJson["response_data"] as List;
+    } else if (responseJson["response_data"] == "") {
+      return [];
+    }
   }
 
-  Future fetchLedgerList(String userId, String companyId) async {
+  Future fetchLedgerList(String userId, String companyId,String product) async {
     dynamic responseJson;
     try {
       final response = await http.post(
@@ -86,19 +101,26 @@ class TransactionsService {
           <String, String>{
             "userid": userId,
             "companyid": companyId,
-            "product": "1",
+            "product": product,
           },
         ),
-      );
+      ) .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
-    return responseJson["response_data"] as List;
+    if (responseJson["type"] == "success" &&
+        responseJson["response_data"] != "") {
+      return responseJson["response_data"] as List;
+    } else if (responseJson["response_data"] == "") {
+      return [];
+    }
   }
 
-  Future fetchDataList(String category, String userId, String companyId) async {
+  Future fetchDataList(String category, String userId, String companyId,String product) async {
     dynamic responseJson;
     try {
       final response = await http.post(
@@ -113,19 +135,25 @@ class TransactionsService {
           <String, String>{
             "userid": userId,
             "companyid": companyId,
-            "product": "1",
+            "product": product,
           },
         ),
-      );
+      ) .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
-
-    return responseJson["response_data"] as List;
+    if (responseJson["type"] == "success" &&
+        responseJson["response_data"] != "") {
+      return responseJson["response_data"] as List;
+    } else if (responseJson["response_data"] == "") {
+      return [];
+    }
   }
 
-  Future fetchExtraFieldData(String userId, String companyId) async {
+  Future fetchExtraFieldData(String userId, String companyId,String product) async {
     dynamic responseJson;
     try {
       final response = await http.post(
@@ -140,19 +168,24 @@ class TransactionsService {
           <String, String>{
             "userid": userId,
             "companyid": companyId,
-            "product": "1",
+            "product": product,
           },
         ),
-      );
+      ) .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
-
-    return responseJson["response_data"] as Map;
+    if (responseJson["response_data"] == "") {
+      return {};
+    } else {
+      return responseJson["response_data"] as Map;
+    }
   }
 
-  Future fetchBillById(String companyId, Map data) async {
+  Future fetchBillById(String companyId, Map data,String product) async {
     dynamic responseJson;
     try {
       final response = await http.post(
@@ -166,22 +199,24 @@ class TransactionsService {
         body: jsonEncode(<String, String>{
           "userid": data["user_id"],
           "companyid": companyId,
-          "product": "1",
+          "product": product,
           "bill_type": data["s_invoice_no"] == null ? "P" : "S",
           "invoice_no": data["s_invoice_no"] ?? data["p_invoice_no"],
           "invoice_date": data["inv_date"],
           "party_id": data["party_id"],
         }),
-      );
+      ) .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
     return responseJson["response_data"] as Map;
   }
 
-  Future fetchSaleInvNo(String userId, String companyId) async {
+  Future fetchSaleInvNo(String userId, String companyId,String product) async {
     dynamic responseJson;
     try {
       final response = await http.post(
@@ -196,19 +231,21 @@ class TransactionsService {
           <String, String>{
             "userid": userId,
             "companyid": companyId,
-            "product": "1",
+            "product": product,
           },
         ),
-      );
+      ) .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
     return responseJson["response_data"] as String;
   }
 
-  Future fetchJVInvNo(String userId, String companyId) async {
+  Future fetchJVInvNo(String userId, String companyId,String product) async {
     dynamic responseJson;
     try {
       final response = await http.post(
@@ -223,13 +260,15 @@ class TransactionsService {
           <String, String>{
             "userid": userId,
             "companyid": companyId,
-            "product": "1",
+            "product": product,
           },
         ),
-      );
+      ) .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
     return responseJson["response_data"] as String;
@@ -247,11 +286,13 @@ class TransactionsService {
           'Connection': 'keep-alive'
         },
         body: jsonEncode(voucher.toMap()),
-      );
+      ) .timeout(const Duration(seconds: 10));
       print(voucher.toMap());
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
     return responseJson;
@@ -270,11 +311,13 @@ class TransactionsService {
           'Connection': 'keep-alive'
         },
         body: jsonEncode(data),
-      );
+      ) .timeout(const Duration(seconds: 10));
 
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
     return responseJson;
@@ -293,11 +336,13 @@ class TransactionsService {
           'Connection': 'keep-alive'
         },
         body: jsonEncode(journalVoucher.toMap()),
-      );
+      ) .timeout(const Duration(seconds: 10));
 
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
     return responseJson;
@@ -316,10 +361,12 @@ class TransactionsService {
           'Connection': 'keep-alive'
         },
         body: jsonEncode(bill.toMap()),
-      );
+      ) .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
     return responseJson;
@@ -340,7 +387,7 @@ class TransactionsService {
   }
 
   Future fetchBillPDF(
-      String billType, String userId, String companyId, String billID) async {
+      String billType, String userId, String companyId, String billID,String product) async {
     dynamic responseJson;
     try {
       final response = await http.post(
@@ -355,15 +402,18 @@ class TransactionsService {
           <String, String>{
             "userid": userId,
             "companyid": companyId,
-            "product": "1",
+            "product": product,
             "bill_type": billType,
             "bill_id": billID,
           },
         ),
-      );
+      ) .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
+      print(responseJson);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
     return responseJson;

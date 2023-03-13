@@ -1,3 +1,5 @@
+import '../utils/functions.dart';
+
 class Voucher {
     Voucher({
         required this.userid,
@@ -19,7 +21,7 @@ class Voucher {
     String cashId;
     String product;
     String party;
-    DateTime voucherDate;
+    dynamic voucherDate;
     String ledger;
     String amount;
     String gstApplicable;
@@ -48,7 +50,7 @@ class Voucher {
         "cash_id": cashId,
         "product": product,
         "party": party,
-        "voucher_date": "${voucherDate.year.toString().padLeft(4, '0')}-${voucherDate.month.toString().padLeft(2, '0')}-${voucherDate.day.toString().padLeft(2, '0')}",
+        "voucher_date": voucherDate == "" ? voucherDate : formatDate(voucherDate),
         "ledger": ledger,
         "amount": amount,
         "gst_applicable": gstApplicable,

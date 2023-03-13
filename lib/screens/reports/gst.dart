@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../api/reports.dart';
+import '../../provider/authenticationProvider.dart';
 import '../../utils/constants.dart';
 import '../../widgets/formPages/rowText.dart';
 import '../../widgets/formPages/titleText.dart';
@@ -37,28 +39,34 @@ class _GSTreportState extends State<GSTreport> {
 
   String userId = "";
   String companyId = "";
+  String product = "";
+
   ReportsService service = ReportsService();
 
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+    try {
+      data = await service.fetchGSTStatement(userId, companyId, widget.party,
+          "GST#", widget.fromDate, widget.toDate, product);
+      inward = data["inward"];
+      outward = data["outward"];
+      sales = data["final"][0]["Sales GST"].toString();
+      purchase = data["final"][0]["Purchase GST"].toString();
+      toBePaid = data["final"][0]["GST To be Paid"].toString();
+    } catch (e) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
 
-    data = await service.fetchGSTStatement(
-      userId,
-      companyId,
-      widget.party,
-      "GST#",
-      widget.fromDate,
-      widget.toDate,
-    );
-
-    inward = data["inward"];
-    outward = data["outward"];
-    sales = data["final"][0]["Sales GST"].toString();
-    purchase = data["final"][0]["Purchase GST"].toString();
-    toBePaid = data["final"][0]["GST To be Paid"].toString();
     setState(() => isLoading = false);
   }
 

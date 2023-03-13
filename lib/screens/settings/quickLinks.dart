@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../api/dashboard.dart';
 import '../../api/settings.dart';
+import '../../provider/authenticationProvider.dart';
 import '../../utils/constants.dart';
 import '../../widgets/formPages/dropdownSelector.dart';
 import '../../widgets/formPages/rowText.dart';
@@ -23,6 +25,7 @@ class _QuickLinksSettingsState extends State<QuickLinksSettings> {
   String userId = "";
   String companyId = "";
   String cashId = "";
+  String product = "";
 
   String fav1 = "";
   String fav2 = "";
@@ -42,12 +45,14 @@ class _QuickLinksSettingsState extends State<QuickLinksSettings> {
 
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    cashId = prefs.getString('cashId') ?? "";
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    cashId = Provider.of<AuthenticationProvider>(context, listen: false).cashid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
 
-    data = await service.fetchQuickLinks(userId, companyId);
+    data = await service.fetchQuickLinks(userId, companyId, product);
 
     setState(() => isLoading = false);
   }
@@ -56,17 +61,30 @@ class _QuickLinksSettingsState extends State<QuickLinksSettings> {
   void initState() {
     super.initState();
     getData().then((value) {
-      index1 = data.isNotEmpty ? quickLinks.indexOf(data[0]) : 0;
-      index2 =
-          data.length > 1 ? quickLinks.indexOf(data[1] ?? "Unselected") : 0;
-      index3 =
-          data.length > 2 ? quickLinks.indexOf(data[2] ?? "Unselected") : 0;
-      index4 =
-          data.length > 3 ? quickLinks.indexOf(data[3] ?? "Unselected") : 0;
-      index5 =
-          data.length > 4 ? quickLinks.indexOf(data[4] ?? "Unselected") : 0;
-      index6 =
-          data.length > 5 ? quickLinks.indexOf(data[5] ?? "Unselected") : 0;
+      index1 = data.isNotEmpty
+          ? quickLinks.indexOf(
+              data[0] == "" || data[0] == null ? "Unselected" : data[0])
+          : 0;
+      index2 = data.length > 1
+          ? quickLinks.indexOf(
+              data[1] == "" || data[1] == null ? "Unselected" : data[1])
+          : 0;
+      index3 = data.length > 2
+          ? quickLinks.indexOf(
+              data[2] == "" || data[2] == null ? "Unselected" : data[2])
+          : 0;
+      index4 = data.length > 3
+          ? quickLinks.indexOf(
+              data[3] == "" || data[3] == null ? "Unselected" : data[3])
+          : 0;
+      index5 = data.length > 4
+          ? quickLinks.indexOf(
+              data[4] == "" || data[4] == null ? "Unselected" : data[4])
+          : 0;
+      index6 = data.length > 5
+          ? quickLinks.indexOf(
+              data[5] == "" || data[5] == null ? "Unselected" : data[5])
+          : 0;
       fav1 = data.isNotEmpty ? data[0] : "";
       fav2 = data.length > 1 ? data[1] : "";
       fav3 = data.length > 2 ? data[2] : "";
@@ -219,6 +237,7 @@ class _QuickLinksSettingsState extends State<QuickLinksSettings> {
           userId,
           companyId,
           cashId,
+          product,
           fav1 == "Unselected" ? "" : fav1,
           fav2 == "Unselected" ? "" : fav2,
           fav3 == "Unselected" ? "" : fav3,

@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../utils/constants.dart';
 import '../api/settings.dart';
+import '../provider/authenticationProvider.dart';
 import '../widgets/formPages/customField.dart';
 import '../widgets/formPages/submitButton.dart';
 import '../widgets/navscreens/rowText.dart';
@@ -19,6 +21,7 @@ class Support extends StatefulWidget {
 class _SupportState extends State<Support> {
   String userId = "";
   String companyId = "";
+  String product = "";
 
   String subject = "";
   String query = "";
@@ -27,9 +30,12 @@ class _SupportState extends State<Support> {
   final _formKey2 = GlobalKey<FormState>();
 
   Future getUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+   
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
   }
 
   @override
@@ -114,7 +120,7 @@ class _SupportState extends State<Support> {
     ScaffoldMessenger.of(context)
         .showSnackBar(const SnackBar(content: Text("Processing")));
     try {
-      return await service.sendFeedback(userId, companyId, subject, query);
+      return await service.sendFeedback(userId, companyId, subject, query,product);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

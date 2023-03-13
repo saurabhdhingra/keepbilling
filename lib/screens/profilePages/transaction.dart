@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../api/profile.dart';
+import '../../provider/authenticationProvider.dart';
 import '../../utils/constants.dart';
 import '../../widgets/formPages/titleText.dart';
 import '../loadingScreens.dart';
@@ -19,15 +21,29 @@ class _TransactionDetailsState extends State<TransactionDetails> {
 
   ProfileService service = ProfileService();
 
-  String companyId = "";
   String userId = "";
+  String product = "";
+  String companyId = "";
 
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    data = await service.fetchTransactions(userId, companyId);
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+    try {
+      data = await service.fetchTransactions(userId, companyId,product);
+    } catch (e) {
+      data = [];
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
     setState(() => isLoading = false);
   }
 
@@ -51,6 +67,7 @@ class _TransactionDetailsState extends State<TransactionDetails> {
             ),
             body: SafeArea(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const TitleText(text: "Transactions"),
                   SizedBox(

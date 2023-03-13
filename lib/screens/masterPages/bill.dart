@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/api/master.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../utils/constants.dart';
+import '../../provider/authenticationProvider.dart';
 import '../../widgets/infoPages/CustomExpansionTile.dart';
 import '../../widgets/infoPages/paddedText.dart';
 import '../searchBarDelegate.dart';
@@ -21,14 +23,28 @@ class _BillMasterState extends State<BillMaster> {
 
   String userId = "";
   String companyId = "";
+  String product = "";
 
   MasterService service = MasterService();
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    dataList = await service.fetchDataList(userId, companyId, "billprefix");
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+    try {
+      dataList = await service.fetchDataList(userId, companyId, "billprefix",product);
+    } catch (e) {
+      dataList = [];
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
     setState(() => isLoading = false);
   }
 
@@ -48,7 +64,6 @@ class _BillMasterState extends State<BillMaster> {
     final Map propeties = {
       "title": "prefix_name",
       "subtitle": "is_default",
-      
       "entries": [
         {"fieldName": "Flag", "fieldValue": "flag"},
       ]

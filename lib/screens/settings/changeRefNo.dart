@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:keepbilling/widgets/formPages/submitButton.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../api/settings.dart';
+import '../../provider/authenticationProvider.dart';
 import '../../utils/constants.dart';
 import '../../widgets/formPages/customField.dart';
 import '../../widgets/formPages/dropdownSelector.dart';
+import '../../widgets/formPages/notes.dart';
 import '../../widgets/formPages/rowText.dart';
 import '../../widgets/infoPages/paddedText.dart';
 
@@ -20,6 +23,7 @@ class _ChangeRefNoSettingsState extends State<ChangeRefNoSettings> {
   String userId = "";
   String companyId = "";
   String cashId = "";
+  String product = "";
 
   String type = "";
   int typeIndex = 0;
@@ -38,10 +42,12 @@ class _ChangeRefNoSettingsState extends State<ChangeRefNoSettings> {
     "Voucher"
   ];
   Future getUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    cashId = prefs.getString('cashId') ?? "";
+   userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    cashId = Provider.of<AuthenticationProvider>(context, listen: false).cashid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
   }
 
   @override
@@ -113,7 +119,8 @@ class _ChangeRefNoSettingsState extends State<ChangeRefNoSettings> {
                 );
               },
             ),
-            
+             SizedBox(height: height * 0.02),
+                  const NotesSettings(text: changeRefnoNote),
           ],
         ),
       ),
@@ -126,7 +133,7 @@ class _ChangeRefNoSettingsState extends State<ChangeRefNoSettings> {
         .showSnackBar(const SnackBar(content: Text("Processing")));
     try {
       return await service.changeReferenceNo(
-          userId, companyId, cashId, type, number);
+          userId, companyId, cashId, type, number,product);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

@@ -14,8 +14,9 @@ import '../../../widgets/formPages/submitButton.dart';
 
 class EditBankMaster extends StatefulWidget {
   final Map data;
+  final String product;
 
-  const EditBankMaster({Key? key, required this.data}) : super(key: key);
+  const EditBankMaster({Key? key, required this.data, required this.product}) : super(key: key);
 
   @override
   State<EditBankMaster> createState() => _EditBankMasterState();
@@ -205,7 +206,7 @@ class _EditBankMasterState extends State<EditBankMaster> {
       return await service.editMaster({
         "userid": widget.data["user_id"],
         "companyid": widget.data["company_id"],
-        "product": "1",
+        "product": widget.product,
         "bank_id": widget.data["id"],
         "bank_name": bankName,
         "account_name": accountName,

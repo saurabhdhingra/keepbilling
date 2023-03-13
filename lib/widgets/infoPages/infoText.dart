@@ -13,37 +13,30 @@ class InfoText extends StatelessWidget {
     var height = SizeConfig.getHeight(context);
     var width = SizeConfig.getWidth(context);
     return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: width * 0.06,
-        vertical: height * 0.01,
-      ),
-      child: Row(
-        children: [
-          SizedBox(
-            height: height * 0.03,
-            child: FittedBox(
-              child: Text(
-                "$title : ",
-                style: TextStyle(
-                  fontSize: height * 0.025,
-                  fontWeight: FontWeight.bold,
-                ),
+      padding: EdgeInsets.fromLTRB(width * 0.06, height * 0.01, 0, 0),
+      child: SizedBox(
+        height: height * 0.03,
+        child: FittedBox(
+          child: RichText(
+            text: TextSpan(
+              text: "$title : ",
+              style: TextStyle(
+                fontSize: height * 0.025,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
               ),
+              children: [
+                TextSpan(
+                  text: info,
+                  style: TextStyle(
+                    fontSize: height * 0.02,
+                    fontWeight: FontWeight.w400,
+                  ),
+                )
+              ],
             ),
           ),
-          SizedBox(
-            height: height * 0.03,
-            child: FittedBox(
-              child: Text(
-                info,
-                style: TextStyle(
-                  fontSize: height * 0.022,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

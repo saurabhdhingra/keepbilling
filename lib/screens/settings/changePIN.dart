@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:keepbilling/widgets/formPages/submitButton.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../api/settings.dart';
+import '../../provider/authenticationProvider.dart';
 import '../../utils/constants.dart';
 import '../../widgets/formPages/customField.dart';
 import '../../widgets/formPages/rowText.dart';
@@ -21,6 +23,7 @@ class _ChangePINSetingsState extends State<ChangePINSetings> {
 
   String userId = "";
   String companyId = "";
+  String product = "";
 
   String otpApi = "";
   String timeKey = "";
@@ -28,22 +31,27 @@ class _ChangePINSetingsState extends State<ChangePINSetings> {
   String otp = "";
   String oldPin = "";
   String newPin = "";
+  String newPinVerify = "";
 
   final _formKey1 = GlobalKey<FormState>();
   final _formKey2 = GlobalKey<FormState>();
   final _formKey3 = GlobalKey<FormState>();
+  final _formKey4 = GlobalKey<FormState>();
 
   Future getUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
   }
 
   final SettingsService service = SettingsService();
 
   Future getOTP() async {
     setState(() => isLoading = true);
-    dynamic response = await service.sendOTPforPIN(userId, companyId);
+    dynamic response = await service.sendOTPforPIN(userId, companyId, product);
     otpApi = response["OTP"].toString();
     timeKey = response["timekey"].toString();
     setState(() => isLoading = false);
@@ -91,6 +99,7 @@ class _ChangePINSetingsState extends State<ChangePINSetings> {
                   CustomField(
                     setValue: (value) => setState(() => oldPin = value),
                     formKey: _formKey2,
+                    obscureText: true,
                     keyboardType: TextInputType.number,
                   ),
                   SizedBox(height: height * 0.02),
@@ -98,34 +107,48 @@ class _ChangePINSetingsState extends State<ChangePINSetings> {
                   CustomField(
                     setValue: (value) => setState(() => newPin = value),
                     formKey: _formKey3,
+                    obscureText: true,
+                    keyboardType: TextInputType.number,
+                  ),
+                  SizedBox(height: height * 0.02),
+                  const RowText(text: "Verify New PIN"),
+                  CustomField(
+                    setValue: (value) => setState(() => newPinVerify = value),
+                    formKey: _formKey4,
+                    obscureText: true,
                     keyboardType: TextInputType.number,
                   ),
                   SizedBox(height: height * 0.02),
                   SubmitButton(
                     onSubmit: () {
-                      apiCall().then(
-                        (value) {
-                          print(value);
-                          if (value["type"] == "success") {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                            Navigator.pop(context);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(value["message"]),
-                              ),
-                            );
-                          }
-                        },
-                      );
+                      if (newPin == newPinVerify) {
+                        apiCall().then(
+                          (value) {
+                            if (value["type"] == "success") {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(value["message"]),
+                                ),
+                              );
+                              Navigator.pop(context);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(value["message"]),
+                                ),
+                              );
+                            }
+                          },
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("New PIN not verified correctly."),
+                          ),
+                        );
+                      }
                     },
                   ),
-                 
-                 
                 ],
               ),
             ),
@@ -138,7 +161,7 @@ class _ChangePINSetingsState extends State<ChangePINSetings> {
         .showSnackBar(const SnackBar(content: Text("Processing")));
     try {
       return await service.verifyOTPandChangePIN(
-          userId, companyId, otp, oldPin, newPin, timeKey);
+          userId, companyId, otp, oldPin, newPin, timeKey, product);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

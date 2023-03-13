@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:keepbilling/widgets/formPages/switch.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../api/settings.dart';
 import '../../api/transaction.dart';
+import '../../provider/authenticationProvider.dart';
 import '../../utils/constants.dart';
 import '../../widgets/formPages/customField.dart';
 import '../../widgets/formPages/rowText.dart';
@@ -24,6 +26,7 @@ class _ExtraFieldsSetingsState extends State<ExtraFieldsSetings> {
   String userId = "";
   String companyId = "";
   String cashId = "";
+  String product = "";
 
   String extra1 = "";
   String extra2 = "";
@@ -45,11 +48,13 @@ class _ExtraFieldsSetingsState extends State<ExtraFieldsSetings> {
 
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    cashId = prefs.getString('cashId') ?? "";
-    data = await service.fetchExtraFieldData(userId, companyId);
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    cashId = Provider.of<AuthenticationProvider>(context, listen: false).cashid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+    data = await service.fetchExtraFieldData(userId, companyId,product);
     setState(() => isLoading = false);
   }
 
@@ -196,6 +201,7 @@ class _ExtraFieldsSetingsState extends State<ExtraFieldsSetings> {
       return await service.adjustExtrafields(
         userId,
         companyId,
+        product,
         cashId,
         extra1,
         extra2,

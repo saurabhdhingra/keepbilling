@@ -11,6 +11,7 @@ import '../../../utils/functions.dart';
 import '../../../widgets/formPages/dropdownSelector.dart';
 import '../../../widgets/formPages/itemExpansionTile.dart';
 import '../../../widgets/formPages/rowText.dart';
+import '../../../widgets/formPages/statusButton.dart';
 import '../../../widgets/formPages/submitButton.dart';
 
 class CreateBill extends StatefulWidget {
@@ -18,6 +19,7 @@ class CreateBill extends StatefulWidget {
   final List paymentTerms;
   final List partyList;
   final List itemList;
+  final String product;
   final Map extraFieldData;
   final String invoiceNo;
   const CreateBill(
@@ -27,7 +29,7 @@ class CreateBill extends StatefulWidget {
       required this.partyList,
       required this.invoiceNo,
       required this.itemList,
-      required this.extraFieldData})
+      required this.extraFieldData, required this.product})
       : super(key: key);
 
   @override
@@ -44,13 +46,13 @@ class _CreateBillState extends State<CreateBill> {
   String invoiceNo = "";
   String orderBy = "";
   String orderNo = "";
-  DateTime orderDate = DateTime.now();
-  DateTime invoiceDate = DateTime.now();
+  dynamic orderDate = "";
+  dynamic invoiceDate = "";
   String despatchNo = "";
   String despatchThrough = "";
   String paymentTerm = "";
   int paymentTermIndex = 0;
-  DateTime dueDate = DateTime.now();
+  dynamic dueDate = "";
   String deliveryNote = "";
   String deliveryType = "";
   String ewaybillNo = "";
@@ -106,7 +108,7 @@ class _CreateBillState extends State<CreateBill> {
   TextEditingController gTotalController = TextEditingController(text: "0");
 
   final Map propeties = {
-    "title": "name",
+    "title": "item",
     "subtitle": "qty",
     "entries": [
       {"fieldName": "description", "fieldValue": "descrip"},
@@ -183,13 +185,14 @@ class _CreateBillState extends State<CreateBill> {
                 setValue: (value) => setState(() => invoiceNo = value),
                 formKey: _formKey2,
                 initialValue: widget.invoiceNo,
-                readOnly: widget.billType == "S" ? true : false,
+                // readOnly: widget.billType == "S" ? true : false,
               ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Invoice Date"),
               CupertinoDateSelector(
-                initialDate: invoiceDate,
+                initialDate: DateTime.now(),
                 setFunction: (value) => setState(() => invoiceDate = value),
+                showReset: false,
               ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Order By"),
@@ -206,9 +209,9 @@ class _CreateBillState extends State<CreateBill> {
               SizedBox(height: height * 0.02),
               const RowText(text: "Order Date"),
               CupertinoDateSelector(
-                initialDate: orderDate,
-                setFunction: (value) => setState(() => orderDate = value),
-              ),
+                  initialDate: DateTime.now(),
+                  setFunction: (value) => setState(() => orderDate = value),
+                  reset: () => setState(() => orderDate = "")),
               SizedBox(height: height * 0.02),
               const RowText(text: "Despatch Number"),
               CustomField(
@@ -348,6 +351,9 @@ class _CreateBillState extends State<CreateBill> {
                       child: ItemExpansionTile(
                         data: e,
                         properties: propeties,
+                        itemName:
+                            widget.itemList[findItemIndex(e["name"], false)]
+                                ["item_name"],
                         deleteFunc: () {
                           setState(() => items.remove(e));
                           updateMainValues();
@@ -356,7 +362,7 @@ class _CreateBillState extends State<CreateBill> {
                           setState(
                             () {
                               itemName = e["name"];
-                              itemNameIndex = findItemIndex(e["id"]);
+                              itemNameIndex = findItemIndex(e["name"], true);
                               itemQty = e["qty"];
                               itemDescription = e["descrip"];
                               itemAmount = e["amt"];
@@ -405,6 +411,23 @@ class _CreateBillState extends State<CreateBill> {
                   child: const Text("Add item"),
                 ),
               ),
+              const RowText(text: "Round ?"),
+              SizedBox(height: height * 0.02),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  StatusButton(
+                    isSelected: round == "on" ? true : false,
+                    setState: (String value) => setState(() => round = "on"),
+                    text: "ON",
+                  ),
+                  StatusButton(
+                    isSelected: round == "" ? true : false,
+                    setState: (String value) => setState(() => round = ""),
+                    text: "OFF",
+                  ),
+                ],
+              ),
               SizedBox(height: height * 0.02),
               SubmitButton(
                 onSubmit: () {
@@ -447,21 +470,23 @@ class _CreateBillState extends State<CreateBill> {
         Bill(
           userid: userId,
           companyid: companyId,
-          product: '1',
+          product: widget.product,
           cashId: cashId,
           billType: widget.billType,
           deliveryNote: deliveryNote,
           deliveryType: deliveryType,
           despatchNo: despatchNo,
           despatchThrough: despatchThrough,
-          dueDate: dueDateCalc(orderDate, paymentTerm),
+          dueDate: dueDateCalc(),
           ewaybillNo: ewaybillNo,
           extraF1: extraF1,
           extraF2: extraF2,
           extraF3: extraF3,
           extraF4: extraF4,
           extraDiscount: extraDiscount,
-          grandTotal: grandTotal,
+          grandTotal: round == "on"
+              ? double.parse(grandTotal).round().toString()
+              : grandTotal,
           invoiceDate: invoiceDate,
           invoiceNo: invoiceNo,
           itemArray: itemArrayBill(items),
@@ -538,7 +563,7 @@ class _CreateBillState extends State<CreateBill> {
                     const RowText(text: "Item Name"),
                     DropdownSelector(
                       setState: (value) => setState(() {
-                        itemName = itemListValues[value]["item_name"];
+                        itemName = itemListValues[value]["id"];
                         itemRate = itemListValues[value]["s_rate"];
                         itemTax = itemListValues[value]["tax"];
                         rateController.text = itemListValues[value]["s_rate"];
@@ -613,7 +638,7 @@ class _CreateBillState extends State<CreateBill> {
                       text: addOrEdit ? "Add Entry" : "Edit Entry",
                       onSubmit: () {
                         Navigator.pop(context);
-                        if (int.parse(itemAmount == "" ? "0" : itemAmount) <
+                        if (double.parse(itemAmount == "" ? "0" : itemAmount) <
                             0) {
                           ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -659,7 +684,7 @@ class _CreateBillState extends State<CreateBill> {
     );
   }
 
-  int findItemIndex(String itemId) {
+  int findItemIndex(String itemId, bool addOne) {
     int ans = 0;
     for (int i = 0; i < widget.itemList.length; i++) {
       if (widget.itemList[i]["id"] == itemId) {
@@ -667,31 +692,34 @@ class _CreateBillState extends State<CreateBill> {
         break;
       }
     }
-    return ans;
+    return addOne ? ans + 1 : ans;
   }
 
   void updateItemValues() {
-    int quantity = int.parse(itemQty == "" ? "0" : itemQty);
-    int rate = int.parse(itemRate == "" ? "0" : itemRate);
-    int discount = int.parse(itemDiscount == "" ? "0" : itemDiscount);
-    int tax = int.parse(itemTax == "" ? "0" : itemTax);
+    double quantity = double.parse(itemQty == "" ? "0" : itemQty);
+    double rate = double.parse(itemRate == "" ? "0" : itemRate);
+    double discount = double.parse(itemDiscount == "" ? "0" : itemDiscount);
+    double tax = double.parse(itemTax == "" ? "0" : itemTax);
     setState(() {
       itemAmount = (quantity * (rate * (1 - discount / 100)) * (1 + tax / 100))
-          .toInt()
           .toString();
       amountController.text = itemAmount;
     });
   }
 
-  DateTime dueDateCalc(DateTime orderDate, String term) {
-    switch (term) {
+  dynamic dueDateCalc() {
+    switch (paymentTerm) {
       case "Cash":
         return orderDate;
       case "Current":
         return orderDate;
       default:
-        int days = int.parse(term);
-        return orderDate.add(Duration(days: days));
+        int days = int.parse(paymentTerm);
+        if (orderDate != "") {
+          return orderDate.add(Duration(days: days));
+        } else {
+          return orderDate;
+        }
     }
   }
 
@@ -704,21 +732,21 @@ class _CreateBillState extends State<CreateBill> {
   }
 
   void updateMainValues() {
-    int oCharges = int.parse(otherCharges == "" ? "0" : otherCharges);
-    int eDiscount = int.parse(extraDiscount == "" ? "0" : extraDiscount);
-
-    int totalTax = 0;
-    int totalSum = 0;
+    double oCharges = double.parse(otherCharges == "" ? "0" : otherCharges);
+    double eDiscount = double.parse(extraDiscount == "" ? "0" : extraDiscount);
+    double totalTax = 0;
+    double totalSum = 0;
 
     for (int i = 0; i < items.length; i++) {
-      int amt = int.parse(items[i]["amt"]);
-      int tax = int.parse(items[i]["tax"]);
-      totalTax += (amt * (tax / 100)).toInt();
+      double amt = double.parse(items[i]["amt"]);
+      double tax = double.parse(items[i]["tax"]);
+      totalTax += (amt * (tax / 100));
       totalSum += amt;
     }
 
     setState(() {
-      grandTotal = ((totalSum + oCharges) * (1 - eDiscount / 100)).toString();
+      grandTotal =
+          ((totalSum + oCharges) * (1 - eDiscount / 100)).toDouble().toString();
       tax = totalTax.toString();
 
       gTotalController.text = grandTotal;

@@ -1,3 +1,5 @@
+import '../utils/functions.dart';
+
 class Bill {
   Bill({
     required this.userid,
@@ -36,15 +38,15 @@ class Bill {
   String product;
   String billType;
   String party;
-  DateTime invoiceDate;
+  dynamic invoiceDate;
   String invoiceNo;
   String orderby;
   String orderNo;
-  DateTime orderDate;
+  dynamic orderDate;
   String despatchNo;
   String despatchThrough;
   String paymentTerms;
-  DateTime dueDate;
+  dynamic dueDate;
   String deliveryNote;
   String deliveryType;
   String ewaybillNo;
@@ -98,17 +100,15 @@ class Bill {
         "bill_type": billType,
         "party": party,
         "invoice_date":
-            "${invoiceDate.year.toString().padLeft(4, '0')}-${invoiceDate.month.toString().padLeft(2, '0')}-${invoiceDate.day.toString().padLeft(2, '0')}",
+            invoiceDate == "" ? invoiceDate : formatDate(invoiceDate),
         "invoice_no": invoiceNo,
         "orderby": orderby,
         "order_no": orderNo,
-        "order_date":
-            "${orderDate.year.toString().padLeft(4, '0')}-${orderDate.month.toString().padLeft(2, '0')}-${orderDate.day.toString().padLeft(2, '0')}",
+        "order_date": orderDate == "" ? orderDate : formatDate(orderDate),
         "despatch_no": despatchNo,
         "despatch_through": despatchThrough,
         "payment_terms": paymentTerms,
-        "due_date":
-            "${dueDate.year.toString().padLeft(4, '0')}-${dueDate.month.toString().padLeft(2, '0')}-${dueDate.day.toString().padLeft(2, '0')}",
+        "due_date": dueDate == "" ? dueDate : formatDate(dueDate),
         "delivery_note": deliveryNote,
         "delivery_type": deliveryType,
         "ewaybill_no": ewaybillNo,

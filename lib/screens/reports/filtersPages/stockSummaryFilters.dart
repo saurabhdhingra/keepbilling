@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
 import 'package:keepbilling/screens/reports/export.dart';
+import 'package:keepbilling/widgets/formPages/submitButton.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../api/master.dart';
+import '../../../provider/authenticationProvider.dart';
 import '../../../utils/constants.dart';
 import '../../../widgets/formPages/dropdownSelector.dart';
 import '../../../widgets/formPages/rowText.dart';
@@ -32,18 +35,38 @@ class _StockSummaryFiltersState extends State<StockSummaryFilters> {
   List stockLimitList = ["Unselected", "Below", "Above"];
   List stockLimitListValues = ["Unselected", "Below", "Above"];
   List magnitudeList = ["Unselected", "Positive", "Negative", "Both", "All"];
-  List magnitudeListValues = ["Unselected", "Positive", "Negative", "Both", "All"];
+  List magnitudeListValues = [
+    "Unselected",
+    "Positive",
+    "Negative",
+    "Both",
+    "All"
+  ];
   String userId = "";
   String companyId = "";
+  String product = "";
+
   MasterService service = MasterService();
 
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
 
-    itemList = await service.fetchDataList(userId, companyId, "item");
+    try {
+      itemList = await service.fetchDataList(userId, companyId, "item",product);
+    } catch (e) {
+      itemList = [];
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
     setState(() => isLoading = false);
   }
 
@@ -110,26 +133,21 @@ class _StockSummaryFiltersState extends State<StockSummaryFilters> {
                       dropDownValue: items[itemIndex]["item_name"],
                     ),
                     SizedBox(height: height * 0.02),
-                    Row(
-                      children: [
-                        SizedBox(width: width * 0.8),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => StockSummary(
-                                  itemName: itemName,
-                                  stockLimit: stockLimit,
-                                  stockSign: magnitude,
-                                ),
-                              ),
-                            );
-                          },
-                          child: const Text("Submit"),
-                        )
-                      ],
-                    ),
+                    SubmitButton(
+                      text: "Get Report",
+                      onSubmit: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => StockSummary(
+                              itemName: itemName,
+                              stockLimit: stockLimit,
+                              stockSign: magnitude,
+                            ),
+                          ),
+                        );
+                      },
+                    )
                   ],
                 ),
               ),

@@ -16,7 +16,8 @@ import '../../../widgets/formPages/submitButton.dart';
 class AddJVTransaction extends StatefulWidget {
   final int jvNo;
   final List jvInput;
-  const AddJVTransaction({Key? key, required this.jvNo, required this.jvInput})
+  final String product;
+  const AddJVTransaction({Key? key, required this.jvNo, required this.jvInput, required this.product})
       : super(key: key);
 
   @override
@@ -29,7 +30,7 @@ class _AddJVTransactionState extends State<AddJVTransaction> {
   String cashId = "";
 
   String jvNo = "";
-  DateTime transferDate = DateTime.now();
+  dynamic transferDate = "";
   String narration = "";
   String credit = "";
   int creditIndex = 0;
@@ -46,6 +47,9 @@ class _AddJVTransactionState extends State<AddJVTransaction> {
   TextEditingController jvNoController = TextEditingController();
   TextEditingController amountController = TextEditingController(text: "0");
   TextEditingController narrationController = TextEditingController();
+
+  FixedExtentScrollController creditController = FixedExtentScrollController();
+  FixedExtentScrollController debitController = FixedExtentScrollController();
 
   final Map propeties = {
     "title": "narration",
@@ -127,11 +131,14 @@ class _AddJVTransactionState extends State<AddJVTransaction> {
                             backgroundColor: Colors.transparent,
                             context: context,
                             builder: (context) => addOrEditEntry(
-                              context,
-                              (Map value) => setState(
-                                  () => jvEntryList = [...jvEntryList, value]),
-                              false,
-                            ),
+                                context,
+                                (Map value) => setState(() =>
+                                    jvEntryList[jvEntryList.indexOf(e)] =
+                                        value),
+                                false,
+                                creditIndex,
+                                debitIndex,
+                                DateTime.parse(e["transfer_date"])),
                           );
                         },
                       ),
@@ -153,7 +160,10 @@ class _AddJVTransactionState extends State<AddJVTransaction> {
                           context,
                           (Map value) => setState(
                               () => jvEntryList = [...jvEntryList, value]),
-                          true),
+                          true,
+                          0,
+                          0,
+                          DateTime.now()),
                     );
                   },
                   child: const Text("Add item"),
@@ -202,7 +212,7 @@ class _AddJVTransactionState extends State<AddJVTransaction> {
         JournalVoucher(
           userid: userId,
           companyid: companyId,
-          product: '1',
+          product: widget.product,
           cashId: cashId,
           jvEntry: jvArray(jvEntryList),
         ),
@@ -234,7 +244,8 @@ class _AddJVTransactionState extends State<AddJVTransaction> {
     return ans;
   }
 
-  Widget addOrEditEntry(context, Function(Map) function, bool addOrEdit) {
+  Widget addOrEditEntry(context, Function(Map) function, bool addOrEdit,
+      int creditInd, int debitInd, dynamic currentDate) {
     return StatefulBuilder(
       builder: (BuildContext context, StateSetter setState) {
         return DraggableScrollableSheet(
@@ -246,7 +257,6 @@ class _AddJVTransactionState extends State<AddJVTransaction> {
               {"id": "", "name": "Unselected"},
               ...widget.jvInput
             ];
-
             return Container(
               padding: EdgeInsets.all(width * 0.02),
               decoration: const BoxDecoration(
@@ -268,8 +278,15 @@ class _AddJVTransactionState extends State<AddJVTransaction> {
                               jvNo = "";
                               transferDate = DateTime.now();
                               narration = "";
+                              narrationController.text = "";
                               credit = "";
+                              creditController.animateTo(0,
+                                  duration: const Duration(seconds: 2),
+                                  curve: Curves.decelerate);
                               debit = "";
+                              debitController.animateTo(0,
+                                  duration: const Duration(seconds: 2),
+                                  curve: Curves.decelerate);
                             },
                           );
                         },
@@ -291,9 +308,9 @@ class _AddJVTransactionState extends State<AddJVTransaction> {
                       }),
                       items: List.generate(jvInputList.length,
                           (index) => jvInputList[index]["name"]),
-                      dropDownValue: jvInputList[creditIndex]["name"],
+                      dropDownValue: jvInputList[creditInd]["name"],
                       scrollController:
-                          FixedExtentScrollController(initialItem: creditIndex),
+                          FixedExtentScrollController(initialItem: creditInd),
                     ),
                     SizedBox(height: height * 0.02),
                     const RowText(text: "Debit"),
@@ -304,16 +321,17 @@ class _AddJVTransactionState extends State<AddJVTransaction> {
                       }),
                       items: List.generate(jvInputList.length,
                           (index) => jvInputList[index]["name"]),
-                      dropDownValue: jvInputList[debitIndex]["name"],
+                      dropDownValue: jvInputList[debitInd]["name"],
                       scrollController:
-                          FixedExtentScrollController(initialItem: debitIndex),
+                          FixedExtentScrollController(initialItem: debitInd),
                     ),
                     SizedBox(height: height * 0.02),
                     const RowText(text: "Transfer Date"),
                     CupertinoDateSelector(
-                      initialDate: transferDate,
+                      initialDate: currentDate,
                       setFunction: (value) =>
                           setState(() => transferDate = value),
+                      reset: () => setState(() => transferDate = ""),
                     ),
                     SizedBox(height: height * 0.02),
                     const RowText(text: "Amount"),
@@ -333,26 +351,57 @@ class _AddJVTransactionState extends State<AddJVTransaction> {
                     SubmitButton(
                       text: addOrEdit ? "Add Entry" : "Edit Entry",
                       onSubmit: () {
-                        Navigator.pop(context);
-                        setState(
-                          () {
-                            function(
-                              {
-                                "jv_no": jvNo,
-                                "transfer_date": formatDate(transferDate),
-                                "amount": amount,
-                                "credit": credit,
-                                "debit": debit,
-                                "narration": narration,
-                              },
-                            );
-                            jvNo = "";
-                            transferDate = DateTime.now();
-                            narration = "";
-                            credit = "";
-                            debit = "";
-                          },
-                        );
+                        if (credit == "") {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Credit is a mandatory field."),
+                            ),
+                          );
+                        } else if (debit == "") {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Debit is a mandatory field."),
+                            ),
+                          );
+                        } else if (amount == "" || amount == "0") {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Amount can't be zero."),
+                            ),
+                          );
+                        } else if (credit == debit) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  "Same Credit and Debit values are not allowed."),
+                            ),
+                          );
+                        } else {
+                          Navigator.pop(context);
+                          setState(
+                            () {
+                              function(
+                                {
+                                  "jv_no": jvNo,
+                                  "transfer_date": transferDate == ""
+                                      ? transferDate
+                                      : formatDate(transferDate),
+                                  "amount": amount,
+                                  "credit": credit,
+                                  "debit": debit,
+                                  "narration": narration,
+                                },
+                              );
+                              jvNo = "";
+                              transferDate = "";
+                              narrationController.text = "";
+                              amountController.text = "";
+                              narration = "";
+                              credit = "";
+                              debit = "";
+                            },
+                          );
+                        }
                       },
                     ),
                   ],

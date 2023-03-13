@@ -3,10 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:keepbilling/api/transaction.dart';
 import 'package:keepbilling/screens/transactionPages/voucher.dart';
 import 'package:keepbilling/widgets/formPages/titleText.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../api/master.dart';
 import '../../../model/voucher.dart';
+import '../../../provider/authenticationProvider.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/functions.dart';
 import '../../../widgets/formPages/datePicker.dart';
 import '../../../widgets/formPages/dropdownSelector.dart';
 import '../../../widgets/formPages/customField.dart';
@@ -29,6 +32,8 @@ class _AddVoucherTransactionQLState extends State<AddVoucherTransactionQL> {
   String userId = "";
   String companyId = "";
   String cashId = "";
+  String product = "";
+
   List partyList = [];
   List ledgers = [];
 
@@ -41,15 +46,15 @@ class _AddVoucherTransactionQLState extends State<AddVoucherTransactionQL> {
   String party = "";
   int partyIndex = 0;
   String totalAmount = "";
-  DateTime voucherDate = DateTime.now();
+  dynamic voucherDate = "";
 
   final _formKey1 = GlobalKey<FormState>();
-  final _formKey2 = GlobalKey<FormState>();
+  // final _formKey2 = GlobalKey<FormState>();
   final _formKey3 = GlobalKey<FormState>();
   final _formKey4 = GlobalKey<FormState>();
-  final _formKey5 = GlobalKey<FormState>();
+  // final _formKey5 = GlobalKey<FormState>();
   final _formKey6 = GlobalKey<FormState>();
-  final _formKey7 = GlobalKey<FormState>();
+  // final _formKey7 = GlobalKey<FormState>();
 
   TextEditingController gstController = TextEditingController(text: "0");
   TextEditingController tAmountController = TextEditingController(text: "0");
@@ -59,12 +64,23 @@ class _AddVoucherTransactionQLState extends State<AddVoucherTransactionQL> {
 
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    cashId = prefs.getString('cashId') ?? "";
-    ledgers = await service.fetchLedgerList(userId, companyId);
-    partyList = await serviceM.fetchDataList(userId, companyId, "party");
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    cashId = Provider.of<AuthenticationProvider>(context, listen: false).cashid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+    try {
+      ledgers = await service.fetchLedgerList(userId, companyId,product);
+      partyList = await serviceM.fetchDataList(userId, companyId, "party",product);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
     setState(() => isLoading = false);
   }
 
@@ -135,14 +151,15 @@ class _AddVoucherTransactionQLState extends State<AddVoucherTransactionQL> {
                       }),
                       items: List.generate(ledgerList.length,
                           (index) => ledgerList[index]["ledger"]),
-                      dropDownValue: ledgerList[partyIndex]["ledger"],
+                      dropDownValue: ledgerList[ledgerIndex]["ledger"],
                     ),
                     SizedBox(height: height * 0.02),
                     const RowText(text: "Voucher Date"),
                     CupertinoDateSelector(
-                      initialDate: voucherDate,
+                      initialDate: DateTime.now(),
                       setFunction: (value) =>
                           setState(() => voucherDate = value),
+                      reset: () => setState(() => voucherDate = ""),
                     ),
                     SizedBox(height: height * 0.02),
                     const RowText(text: "Amount"),
@@ -237,9 +254,9 @@ class _AddVoucherTransactionQLState extends State<AddVoucherTransactionQL> {
   }
 
   void updateValues() async {
-    int gst = int.parse(gstPercent == "" ? "0" : gstPercent);
-    int amt = int.parse(amount == "" ? "0" : amount);
-    int tAmount = (amt * (1 + gst / 100)).toInt();
+    double gst = double.parse(gstPercent == "" ? "0" : gstPercent);
+    double amt = double.parse(amount == "" ? "0" : amount);
+    double tAmount = (amt * (1 + gst / 100)).toDouble();
     setState(() {
       totalAmount = tAmount.toString();
       tAmountController.text = totalAmount;
@@ -257,7 +274,7 @@ class _AddVoucherTransactionQLState extends State<AddVoucherTransactionQL> {
       return await service.addVoucher(Voucher(
         userid: userId,
         companyid: companyId,
-        product: '1',
+        product: product,
         cashId: cashId,
         amount: amount,
         gstApplicable: gstApplicable,
@@ -266,7 +283,7 @@ class _AddVoucherTransactionQLState extends State<AddVoucherTransactionQL> {
         narration: narration,
         party: party,
         totalAmount: totalAmount,
-        voucherDate: voucherDate,
+        voucherDate: voucherDate == "" ? voucherDate : formatDate(voucherDate),
       ));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

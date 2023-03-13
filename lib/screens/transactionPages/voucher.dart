@@ -3,9 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:keepbilling/api/transaction.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
 import 'package:keepbilling/screens/transactionPages/editPages/editVoucher.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../utils/constants.dart';
 import '../../api/master.dart';
+import '../../provider/authenticationProvider.dart';
 import '../../widgets/infoPages/CustomExpansionTile.dart';
 import '../../widgets/infoPages/paddedText.dart';
 import '../searchBarDelegate.dart';
@@ -29,21 +31,45 @@ class _VoucherTransactionState extends State<VoucherTransaction> {
 
   String companyId = "";
   String userId = "";
+  String product = "";
 
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    dataList = await service.fetchDataList("voucher", userId, companyId);
-    ledgers = await service.fetchLedgerList(userId, companyId);
-    partyList = await serviceM.fetchDataList(userId, companyId, "party");
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+    try {
+      dataList =
+          await service.fetchDataList("voucher", userId, companyId, product);
+      ledgers = await service.fetchLedgerList(userId, companyId, product);
+      partyList =
+          await serviceM.fetchDataList(userId, companyId, "party", product);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
     setState(() => isLoading = false);
   }
 
   Future getUpdatedData() async {
     setState(() => isLoading = true);
-    dataList = await service.fetchDataList("voucher", userId, companyId);
+    try {
+      dataList =
+          await service.fetchDataList("voucher", userId, companyId, product);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
     setState(() => isLoading = false);
   }
 
@@ -86,7 +112,9 @@ class _VoucherTransactionState extends State<VoucherTransaction> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => AddVoucherTransaction(
-                        partyList: parties, ledgerList: ledgerList),
+                        partyList: parties,
+                        ledgerList: ledgerList,
+                        product: product),
                   ),
                 );
                 if (navigationResult == "update") {
@@ -142,6 +170,7 @@ class _VoucherTransactionState extends State<VoucherTransaction> {
                                       data: e,
                                       ledgerList: ledgerList,
                                       partyList: parties,
+                                      product: product,
                                     ),
                                   ),
                                 );

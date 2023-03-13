@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
@@ -19,137 +20,160 @@ class DashboardService {
     return parsed.map<Cheque>((json) => Cheque.fromMap(json)).toList();
   }
 
-  Future fetchAllAccounts(String userId, String companyId) async {
+  Future fetchAllAccounts(String userId, String companyId,String product) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse(service.backend + service.quickViews),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(
-          <String, String>{
-            "userid": userId,
-            "companyid": companyId,
-            "product": "1"
-          },
-        ),
-      );
+      final response = await http
+          .post(
+            Uri.parse(service.backend + service.quickViews),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": "1"
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
     return responseJson["response_data"].cast<String, dynamic>();
   }
 
-  Future fetchChequeList(String userId, String companyId) async {
+  Future fetchChequeList(String userId, String companyId,String product) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse(service.backend + service.chequeList),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(
-          <String, String>{
-            "userid": userId,
-            "companyid": companyId,
-            "product": "1"
-          },
-        ),
-      );
+      final response = await http
+          .post(
+            Uri.parse(service.backend + service.chequeList),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": "1"
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
     return decodeChequeData(responseJson["response_data"]);
   }
 
-    Future fetchQuickLinks(String userId, String companyId) async {
+  Future fetchQuickLinks(String userId, String companyId,String product) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse(service.backend + service.quickLinks),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(
-          <String, String>{
-            "userid": userId,
-            "companyid": companyId,
-            "product": "1"
-          },
-        ),
-      );
+      final response = await http
+          .post(
+            Uri.parse(service.backend + service.quickLinks),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": "1"
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
-
-    return responseJson["response_data"];
+    if (responseJson["response_data"] == "") {
+      return [];
+    } else {
+      return responseJson["response_data"];
+    }
   }
 
-  Future fetchToDoList(String userId, String companyId) async {
+  Future fetchToDoList(String userId, String companyId,String product) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse(service.backend + service.todoList),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(
-          <String, String>{
-            "userid": userId,
-            "companyid": companyId,
-            "product": "1"
-          },
-        ),
-      );
+      final response = await http
+          .post(
+            Uri.parse(service.backend + service.todoList),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": "1"
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
     return decodeToDoData(responseJson["response_data"]);
   }
 
-  Future deleteToDo(String todoId, String userId, String companyId) async {
+  Future deleteToDo(String todoId, String userId, String companyId,String product) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse(service.backend + service.editToDoList),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(
-          <String, String>{
-            "userid": userId,
-            "companyid": companyId,
-            "product": "1",
-            "todo_id": todoId,
-          },
-        ),
-      );
+      final response = await http
+          .post(
+            Uri.parse(service.backend + service.editToDoList),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": "1",
+                "todo_id": todoId,
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
     }
 
     return responseJson;

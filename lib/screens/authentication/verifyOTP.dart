@@ -124,6 +124,9 @@ class _VerifyOTPPageState extends State<VerifyOTPPage> {
               value["companyid"] != null &&
               value["cashid"] != null &&
               value["company_name"] != null) {
+            Provider.of<AuthenticationProvider>(context, listen: false)
+                .setCredentials(value["companyid"], value["cashid"],
+                    value["userid"], value["product"]);
             setUserData(
               value["userid"],
               value["username"],
@@ -140,11 +143,10 @@ class _VerifyOTPPageState extends State<VerifyOTPPage> {
             );
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 content: Text("OTP verified and logged in successfully.")));
-          } else if (value["type"] == "success" &&
-              value["userid"] == null &&
-              value["username"] == null &&
-              value["companyid"] == null &&
-              value["cashid"] == null &&
+          } else if (value["type"] == "success" && value["userid"] == null ||
+              value["username"] == null ||
+              value["companyid"] == null ||
+              value["cashid"] == null ||
               value["company_name"] == null) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(

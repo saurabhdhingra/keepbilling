@@ -16,8 +16,9 @@ import '../../../widgets/formPages/submitButton.dart';
 class AddQuotationMaster extends StatefulWidget {
   final List partyList;
   final List itemList;
+  final String product;
   const AddQuotationMaster(
-      {Key? key, required this.partyList, required this.itemList})
+      {Key? key, required this.partyList, required this.itemList, required this.product})
       : super(key: key);
 
   @override
@@ -30,7 +31,7 @@ class _AddQuotationMasterState extends State<AddQuotationMaster> {
 
   String partyId = "";
   int partyIndex = 0;
-  DateTime buildDate = DateTime.now();
+  dynamic buildDate = "";
   String subject = "";
   String grandTotal = "";
   String otherCharges = "";
@@ -145,6 +146,7 @@ class _AddQuotationMasterState extends State<AddQuotationMaster> {
               CupertinoDateSelector(
                 initialDate: buildDate,
                 setFunction: (value) => setState(() => buildDate = value),
+                showReset: false,
               ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Subject"),
@@ -417,50 +419,45 @@ class _AddQuotationMasterState extends State<AddQuotationMaster> {
                       readOnly: true,
                     ),
                     SizedBox(height: height * 0.02),
-                    Row(
-                      children: [
-                        SizedBox(width: width * 0.7),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            if (int.parse(itemAmount == "" ? "0" : itemAmount) <
-                                0) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          "Amount can't be zero or negative")));
-                            } else {
-                              setState(
-                                () {
-                                  function(
-                                    {
-                                      "name": itemName,
-                                      "qty": itemQty,
-                                      "descrip": itemDescription,
-                                      "rate": itemRate,
-                                      "amt": itemAmount,
-                                      "discount": itemDiscount,
-                                      "tax": itemTax,
-                                    },
-                                  );
-                                  itemName = "";
-                                  itemDescription = "";
-                                  itemQty = "0";
-                                  itemAmount = "0";
-                                  itemDiscount = "0";
-                                  itemRate = "";
-                                  itemTax = "";
-                                  rateController.text = "0";
-                                  taxController.text = "0";
-                                  amountController.text = "0";
+                    SubmitButton(
+                      text: addOrEdit ? "Add Entry" : "Edit Entry",
+                      onSubmit: () {
+                        Navigator.pop(context);
+                        if (double.parse(itemAmount == "" ? "0" : itemAmount) <
+                            0) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      "Amount can't be zero or negative")));
+                        } else {
+                          setState(
+                            () {
+                              function(
+                                {
+                                  "name": itemName,
+                                  "qty": itemQty,
+                                  "descrip": itemDescription,
+                                  "rate": itemRate,
+                                  "amt": itemAmount,
+                                  "discount": itemDiscount,
+                                  "tax": itemTax,
                                 },
                               );
-                              updateMainValues();
-                            }
-                          },
-                          child: Text(addOrEdit ? "Add Entry" : "Edit Entry"),
-                        )
-                      ],
+                              itemName = "";
+                              itemDescription = "";
+                              itemQty = "0";
+                              itemAmount = "0";
+                              itemDiscount = "0";
+                              itemRate = "";
+                              itemTax = "";
+                              rateController.text = "0";
+                              taxController.text = "0";
+                              amountController.text = "0";
+                            },
+                          );
+                          updateMainValues();
+                        }
+                      },
                     ),
                   ],
                 ),
@@ -482,7 +479,7 @@ class _AddQuotationMasterState extends State<AddQuotationMaster> {
           Quotation(
             userid: userId,
             companyid: companyId,
-            product: '1',
+            product: widget.product,
             buildDate: buildDate,
             extraComment: extraComment,
             grandQty: grandQuantity,
@@ -503,9 +500,9 @@ class _AddQuotationMasterState extends State<AddQuotationMaster> {
   }
 
   int findItemIndex(String itemName) {
-    int ans = 1;
+    int ans = 0;
     for (int i = 0; i < widget.itemList.length; i++) {
-      if (widget.itemList[i]["item_name"] == itemName) {
+      if (widget.itemList[i]["id"] == itemName) {
         ans += i;
         break;
       }
@@ -514,25 +511,24 @@ class _AddQuotationMasterState extends State<AddQuotationMaster> {
   }
 
   void updateItemValues() {
-    int quantity = int.parse(itemQty == "" ? "0" : itemQty);
-    int rate = int.parse(itemRate == "" ? "0" : itemRate);
-    int discount = int.parse(itemDiscount == "" ? "0" : itemDiscount);
-    int tax = int.parse(itemTax == "" ? "0" : itemTax);
+    double quantity = double.parse(itemQty == "" ? "0" : itemQty);
+    double rate = double.parse(itemRate == "" ? "0" : itemRate);
+    double discount = double.parse(itemDiscount == "" ? "0" : itemDiscount);
+    double tax = double.parse(itemTax == "" ? "0" : itemTax);
     setState(() {
       itemAmount = (quantity * (rate * (1 - discount / 100)) * (1 + tax / 100))
-          .toInt()
           .toString();
       amountController.text = itemAmount;
     });
   }
 
   void updateMainValues() {
-    int oCharges = int.parse(otherCharges == "" ? "0" : otherCharges);
-    int qtySum = 0;
-    int totalSum = 0;
+    double oCharges = double.parse(otherCharges == "" ? "0" : otherCharges);
+    double qtySum = 0;
+    double totalSum = 0;
     for (int i = 0; i < items.length; i++) {
-      int qty = int.parse(items[i]["qty"]);
-      int amt = int.parse(items[i]["amt"]);
+      double qty = double.parse(items[i]["qty"]);
+      double amt = double.parse(items[i]["amt"]);
       qtySum += qty;
       totalSum += amt;
     }

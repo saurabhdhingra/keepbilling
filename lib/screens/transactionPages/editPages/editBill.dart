@@ -16,6 +16,7 @@ class EditBill extends StatefulWidget {
   final String userId;
   final String cashId;
   final String companyId;
+  final String product;
 
   final List paymentTerms;
   final List partyList;
@@ -32,6 +33,7 @@ class EditBill extends StatefulWidget {
     required this.userId,
     required this.cashId,
     required this.companyId,
+    required this.product,
   }) : super(key: key);
 
   @override
@@ -44,13 +46,13 @@ class _EditBillState extends State<EditBill> {
   String invoiceNo = "";
   String orderBy = "";
   String orderNo = "";
-  DateTime orderDate = DateTime.now();
-  DateTime invoiceDate = DateTime.now();
+  dynamic orderDate = "";
+  dynamic invoiceDate = "";
   String despatchNo = "";
   String despatchThrough = "";
   String paymentTerm = "";
   int paymentTermIndex = 0;
-  DateTime dueDate = DateTime.now();
+  dynamic dueDate = "";
   String deliveryNote = "";
   String deliveryType = "";
   String ewaybillNo = "";
@@ -105,7 +107,7 @@ class _EditBillState extends State<EditBill> {
   TextEditingController gTotalController = TextEditingController();
 
   final Map propeties = {
-    "title": "name",
+    "title": "item",
     "subtitle": "qty",
     "entries": [
       {"fieldName": "description", "fieldValue": "descrip"},
@@ -124,13 +126,19 @@ class _EditBillState extends State<EditBill> {
     invoiceNo = widget.data["s_invoice_no"] ?? widget.data["p_invoice_no"];
     orderBy = widget.data["order_by"] ?? "";
     orderNo = widget.data["order_no"] ?? "";
-    orderDate = DateTime.parse(widget.data["order_date"] ?? "2020-01-01");
-    invoiceDate = DateTime.parse(widget.data["inv_date"] ?? "2020-01-01");
+    orderDate = DateTime.parse(widget.data["order_date"] == ""
+        ? DateTime.now().toString()
+        : widget.data["order_date"]);
+    invoiceDate = DateTime.parse(widget.data["inv_date"] == ""
+        ? DateTime.now().toString()
+        : widget.data["inv_date"]);
     despatchNo = widget.data["despatch_no"] ?? "";
     despatchThrough = widget.data["thru"] ?? "";
     paymentTerm = widget.data["p_terms"] ?? "";
     paymentTermIndex = findPtermIndex(widget.data["p_terms"] ?? "");
-    dueDate = DateTime.parse(widget.data["due_date"] ?? "2020-01-01");
+    dueDate = DateTime.parse(widget.data["due_date"] == ""
+        ? DateTime.now().toString()
+        : widget.data["due_date"]);
     deliveryNote = widget.data["delivery_note"] ?? "";
     deliveryType = widget.data["delivery_type"] ?? "";
     ewaybillNo = widget.data["ewaybillno"] ?? "";
@@ -146,6 +154,7 @@ class _EditBillState extends State<EditBill> {
     extraDiscount = widget.data["extra_disc"] ?? "";
     round = widget.data["round_off_status"] ?? "";
     items = itemList(widget.data["item_array"]);
+    print(items);
     gTotalController = TextEditingController(text: grandTotal);
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
@@ -211,6 +220,7 @@ class _EditBillState extends State<EditBill> {
               CupertinoDateSelector(
                 initialDate: invoiceDate,
                 setFunction: (value) => setState(() => invoiceDate = value),
+                showReset: false,
               ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Order By"),
@@ -231,6 +241,7 @@ class _EditBillState extends State<EditBill> {
               CupertinoDateSelector(
                 initialDate: orderDate,
                 setFunction: (value) => setState(() => orderDate = value),
+                showReset: false,
               ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Despatch Number"),
@@ -382,6 +393,9 @@ class _EditBillState extends State<EditBill> {
                       child: ItemExpansionTile(
                         data: e,
                         properties: propeties,
+                        itemName: widget.itemList[findItemIndex(e["name"])]
+                                ["item_name"] ??
+                            "",
                         deleteFunc: () {
                           setState(() => items.remove(e));
                           updateMainValues();
@@ -435,6 +449,7 @@ class _EditBillState extends State<EditBill> {
                               setState(() => items = [...items, value]),
                           true),
                     );
+                    print(items);
                   },
                   child: const Text("Add item"),
                 ),
@@ -481,11 +496,12 @@ class _EditBillState extends State<EditBill> {
         "userid": widget.userId,
         "companyid": widget.companyId,
         "cash_id": widget.cashId,
-        "product": "1",
+        "product": widget.product,
         "bill_id": widget.data["id"],
         "bill_type": widget.data["s_invoice_no"] == null ? "P" : "S",
         "party": party,
-        "invoice_date": formatDate(invoiceDate),
+        "invoice_date":
+            invoiceDate == "" ? invoiceDate : formatDate(invoiceDate),
         "invoice_no": invoiceNo,
         "oldparty": widget.data["party_id"],
         "oldinvoice_date": widget.data["inv_date"],
@@ -493,11 +509,11 @@ class _EditBillState extends State<EditBill> {
             widget.data["p_invoice_no"] ?? widget.data["s_invoice_no"],
         "orderby": orderBy,
         "order_no": orderNo,
-        "order_date": formatDate(orderDate),
+        "order_date": orderDate == "" ? orderDate : formatDate(orderDate),
         "despatch_no": despatchNo,
         "despatch_through": despatchThrough,
         "payment_terms": paymentTerm,
-        "due_date": formatDate(dueDateCalc()),
+        "due_date": dueDate == "" ? dueDate : formatDate(dueDateCalc()),
         "delivery_note": deliveryNote,
         "delivery_type": deliveryType,
         "ewaybill_no": ewaybillNo,
@@ -572,7 +588,7 @@ class _EditBillState extends State<EditBill> {
                     const RowText(text: "Item Name"),
                     DropdownSelector(
                       setState: (value) => setState(() {
-                        itemName = itemListValues[value]["item_name"];
+                        itemName = itemListValues[value]["id"];
                         itemRate = itemListValues[value]["s_rate"];
                         itemTax = itemListValues[value]["tax"];
                         rateController.text = itemListValues[value]["s_rate"];
@@ -582,9 +598,12 @@ class _EditBillState extends State<EditBill> {
                       }),
                       items: List.generate(itemListValues.length,
                           (index) => itemListValues[index]["item_name"]),
-                      dropDownValue: itemListValues[itemNameIndex]["item_name"],
+                      dropDownValue: itemListValues[itemNameIndex == 0
+                          ? 0
+                          : itemNameIndex + 1]["item_name"],
                       scrollController: FixedExtentScrollController(
-                          initialItem: itemNameIndex),
+                          initialItem:
+                              itemNameIndex == 0 ? 0 : itemNameIndex + 1),
                     ),
                     SizedBox(height: height * 0.02),
                     const RowText(text: "Quantity"),
@@ -643,51 +662,47 @@ class _EditBillState extends State<EditBill> {
                       readOnly: true,
                     ),
                     SizedBox(height: height * 0.02),
-                    Row(
-                      children: [
-                        SizedBox(width: width * 0.7),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            if (int.parse(itemAmount == "" ? "0" : itemAmount) <
-                                0) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          "Amount can't be zero or negative")));
-                            } else {
-                              setState(
-                                () {
-                                  function(
-                                    {
-                                      "name": itemName,
-                                      "qty": itemQty,
-                                      "descrip": itemDescription,
-                                      "rate": itemRate,
-                                      "amt": itemAmount,
-                                      "discount": itemDiscount,
-                                      "tax": itemTax,
-                                    },
-                                  );
-                                  itemName = "";
-                                  itemDescription = "";
-                                  itemQty = "0";
-                                  itemAmount = "0";
-                                  itemDiscount = "0";
-                                  itemRate = "";
-                                  itemTax = "";
-                                  rateController.text = "0";
-                                  taxController.text = "0";
-                                  amountController.text = "0";
-                                },
-                              );
-                              updateMainValues();
-                            }
-                          },
-                          child: Text(addOrEdit ? "Add Entry" : "Edit Entry"),
-                        )
-                      ],
-                    ),
+                    SubmitButton(
+                        onSubmit: () {
+                          Navigator.pop(context);
+                          if (double.parse(
+                                  itemAmount == "" ? "0" : itemAmount) <
+                              0) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                        "Amount can't be zero or negative")));
+                          } else {
+                            setState(
+                              () {
+                                function(
+                                  {
+                                    "name": itemName,
+                                    "qty": itemQty,
+                                    "descrip": itemDescription,
+                                    "rate": itemRate,
+                                    "amt": itemAmount,
+                                    "discount": itemDiscount,
+                                    "tax": itemTax,
+                                  },
+                                );
+                                itemName = "";
+                                itemDescription = "";
+                                itemQty = "0";
+                                itemAmount = "0";
+                                itemDiscount = "0";
+                                itemRate = "";
+                                itemTax = "";
+                                itemNameIndex = 0;
+                                rateController.text = "0";
+                                taxController.text = "0";
+                                amountController.text = "0";
+                              },
+                            );
+                            updateMainValues();
+                          }
+                        },
+                        text: addOrEdit ? "Add Entry" : "Edit Entry")
                   ],
                 ),
               ),
@@ -739,7 +754,9 @@ class _EditBillState extends State<EditBill> {
         "qty": v["qnty"],
         "descrip": v["description"],
         "rate": v["rate"],
-        "amt": (double.parse(v["amt"]) + double.parse(v["tax_amt"])).toString(),
+        "amt": (double.parse(v["amt"]) + double.parse(v["tax_amt"]))
+            .toDouble()
+            .toString(),
         "discount": v["disc"],
         "tax": v["gst"]
       });
@@ -749,13 +766,12 @@ class _EditBillState extends State<EditBill> {
   }
 
   void updateItemValues() {
-    int quantity = int.parse(itemQty == "" ? "0" : itemQty);
-    int rate = int.parse(itemRate == "" ? "0" : itemRate);
-    int discount = int.parse(itemDiscount == "" ? "0" : itemDiscount);
-    int tax = int.parse(itemTax == "" ? "0" : itemTax);
+    double quantity = double.parse(itemQty == "" ? "0" : itemQty);
+    double rate = double.parse(itemRate == "" ? "0" : itemRate);
+    double discount = double.parse(itemDiscount == "" ? "0" : itemDiscount);
+    double tax = double.parse(itemTax == "" ? "0" : itemTax);
     setState(() {
       itemAmount = (quantity * (rate * (1 - discount / 100)) * (1 + tax / 100))
-          .toInt()
           .toString();
       amountController.text = itemAmount;
     });
@@ -769,7 +785,11 @@ class _EditBillState extends State<EditBill> {
         return orderDate;
       default:
         int days = int.parse(paymentTerm);
-        return orderDate.add(Duration(days: days));
+        if (orderDate != "") {
+          return orderDate.add(Duration(days: days));
+        } else {
+          return orderDate;
+        }
     }
   }
 
@@ -782,16 +802,15 @@ class _EditBillState extends State<EditBill> {
   }
 
   void updateMainValues() {
-    int oCharges = int.parse(otherCharges == "" ? "0" : otherCharges);
-    int eDiscount = int.parse(extraDiscount == "" ? "0" : extraDiscount);
-
-    int totalTax = 0;
-    int totalSum = 0;
+    double oCharges = double.parse(otherCharges == "" ? "0" : otherCharges);
+    double eDiscount = double.parse(extraDiscount == "" ? "0" : extraDiscount);
+    double totalTax = 0;
+    double totalSum = 0;
 
     for (int i = 0; i < items.length; i++) {
-      int amt = int.parse(items[i]["amt"]);
-      int tax = int.parse(items[i]["tax"]);
-      totalTax += (amt * (tax / 100)).toInt();
+      double amt = double.parse(items[i]["amt"]);
+      double tax = double.parse(items[i]["tax"]);
+      totalTax += (amt * (tax / 100));
       totalSum += amt;
     }
 

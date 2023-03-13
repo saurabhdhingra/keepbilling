@@ -13,7 +13,8 @@ import '../../../widgets/formPages/statusButton.dart';
 import '../../../widgets/formPages/submitButton.dart';
 
 class AddPartyMaster extends StatefulWidget {
-  const AddPartyMaster({Key? key}) : super(key: key);
+  final String product;
+  const AddPartyMaster({Key? key, required this.product}) : super(key: key);
 
   @override
   State<AddPartyMaster> createState() => _AddPartyMasterState();
@@ -383,7 +384,7 @@ class _AddPartyMasterState extends State<AddPartyMaster> {
               pan: pan,
               partyEmail1: partyEmail1,
               partyEmail2: partyEmail2,
-              product: "1",
+              product: widget.product,
               partyAddress: partyAddress,
               partnerlimit: partnerLimit,
               partyGst: partyGst,

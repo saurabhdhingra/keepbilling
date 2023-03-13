@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:keepbilling/api/master.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
 import 'package:keepbilling/screens/searchBarDelegate.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../provider/authenticationProvider.dart';
 import '/widgets/infoPages/CustomExpansionTile.dart';
 import '../../../utils/constants.dart';
 import '../../widgets/infoPages/paddedText.dart';
@@ -25,21 +27,47 @@ class _ItemMasterState extends State<ItemMaster> {
 
   String userId = "";
   String companyId = "";
+  String  product = "";
+
   MasterService service = MasterService();
+
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    dataList = await service.fetchDataList(userId, companyId, "item");
-    groups = await service.fetchDataList(userId, companyId, "allgroup");
-    units = await service.fetchDataList(userId, companyId, "allunit");
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+    try {
+      dataList = await service.fetchDataList(userId, companyId, "item",product);
+      groups = await service.fetchDataList(userId, companyId, "allgroup",product);
+      units = await service.fetchDataList(userId, companyId, "allunit",product);
+    } catch (e) {
+      dataList = [];
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
     setState(() => isLoading = false);
   }
 
   Future getUpdatedData() async {
     setState(() => isLoading = true);
-    dataList = await service.fetchDataList(userId, companyId, "item");
+    try {
+      dataList = await service.fetchDataList(userId, companyId, "item",product);
+    } catch (e) {
+      dataList = [];
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
     setState(() => isLoading = false);
   }
 
@@ -66,7 +94,6 @@ class _ItemMasterState extends State<ItemMaster> {
     final Map propeties = {
       "title": "item_name",
       "subtitle": "item_stock",
-       
       "entries": [
         {"fieldName": "Type", "fieldValue": "item_type"},
         {"fieldName": "HSN_SAC", "fieldValue": "hsn_sac"},
@@ -84,6 +111,7 @@ class _ItemMasterState extends State<ItemMaster> {
                     builder: (context) => AddItemMaster(
                       groups: groupsList,
                       units: unitsList,
+                      product: product,
                     ),
                   ),
                 );
@@ -139,6 +167,7 @@ class _ItemMasterState extends State<ItemMaster> {
                                       groups: groupsList,
                                       units: unitsList,
                                       data: e,
+                                      product: product,
                                     ),
                                   ),
                                 );

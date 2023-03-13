@@ -3,9 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
 import 'package:keepbilling/screens/reports/hsnSac.dart';
 import 'package:keepbilling/utils/functions.dart';
+import 'package:keepbilling/widgets/formPages/submitButton.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../api/master.dart';
+import '../../../provider/authenticationProvider.dart';
 import '../../../utils/constants.dart';
 import '../../../widgets/formPages/datePicker.dart';
 import '../../../widgets/formPages/dropdownSelector.dart';
@@ -24,21 +27,37 @@ class _HSNFiltersState extends State<HSNFilters> {
 
   String hsn = "";
   int hsnIndex = 0;
-  DateTime fromDate = DateTime.now();
-  DateTime toDate = DateTime.now();
+  dynamic fromDate = "";
+  dynamic toDate = "";
 
   List itemList = [];
 
   String userId = "";
   String companyId = "";
+  String product = "";
+
   MasterService service = MasterService();
 
   Future getData() async {
     setState(() => isLoading = true);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId') ?? "";
-    companyId = prefs.getString('companyId') ?? "";
-    itemList = await service.fetchDataList(userId, companyId, "item");
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+    product =
+        Provider.of<AuthenticationProvider>(context, listen: false).product;
+    try {
+      itemList =
+          await service.fetchDataList(userId, companyId, "item", product);
+    } catch (e) {
+      itemList = [];
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
     setState(() => isLoading = false);
   }
 
@@ -82,7 +101,7 @@ class _HSNFiltersState extends State<HSNFilters> {
                       }),
                       items: List.generate(items.length, (index) {
                         if (index == 0 || items[index]["hsn_sac"] == "") {
-                          return "Unselected";
+                          return;
                         } else {
                           return items[index]["hsn_sac"];
                         }
@@ -92,36 +111,36 @@ class _HSNFiltersState extends State<HSNFilters> {
                     SizedBox(height: height * 0.02),
                     const RowText(text: "Start Date"),
                     CupertinoDateSelector(
-                      initialDate: fromDate,
+                      initialDate: DateTime.now(),
                       setFunction: (value) => setState(() => fromDate = value),
+                      reset: () => setState(() => fromDate = ""),
                     ),
                     SizedBox(height: height * 0.02),
                     const RowText(text: "End Date"),
                     CupertinoDateSelector(
-                      initialDate: toDate,
+                      initialDate: DateTime.now(),
                       setFunction: (value) => setState(() => toDate = value),
+                      reset: () => setState(() => toDate = ""),
                     ),
                     SizedBox(height: height * 0.02),
-                    Row(
-                      children: [
-                        SizedBox(width: width * 0.8),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => HSNreport(
-                                  hsn: hsn,
-                                  fromDate: formatDate(fromDate),
-                                  toDate: formatDate(toDate),
-                                ),
-                              ),
-                            );
-                          },
-                          child: const Text("Submit"),
-                        )
-                      ],
-                    ),
+                    SubmitButton(
+                      text: "Get Report",
+                      onSubmit: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HSNreport(
+                              hsn: hsn,
+                              fromDate: fromDate == ""
+                                  ? fromDate
+                                  : formatDate(fromDate),
+                              toDate:
+                                  toDate == "" ? toDate : formatDate(toDate),
+                            ),
+                          ),
+                        );
+                      },
+                    )
                   ],
                 ),
               ),
