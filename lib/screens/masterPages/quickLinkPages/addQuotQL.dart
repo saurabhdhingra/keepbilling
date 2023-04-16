@@ -32,7 +32,7 @@ class _AddQuotationMasterQLState extends State<AddQuotationMasterQL> {
 
   String partyId = "";
   int partyIndex = 0;
-  dynamic buildDate = "";
+  dynamic buildDate = DateTime.now();
   String subject = "";
   String grandTotal = "";
   String otherCharges = "";

@@ -23,17 +23,21 @@ class CustomExpansionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var width = SizeConfig.getWidth(context);
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20.0),
-      child: ExpansionTile(
-        title: Text(data["${properties["title"]}"] ?? ""),
-        subtitle: Text(data["${properties["subtitle"]}"]),
-        textColor: Colors.black87,
-        iconColor: Colors.black87,
-        backgroundColor: const Color.fromARGB(255, 16, 196, 160),
-        expandedAlignment: Alignment.centerLeft,
-        expandedCrossAxisAlignment: CrossAxisAlignment.start,
-        children: fields(properties["entries"], width),
+    var height = SizeConfig.getHeight(context);
+    return Padding(
+      padding: EdgeInsets.fromLTRB(0, 0, 0, height * 0.005),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20.0),
+        child: ExpansionTile(
+          title: Text(data["${properties["title"]}"] ?? ""),
+          subtitle: Text(data["${properties["subtitle"]}"]),
+          textColor: Colors.black87,
+          iconColor: Colors.black87,
+          backgroundColor: const Color.fromARGB(255, 16, 196, 160),
+          expandedAlignment: Alignment.centerLeft,
+          expandedCrossAxisAlignment: CrossAxisAlignment.start,
+          children: fields(properties["entries"], width),
+        ),
       ),
     );
   }

@@ -18,7 +18,10 @@ class AddQuotationMaster extends StatefulWidget {
   final List itemList;
   final String product;
   const AddQuotationMaster(
-      {Key? key, required this.partyList, required this.itemList, required this.product})
+      {Key? key,
+      required this.partyList,
+      required this.itemList,
+      required this.product})
       : super(key: key);
 
   @override
@@ -31,7 +34,7 @@ class _AddQuotationMasterState extends State<AddQuotationMaster> {
 
   String partyId = "";
   int partyIndex = 0;
-  dynamic buildDate = "";
+  dynamic buildDate = DateTime.now();
   String subject = "";
   String grandTotal = "";
   String otherCharges = "";
@@ -245,15 +248,15 @@ class _AddQuotationMasterState extends State<AddQuotationMaster> {
                 controller: gQuantityController,
                 readOnly: true,
               ),
-              SizedBox(height: height * 0.02),
-              const RowText(text: "Other Charges"),
-              CustomField(
-                setValue: (value) {
-                  setState(() => otherCharges = value);
-                  updateMainValues();
-                },
-                formKey: _formKey5,
-              ),
+              // SizedBox(height: height * 0.02),
+              // const RowText(text: "Other Charges"),
+              // CustomField(
+              //   setValue: (value) {
+              //     setState(() => otherCharges = value);
+              //     updateMainValues();
+              //   },
+              //   formKey: _formKey5,
+              // ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Grand Total"),
               CustomField(

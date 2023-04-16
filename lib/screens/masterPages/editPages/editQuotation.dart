@@ -22,7 +22,8 @@ class EditQuotationMaster extends StatefulWidget {
       {Key? key,
       required this.partyList,
       required this.itemList,
-      required this.data, required this.product})
+      required this.data,
+      required this.product})
       : super(key: key);
 
   @override
@@ -257,15 +258,15 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
                 controller: gQuantityController,
                 readOnly: true,
               ),
-              SizedBox(height: height * 0.02),
-              const RowText(text: "Other Charges"),
-              CustomField(
-                setValue: (value) {
-                  setState(() => otherCharges = value);
-                  updateMainValues();
-                },
-                formKey: _formKey5,
-              ),
+              // SizedBox(height: height * 0.02),
+              // const RowText(text: "Other Charges"),
+              // CustomField(
+              //   setValue: (value) {
+              //     setState(() => otherCharges = value);
+              //     updateMainValues();
+              //   },
+              //   formKey: _formKey5,
+              // ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Grand Total"),
               CustomField(
@@ -494,6 +495,7 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
         "oldparty_id": widget.data["party_id"],
         "party_id": partyId,
         "build_date": buildDate == "" ? buildDate : formatDate(buildDate),
+        "oldbuild_date" : widget.data["build_date"],
         "subject": subject,
         "grandtotal": grandTotal,
         "extra_comment": extraComment,
@@ -547,15 +549,6 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
     return ans;
   }
 
-  void updateItemValues() {
-    double quantity = double.parse(itemQty == "" ? "0" : itemQty);
-    double rate = double.parse(itemRate == "" ? "0" : itemRate);
-    setState(() {
-      itemAmount = (quantity * rate).toDouble().toString();
-      amountController.text = itemAmount;
-    });
-  }
-
   Map itemList(List items) {
     Map<String, Map> answer = {};
     for (int i = 0; i < items.length; i++) {
@@ -580,20 +573,31 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
     return ans.toString();
   }
 
+  void updateItemValues() {
+    double quantity = double.parse(itemQty == "" ? "0" : itemQty);
+    double rate = double.parse(itemRate == "" ? "0" : itemRate);
+    setState(() {
+      itemAmount = (quantity * rate).toDouble().toString();
+      amountController.text = itemAmount;
+    });
+  }
+
   void updateMainValues() {
-    double oCharges = double.parse(otherCharges == "" ? "0" : otherCharges);
     double qtySum = 0;
     double totalSum = 0;
+
     for (int i = 0; i < items.length; i++) {
       double qty = double.parse(items[i]["qntty"]);
       double amt = double.parse(items[i]["amt"]);
+      double discount = double.parse(items[i]["disc"]);
+      double tax = double.parse(items[i]["gst"]);
       qtySum += qty;
-      totalSum += amt;
+      totalSum += amt * (1 - discount / 100) * (1 + tax / 100);
     }
 
     setState(() {
       grandQuantity = qtySum.toString();
-      grandTotal = (totalSum + oCharges).toString();
+      grandTotal = totalSum.toString();
 
       gQuantityController.text = grandQuantity;
       gTotalController.text = grandTotal;
