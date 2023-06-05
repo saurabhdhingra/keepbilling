@@ -13,9 +13,11 @@ import '../../../utils/constants.dart';
 
 class QuickView extends StatelessWidget {
   final Map data;
+  final bool isTab;
   const QuickView({
     Key? key,
     required this.data,
+    required this.isTab,
   }) : super(key: key);
 
   @override
@@ -147,8 +149,8 @@ class QuickView extends StatelessWidget {
             isFirst ? width * 0.05 : 0, 0, isLast ? width * 0.05 : 0, 0),
         child: Container(
           padding: EdgeInsets.fromLTRB(0, 0, 0, width * 0.02),
-          width: width * 0.9,
-          height: height * 0.3,
+          width: isTab ? width * 0.5 : width * 0.9,
+          height: isTab ? height * 0.27 : height * 0.3,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(
               Radius.circular(height * 0.02),
@@ -182,7 +184,7 @@ class QuickView extends StatelessWidget {
                       width: width * 0.03,
                     ),
                     SizedBox(
-                      height: height * 0.032,
+                      height: isTab ? height * 0.03 : height * 0.032,
                       child: FittedBox(
                         child: Text(
                           title,
@@ -198,7 +200,7 @@ class QuickView extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: height * 0.03),
+              SizedBox(height: isTab ? height * 0.015 : height * 0.03),
               SizedBox(
                 height: height * 0.14,
                 child: Align(
@@ -229,7 +231,7 @@ class QuickView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       SizedBox(
-                        height: height * 0.032,
+                        height: isTab ? height * 0.026 : height * 0.032,
                         child: FittedBox(
                           child: Text(
                             '  ${data[index]["name"]}',
@@ -241,7 +243,7 @@ class QuickView extends StatelessWidget {
                         ),
                       ),
                       SizedBox(
-                        height: height * 0.032,
+                        height: isTab ? height * 0.028 : height * 0.032,
                         child: FittedBox(
                           child: Text(
                             '${data[index]["balance"]}   ',
@@ -267,7 +269,7 @@ class QuickView extends StatelessWidget {
     return Align(
       alignment: Alignment.centerRight,
       child: SizedBox(
-        height: height * 0.065,
+        height: isTab ? height * 0.06 : height * 0.065,
         child: FittedBox(
           child: Text(
             "${data[key].round()} ",

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/api/transaction.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
+import 'package:keepbilling/screens/transactionPages/addPages/outstandingPayment.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../utils/constants.dart';
+import '../../api/master.dart';
 import '../../provider/authenticationProvider.dart';
 import '../../widgets/formPages/statusButton.dart';
 import '../../widgets/infoPages/CustomExpansionTile.dart';
@@ -26,12 +28,14 @@ class _OutstandingTransactionState extends State<OutstandingTransaction> {
 
   List saleList = [];
   List purchaseList = [];
+  List partyList = [];
 
   String companyId = "";
   String userId = "";
   String product = "";
 
   TransactionsService service = TransactionsService();
+  MasterService serviceM = MasterService();
 
   Future getData() async {
     setState(() => isLoading = true);
@@ -41,8 +45,12 @@ class _OutstandingTransactionState extends State<OutstandingTransaction> {
     product =
         Provider.of<AuthenticationProvider>(context, listen: false).product;
     try {
-      saleList = await service.fetchOutstanding("S", userId, companyId,product);
-      purchaseList = await service.fetchOutstanding("P", userId, companyId,product);
+      saleList =
+          await service.fetchOutstanding("S", userId, companyId, product);
+      purchaseList =
+          await service.fetchOutstanding("P", userId, companyId, product);
+      partyList =
+          await serviceM.fetchDataList(userId, companyId, "party", product);
       dataList = saleList;
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -51,7 +59,41 @@ class _OutstandingTransactionState extends State<OutstandingTransaction> {
         ),
       );
     }
-    
+
+    setState(() => isLoading = false);
+  }
+
+  Future updateSaleData() async {
+    setState(() => isLoading = true);
+
+    try {
+      saleList =
+          await service.fetchOutstanding("S", userId, companyId, product);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
+    setState(() => isLoading = false);
+  }
+
+  Future updatePurchaseData() async {
+    setState(() => isLoading = true);
+
+    try {
+      purchaseList =
+          await service.fetchOutstanding("P", userId, companyId, product);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
     setState(() => isLoading = false);
   }
 
@@ -73,7 +115,7 @@ class _OutstandingTransactionState extends State<OutstandingTransaction> {
       "subtitle": "invoice_date",
       "entries": [
         {"fieldName": "Amount", "fieldValue": "amount"},
-        {"fieldName": "Party ID", "fieldValue": "party_id"},
+        {"fieldName": "Party", "fieldValue": "party_name"},
       ]
     };
     return isLoading
@@ -131,15 +173,42 @@ class _OutstandingTransactionState extends State<OutstandingTransaction> {
                         ),
                       ],
                     ),
+                    SizedBox(height: height * 0.02),
                     ...dataList.map(
                       (e) {
+                        String partyName = findPartyName(e["party_id"]);
                         return Padding(
                           padding: EdgeInsets.fromLTRB(
                               width * 0.02, 0, width * 0.02, 0),
                           child: Theme(
-                              data: theme,
-                              child: CustomExpansionTile(
-                                  data: e, properties: propeties)),
+                            data: theme,
+                            child: CustomExpansionTile(
+                              data: e,
+                              properties: propeties,
+                              partyName: partyName,
+                              payAction: () async {
+                                var navigationResult = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PaymentPage(
+                                      partyId: e["party_id"],
+                                      billType: e["bill_type"],
+                                      partyName: partyName,
+                                      receivable: listName == "Sale",
+                                      selected: e,
+                                    ),
+                                  ),
+                                );
+                                if (navigationResult == "update" &&
+                                    listName == "Sale") {
+                                  updateSaleData();
+                                } else if (navigationResult == "update" &&
+                                    listName == "Purchase") {
+                                  updatePurchaseData();
+                                }
+                              },
+                            ),
+                          ),
                         );
                       },
                     ),
@@ -149,5 +218,16 @@ class _OutstandingTransactionState extends State<OutstandingTransaction> {
               ),
             ),
           );
+  }
+
+  String findPartyName(String partyId) {
+    String ans = "";
+    for (int i = 0; i < partyList.length; i++) {
+      if (partyList[i]["id"] == partyId) {
+        ans = partyList[i]["party_name"];
+        break;
+      }
+    }
+    return ans;
   }
 }

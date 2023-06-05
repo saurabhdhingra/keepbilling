@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/api/master.dart';
+import 'package:keepbilling/responsive/screen_type_layout.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,7 +31,7 @@ class _QuotationMasterState extends State<QuotationMaster> {
   String product = "";
 
   MasterService service = MasterService();
-  
+
   Future getData() async {
     setState(() => isLoading = true);
     userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
@@ -39,9 +40,12 @@ class _QuotationMasterState extends State<QuotationMaster> {
     product =
         Provider.of<AuthenticationProvider>(context, listen: false).product;
     try {
-      dataList = await service.fetchDataList(userId, companyId, "quotation",product);
-      partyList = await service.fetchDataList(userId, companyId, "party",product);
-      itemList = await service.fetchDataList(userId, companyId, "item",product);
+      dataList =
+          await service.fetchDataList(userId, companyId, "quotation", product);
+      partyList =
+          await service.fetchDataList(userId, companyId, "party", product);
+      itemList =
+          await service.fetchDataList(userId, companyId, "item", product);
     } catch (e) {
       dataList = [];
       partyList = [];
@@ -60,7 +64,8 @@ class _QuotationMasterState extends State<QuotationMaster> {
   Future getUpdatedData() async {
     setState(() => isLoading = true);
     try {
-      dataList = await service.fetchDataList(userId, companyId, "quotation",product);
+      dataList =
+          await service.fetchDataList(userId, companyId, "quotation", product);
     } catch (e) {
       dataList = [];
       // ignore: use_build_context_synchronously
@@ -106,7 +111,8 @@ class _QuotationMasterState extends State<QuotationMaster> {
                   MaterialPageRoute(
                     builder: (context) => AddQuotationMaster(
                       partyList: partyList,
-                      itemList: itemList,product: product,
+                      itemList: itemList,
+                      product: product,
                     ),
                   ),
                 );
@@ -151,25 +157,48 @@ class _QuotationMasterState extends State<QuotationMaster> {
                               width * 0.02, 0, width * 0.02, 0),
                           child: Theme(
                             data: theme,
-                            child: CustomExpansionTile(
-                              data: e,
-                              properties: propeties,
-                              editAction: () async {
-                                var navigationResult = await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => EditQuotationMaster(
-                                      itemList: itemList,
-                                      partyList: partyList,
-                                      data: e,
-                                      product: product,
+                            child: ScreenTypeLayout(
+                              mobile: CustomExpansionTile(
+                                data: e,
+                                properties: propeties,
+                                editAction: () async {
+                                  var navigationResult = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EditQuotationMaster(
+                                        itemList: itemList,
+                                        partyList: partyList,
+                                        data: e,
+                                        product: product,
+                                      ),
                                     ),
-                                  ),
-                                );
-                                if (navigationResult == "update") {
-                                  getUpdatedData();
-                                }
-                              },
+                                  );
+                                  if (navigationResult == "update") {
+                                    getUpdatedData();
+                                  }
+                                },
+                              ),
+                              tablet: CustomExpansionTile(
+                                data: e,
+                                properties: propeties,
+                                isTab: true,
+                                editAction: () async {
+                                  var navigationResult = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EditQuotationMaster(
+                                        itemList: itemList,
+                                        partyList: partyList,
+                                        data: e,
+                                        product: product,
+                                      ),
+                                    ),
+                                  );
+                                  if (navigationResult == "update") {
+                                    getUpdatedData();
+                                  }
+                                },
+                              ),
                             ),
                           ),
                         );

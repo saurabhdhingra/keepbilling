@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:keepbilling/provider/authenticationProvider.dart';
+import 'package:keepbilling/responsive/screen_type_layout.dart';
 import 'package:keepbilling/screens/authentication/sendOTP.dart';
 import 'package:keepbilling/screens/navScreen.dart';
 import 'package:keepbilling/widgets/formPages/customField.dart';
@@ -36,22 +37,44 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     var height = SizeConfig.getHeight(context);
     var width = SizeConfig.getWidth(context);
-    return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: height * 0.1),
-              imageLogo(width),
-              SizedBox(height: height * 0.08),
-              passKeyField(width, height),
-              SizedBox(height: height * 0.08),
-              logInButton(context, height, width),
-              SizedBox(height: height * 0.06),
-              accountLogin(),
-              SizedBox(height: height * 0.06),
-              changeAccount(),
-            ],
+    return ScreenTypeLayout(
+      mobile: Scaffold(
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: height * 0.1),
+                imageLogo(width),
+                SizedBox(height: height * 0.08),
+                passKeyField(),
+                SizedBox(height: height * 0.08),
+                logInButton(context, height, width, false),
+                SizedBox(height: height * 0.06),
+                accountLogin(false),
+                SizedBox(height: height * 0.06),
+                changeAccount(false),
+              ],
+            ),
+          ),
+        ),
+      ),
+      tablet: Scaffold(
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: height * 0.1),
+                imageLogo(width),
+                SizedBox(height: height * 0.08),
+                passKeyField(),
+                SizedBox(height: height * 0.08),
+                logInButton(context, height * 0.9, width * 0.7, true),
+                SizedBox(height: height * 0.06),
+                accountLogin(true),
+                SizedBox(height: height * 0.06),
+                changeAccount(true),
+              ],
+            ),
           ),
         ),
       ),
@@ -68,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget passKeyField(width, height) {
+  Widget passKeyField() {
     return CustomField(
       setValue: (value) => setState(() => passKey = value),
       formKey: _formKey1,
@@ -78,20 +101,24 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Text accountLogin() {
+  Text accountLogin(bool isTablet) {
     return Text(
       "Login for ${widget.userName}",
-      style: const TextStyle(
-          color: Colors.grey, fontWeight: FontWeight.w500, fontSize: 15),
+      style: TextStyle(
+          color: Colors.grey,
+          fontWeight: FontWeight.w500,
+          fontSize: isTablet ? 25 : 15),
     );
   }
 
-  Widget changeAccount() {
+  Widget changeAccount(bool isTablet) {
     return TextButton(
-        child: const Text(
+        child: Text(
           "Change Account",
           style: TextStyle(
-              color: Colors.blue, fontWeight: FontWeight.w800, fontSize: 15),
+              color: Colors.blue,
+              fontWeight: FontWeight.w800,
+              fontSize: isTablet ? 25 : 15),
         ),
         onPressed: () {
           showDialog(
@@ -187,7 +214,8 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  GestureDetector logInButton(BuildContext context, height, width) {
+  GestureDetector logInButton(
+      BuildContext context, height, width, bool isTablet) {
     return GestureDetector(
       onTap: () {
         logIn().then(
@@ -226,11 +254,13 @@ class _LoginPageState extends State<LoginPage> {
         ),
         height: height * 0.05,
         width: width * 0.9,
-        child: const Center(
+        child: Center(
           child: Text(
             "Log In",
             style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w500, fontSize: 15),
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+                fontSize: isTablet ? 20 : 15),
           ),
         ),
       ),

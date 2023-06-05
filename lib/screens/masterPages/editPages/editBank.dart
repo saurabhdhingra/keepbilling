@@ -5,6 +5,7 @@ import 'package:keepbilling/widgets/formPages/titleText.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../api/master.dart';
+import '../../../responsive/screen_type_layout.dart';
 import '../../../utils/constants.dart';
 import '../../../widgets/formPages/customField.dart';
 import '../../../widgets/formPages/dropdownSelector.dart';
@@ -86,12 +87,18 @@ class _EditBankMasterState extends State<EditBankMaster> {
             children: [
               Row(
                 children: [
-                  SizedBox(width: width * 0.8),
+                ScreenTypeLayout(
+                    mobile: SizedBox(width: width * 0.8),
+                    tablet: SizedBox(width: width * 0.9),
+                  ),
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: const Text("Cancel"),
+                   child: Text(
+                      "Cancel",
+                      style: TextStyle(fontSize: height * 0.015),
+                    ),
                   )
                 ],
               ),
@@ -173,6 +180,13 @@ class _EditBankMasterState extends State<EditBankMaster> {
                 onSubmit: () {
                   edit().then(
                     (value) {
+                      if(value == null){
+                         ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Error with placing request. Please try again."),
+                          ),
+                        );
+                      }
                       if (value["type"] == "success") {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

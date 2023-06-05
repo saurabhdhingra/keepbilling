@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/api/master.dart';
+import 'package:keepbilling/responsive/screen_type_layout.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
 import 'package:keepbilling/screens/searchBarDelegate.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +28,7 @@ class _ItemMasterState extends State<ItemMaster> {
 
   String userId = "";
   String companyId = "";
-  String  product = "";
+  String product = "";
 
   MasterService service = MasterService();
 
@@ -39,9 +40,12 @@ class _ItemMasterState extends State<ItemMaster> {
     product =
         Provider.of<AuthenticationProvider>(context, listen: false).product;
     try {
-      dataList = await service.fetchDataList(userId, companyId, "item",product);
-      groups = await service.fetchDataList(userId, companyId, "allgroup",product);
-      units = await service.fetchDataList(userId, companyId, "allunit",product);
+      dataList =
+          await service.fetchDataList(userId, companyId, "item", product);
+      groups =
+          await service.fetchDataList(userId, companyId, "allgroup", product);
+      units =
+          await service.fetchDataList(userId, companyId, "allunit", product);
     } catch (e) {
       dataList = [];
       // ignore: use_build_context_synchronously
@@ -58,7 +62,27 @@ class _ItemMasterState extends State<ItemMaster> {
   Future getUpdatedData() async {
     setState(() => isLoading = true);
     try {
-      dataList = await service.fetchDataList(userId, companyId, "item",product);
+      dataList =
+          await service.fetchDataList(userId, companyId, "item", product);
+    } catch (e) {
+      dataList = [];
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+    setState(() => isLoading = false);
+  }
+
+  Future getUpdatedGUs() async {
+    setState(() => isLoading = true);
+    try {
+      groups =
+          await service.fetchDataList(userId, companyId, "allgroup", product);
+      units =
+          await service.fetchDataList(userId, companyId, "allunit", product);
     } catch (e) {
       dataList = [];
       // ignore: use_build_context_synchronously
@@ -95,7 +119,7 @@ class _ItemMasterState extends State<ItemMaster> {
       "title": "item_name",
       "subtitle": "item_stock",
       "entries": [
-        {"fieldName": "Type", "fieldValue": "item_type"},
+        {"fieldName": "Group", "fieldValue": "under"},
         {"fieldName": "HSN_SAC", "fieldValue": "hsn_sac"},
       ]
     };
@@ -117,6 +141,9 @@ class _ItemMasterState extends State<ItemMaster> {
                 );
                 if (navigationResult == "update") {
                   getUpdatedData();
+                } else if (navigationResult == "update and gus") {
+                  getUpdatedData();
+                  getUpdatedGUs();
                 }
               },
             ),
@@ -156,25 +183,50 @@ class _ItemMasterState extends State<ItemMaster> {
                               width * 0.02, 0, width * 0.02, 0),
                           child: Theme(
                             data: theme,
-                            child: CustomExpansionTile(
-                              data: e,
-                              properties: propeties,
-                              editAction: () async {
-                                var navigationResult = await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => EditItemMaster(
-                                      groups: groupsList,
-                                      units: unitsList,
-                                      data: e,
-                                      product: product,
+                            child: ScreenTypeLayout(
+                              mobile: CustomExpansionTile(
+                                data: e,
+                                properties: propeties,
+                                groups: groups,
+                                editAction: () async {
+                                  var navigationResult = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EditItemMaster(
+                                        groups: groupsList,
+                                        units: unitsList,
+                                        data: e,
+                                        product: product,
+                                      ),
                                     ),
-                                  ),
-                                );
-                                if (navigationResult == "update") {
-                                  getUpdatedData();
-                                }
-                              },
+                                  );
+                                  if (navigationResult == "update") {
+                                    getUpdatedData();
+                                  }
+                                },
+                              ),
+                              tablet: CustomExpansionTile(
+                                data: e,
+                                properties: propeties,
+                                groups: groups,
+                                isTab: true,
+                                editAction: () async {
+                                  var navigationResult = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EditItemMaster(
+                                        groups: groupsList,
+                                        units: unitsList,
+                                        data: e,
+                                        product: product,
+                                      ),
+                                    ),
+                                  );
+                                  if (navigationResult == "update") {
+                                    getUpdatedData();
+                                  }
+                                },
+                              ),
                             ),
                           ),
                         );

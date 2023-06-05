@@ -4,6 +4,7 @@ import 'package:keepbilling/widgets/formPages/titleText.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../api/transaction.dart';
 import '../../../model/journalVoucher.dart';
+import '../../../responsive/screen_type_layout.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/functions.dart';
 import '../../../widgets/formPages/datePicker.dart';
@@ -78,12 +79,18 @@ class _EditJVTransactionState extends State<EditJVTransaction> {
             children: [
               Row(
                 children: [
-                  SizedBox(width: width * 0.8),
+                  ScreenTypeLayout(
+                    mobile: SizedBox(width: width * 0.8),
+                    tablet: SizedBox(width: width * 0.9),
+                  ),
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: const Text("Cancel"),
+                   child: Text(
+                      "Cancel",
+                      style: TextStyle(fontSize: height * 0.015),
+                    ),
                   )
                 ],
               ),

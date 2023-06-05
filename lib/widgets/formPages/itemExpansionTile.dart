@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:keepbilling/responsive/screen_type_layout.dart';
 import '../../../widgets/infoPages/description.dart';
+import '../../utils/constants.dart';
 
 class ItemExpansionTile extends StatelessWidget {
   final Map properties;
@@ -18,11 +20,34 @@ class ItemExpansionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var width = SizeConfig.getWidth(context);
+    var height = SizeConfig.getHeight(context);
+    return ScreenTypeLayout(
+      mobile: tileChild(height, width, false),
+      tablet: Padding(
+        padding: EdgeInsets.symmetric(horizontal: width * 0.07),
+        child: tileChild(height, width, true),
+      ),
+    );
+  }
+
+  ExpansionTile tileChild(double height, double width, bool isTab) {
     return ExpansionTile(
       title: properties["title"] == "item"
-          ? Text(itemName)
-          : Text(data["${properties["title"]}"]),
-      subtitle: Text(data["${properties["subtitle"]}"]),
+          ? Text(
+              itemName,
+              style:
+                  TextStyle(fontSize: isTab ? height * 0.025 : height * 0.03),
+            )
+          : Text(
+              data["${properties["title"]}"],
+              style:
+                  TextStyle(fontSize: isTab ? height * 0.025 : height * 0.03),
+            ),
+      subtitle: Text(
+        data["${properties["subtitle"]}"],
+        style: TextStyle(fontSize: isTab ? height * 0.022 : height * 0.02),
+      ),
       textColor: Colors.black87,
       iconColor: Colors.black87,
       expandedAlignment: Alignment.centerLeft,

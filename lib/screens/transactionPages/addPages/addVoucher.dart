@@ -5,6 +5,7 @@ import 'package:keepbilling/screens/transactionPages/voucher.dart';
 import 'package:keepbilling/widgets/formPages/titleText.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../model/voucher.dart';
+import '../../../responsive/screen_type_layout.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/functions.dart';
 import '../../../widgets/formPages/datePicker.dart';
@@ -19,7 +20,10 @@ class AddVoucherTransaction extends StatefulWidget {
   final List ledgerList;
   final String product;
   const AddVoucherTransaction(
-      {Key? key, required this.partyList, required this.ledgerList, required this.product})
+      {Key? key,
+      required this.partyList,
+      required this.ledgerList,
+      required this.product})
       : super(key: key);
 
   @override
@@ -87,12 +91,18 @@ class _AddVoucherTransactionState extends State<AddVoucherTransaction> {
             children: [
               Row(
                 children: [
-                  SizedBox(width: width * 0.8),
+                  ScreenTypeLayout(
+                    mobile: SizedBox(width: width * 0.8),
+                    tablet: SizedBox(width: width * 0.9),
+                  ),
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: const Text("Cancel"),
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(fontSize: height * 0.015),
+                    ),
                   )
                 ],
               ),
@@ -193,6 +203,14 @@ class _AddVoucherTransactionState extends State<AddVoucherTransaction> {
                 onSubmit: () {
                   add().then(
                     (value) {
+                      if (value == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                                "Error with placing request. Please try again."),
+                          ),
+                        );
+                      }
                       if (value["type"] == "success") {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

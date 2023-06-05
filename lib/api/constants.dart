@@ -28,6 +28,8 @@ class ApiService {
   String get addItem => "item.php?type=additem";
   String get addBank => "bank.php?type=addbank";
   String get addQuotation => "quotation.php?type=addquot";
+  String get addGroup => "item.php?type=additem_group";
+  String get addUnit => "item.php?type=additem_unit";
 
   //Edit on Master Pages
   String get editBank => "bank.php?type=edit_bank";
@@ -39,11 +41,13 @@ class ApiService {
   String get bills => "bills.php?type=";
   String get ledgers => "ledger.php?type=all";
   String get billById => "bills.php?type=getbill_byid";
+  String get outstanding => "bills.php?type=party_outstanding";
 
   //Add on transaction pages
   String get createBill => "bills.php?type=addbill";
   String get addJournalVoucher => "bills.php?type=add_JV";
   String get addVoucher => "bills.php?type=add_voucher";
+  String get addPayment => "bills.php?type=add_payment";
 
   //Edit on transaction pages
   String get editBill => "bills.php?type=editdbill";

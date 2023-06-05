@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:keepbilling/responsive/screen_type_layout.dart';
 import 'package:provider/provider.dart';
 
 import '../../api/authentication.dart';
@@ -53,23 +54,48 @@ class _VerifyOTPPageState extends State<VerifyOTPPage> {
   Widget build(BuildContext context) {
     var height = SizeConfig.getHeight(context);
     var width = SizeConfig.getWidth(context);
-    return Scaffold(
-      appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.black),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+    return ScreenTypeLayout(
+      mobile: Scaffold(
+        appBar: AppBar(
+          iconTheme: const IconThemeData(color: Colors.black),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: height * 0.12),
+                imageLogo(width),
+                SizedBox(height: height * 0.1),
+                otpField(width, height),
+                SizedBox(height: height * 0.12),
+                sendOTPButton(context, height, width),
+              ],
+            ),
+          ),
+        ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: height * 0.12),
-              imageLogo(width),
-              SizedBox(height: height * 0.1),
-              userNameField(width, height),
-              SizedBox(height: height * 0.12),
-              sendOTPButton(context, height, width),
-            ],
+      tablet: Scaffold(
+        appBar: AppBar(
+          iconTheme: const IconThemeData(color: Colors.black),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Center(
+              child: Column(
+                children: [
+                  SizedBox(height: height * 0.1),
+                  imageLogo(width * 0.7),
+                  SizedBox(height: height * 0.1),
+                  otpField(width, height),
+                  SizedBox(height: height * 0.12),
+                  sendOTPButton(context, height * 0.9, width * 0.7),
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -86,7 +112,7 @@ class _VerifyOTPPageState extends State<VerifyOTPPage> {
     );
   }
 
-  SizedBox userNameField(width, height) {
+  SizedBox otpField(width, height) {
     return SizedBox(
       width: width,
       child: Column(

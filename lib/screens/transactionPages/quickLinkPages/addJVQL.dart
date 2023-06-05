@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../api/transaction.dart';
 import '../../../model/journalVoucher.dart';
 import '../../../provider/authenticationProvider.dart';
+import '../../../responsive/screen_type_layout.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/functions.dart';
 import '../../../widgets/formPages/datePicker.dart';
@@ -116,12 +117,18 @@ class _AddJVTransactionQLState extends State<AddJVTransactionQL> {
                   children: [
                     Row(
                       children: [
-                        SizedBox(width: width * 0.8),
+                       ScreenTypeLayout(
+                    mobile: SizedBox(width: width * 0.8),
+                    tablet: SizedBox(width: width * 0.9),
+                  ),
                         TextButton(
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          child: const Text("Cancel"),
+                         child: Text(
+                      "Cancel",
+                      style: TextStyle(fontSize: height * 0.015),
+                    ),
                         )
                       ],
                     ),
@@ -206,6 +213,13 @@ class _AddJVTransactionQLState extends State<AddJVTransactionQL> {
                       onSubmit: () {
                         add().then(
                           (value) {
+                            if(value == null){
+                         ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Error with placing request. Please try again."),
+                          ),
+                        );
+                      }
                             if (value["type"] == "success") {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
@@ -383,6 +397,7 @@ class _AddJVTransactionQLState extends State<AddJVTransactionQL> {
                     SubmitButton(
                       text: addOrEdit ? "Add Entry" : "Edit Entry",
                       onSubmit: () {
+                        
                         if (credit == "") {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(

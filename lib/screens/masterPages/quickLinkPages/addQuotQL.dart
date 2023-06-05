@@ -153,7 +153,10 @@ class _AddQuotationMasterQLState extends State<AddQuotationMasterQL> {
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          child: const Text("Cancel"),
+                          child: Text(
+                      "Cancel",
+                      style: TextStyle(fontSize: height * 0.015),
+                    ),
                         )
                       ],
                     ),
@@ -295,6 +298,13 @@ class _AddQuotationMasterQLState extends State<AddQuotationMasterQL> {
                       onSubmit: () {
                         add().then(
                           (value) {
+                            if(value == null){
+                         ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Error with placing request. Please try again."),
+                          ),
+                        );
+                      }
                             if (value["type"] == "success") {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(

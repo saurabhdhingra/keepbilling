@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../api/master.dart';
 import '../../../model/bill.dart';
 import '../../../provider/authenticationProvider.dart';
+import '../../../responsive/screen_type_layout.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/functions.dart';
 import '../../../widgets/formPages/dropdownSelector.dart';
@@ -49,8 +50,8 @@ class _CreateBillQLState extends State<CreateBillQL> {
   int partyIndex = 0;
   String orderBy = "";
   String orderNo = "";
-  dynamic orderDate = "";
-  dynamic invoiceDate = "";
+  dynamic orderDate = DateTime.now();
+  dynamic invoiceDate = DateTime.now();
   String despatchNo = "";
   String despatchThrough = "";
   String paymentTerm = "";
@@ -68,7 +69,7 @@ class _CreateBillQLState extends State<CreateBillQL> {
   String tax = "";
   String otherCharges = "";
   String extraDiscount = "";
-  String round = "";
+  String round = "on";
 
   String itemName = "";
   int itemNameIndex = 0;
@@ -134,13 +135,16 @@ class _CreateBillQLState extends State<CreateBillQL> {
     product =
         Provider.of<AuthenticationProvider>(context, listen: false).product;
     try {
-      paymentTerms =
-          await service.fetchDataList('payment_term', userId, companyId,product);
-      partyList = await serviceM.fetchDataList(userId, companyId, "party",product);
-      extraFieldData = await service.fetchExtraFieldData(userId, companyId,product);
-      itemList = await serviceM.fetchDataList(userId, companyId, "item",product);
+      paymentTerms = await service.fetchDataList(
+          'payment_term', userId, companyId, product);
+      partyList =
+          await serviceM.fetchDataList(userId, companyId, "party", product);
+      extraFieldData =
+          await service.fetchExtraFieldData(userId, companyId, product);
+      itemList =
+          await serviceM.fetchDataList(userId, companyId, "item", product);
       if (widget.billType == "S") {
-        invoiceNo = await service.fetchSaleInvNo(userId, companyId,product);
+        invoiceNo = await service.fetchSaleInvNo(userId, companyId, product);
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -200,12 +204,18 @@ class _CreateBillQLState extends State<CreateBillQL> {
                   children: [
                     Row(
                       children: [
-                        SizedBox(width: width * 0.8),
+                         ScreenTypeLayout(
+                    mobile: SizedBox(width: width * 0.8),
+                    tablet: SizedBox(width: width * 0.9),
+                  ),
                         TextButton(
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          child: const Text("Cancel"),
+                         child: Text(
+                      "Cancel",
+                      style: TextStyle(fontSize: height * 0.015),
+                    ),
                         )
                       ],
                     ),
@@ -252,10 +262,10 @@ class _CreateBillQLState extends State<CreateBillQL> {
                     SizedBox(height: height * 0.02),
                     const RowText(text: "Order Date"),
                     CupertinoDateSelector(
-                        initialDate: orderDate,
-                        setFunction: (value) =>
-                            setState(() => orderDate = value),
-                        reset: () => setState(() => orderDate = "")),
+                      initialDate: orderDate,
+                      setFunction: (value) => setState(() => orderDate = value),
+                      showReset: false,
+                    ),
                     SizedBox(height: height * 0.02),
                     const RowText(text: "Despatch Number"),
                     CustomField(
@@ -304,12 +314,12 @@ class _CreateBillQLState extends State<CreateBillQL> {
                       setValue: (value) => setState(() => ewaybillNo = value),
                       formKey: _formKey12,
                     ),
-                    SizedBox(height: height * 0.02),
-                    const RowText(text: "Vendor Code"),
-                    CustomField(
-                      setValue: (value) => setState(() => vendorCode = value),
-                      formKey: _formKey13,
-                    ),
+                    // SizedBox(height: height * 0.02),
+                    // const RowText(text: "Vendor Code"),
+                    // CustomField(
+                    //   setValue: (value) => setState(() => vendorCode = value),
+                    //   formKey: _formKey13,
+                    // ),
                     // Extra fields. Depeends on values set by user
                     extraFieldData["flag_1"] == "N"
                         ? SizedBox(height: height * 0.02)
@@ -363,34 +373,10 @@ class _CreateBillQLState extends State<CreateBillQL> {
                             formKey: _formKey11,
                           )
                         : const SizedBox(),
+                    items.isNotEmpty
+                        ? const RowText(text: "Items")
+                        : const SizedBox(),
                     SizedBox(height: height * 0.02),
-                    const RowText(text: "Extra Discount"),
-                    CustomField(
-                      setValue: (value) {
-                        setState(() => extraDiscount = value);
-                        updateMainValues();
-                      },
-                      formKey: _formKey16,
-                    ),
-                    SizedBox(height: height * 0.02),
-                    const RowText(text: "Other Charges"),
-                    CustomField(
-                      setValue: (value) {
-                        setState(() => otherCharges = value);
-                        updateMainValues();
-                      },
-                      formKey: _formKey15,
-                    ),
-                    SizedBox(height: height * 0.02),
-                    const RowText(text: "Grand Total"),
-                    CustomField(
-                      setValue: (value) => setState(() => invoiceNo = value),
-                      formKey: _formKey14,
-                      controller: gTotalController,
-                      readOnly: true,
-                    ),
-                    SizedBox(height: height * 0.02),
-                    const RowText(text: "Item Array"),
                     ...items.map(
                       (e) {
                         return Padding(
@@ -462,6 +448,34 @@ class _CreateBillQLState extends State<CreateBillQL> {
                         child: const Text("Add item"),
                       ),
                     ),
+                    SizedBox(height: height * 0.02),
+                    const RowText(text: "Extra Discount"),
+                    CustomField(
+                      setValue: (value) {
+                        setState(() => extraDiscount = value);
+                        updateMainValues();
+                      },
+                      formKey: _formKey16,
+                    ),
+                    SizedBox(height: height * 0.02),
+                    const RowText(text: "Other Charges"),
+                    CustomField(
+                      setValue: (value) {
+                        setState(() => otherCharges = value);
+                        updateMainValues();
+                      },
+                      formKey: _formKey15,
+                    ),
+                    SizedBox(height: height * 0.02),
+                    const RowText(text: "Grand Total"),
+                    CustomField(
+                      setValue: (value) => setState(() => invoiceNo = value),
+                      formKey: _formKey14,
+                      controller: gTotalController,
+                      readOnly: true,
+                    ),
+                    SizedBox(height: height * 0.02),
+
                     const RowText(text: "Round ?"),
                     SizedBox(height: height * 0.02),
                     Row(
@@ -486,6 +500,13 @@ class _CreateBillQLState extends State<CreateBillQL> {
                       onSubmit: () {
                         add().then(
                           (value) {
+                            if(value == null){
+                         ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Error with placing request. Please try again."),
+                          ),
+                        );
+                      }
                             if (value["type"] == "success") {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(

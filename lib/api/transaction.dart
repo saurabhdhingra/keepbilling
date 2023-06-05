@@ -15,26 +15,29 @@ import 'exceptions.dart';
 class TransactionsService {
   final ApiService service = ApiService();
 
-  Future fetchBills(String billType, String userId, String companyId,String product) async {
+  Future fetchBills(
+      String billType, String userId, String companyId, String product) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse("${service.backend}${service.bills}all"),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(
-          <String, String>{
-            "userid": userId,
-            "companyid": companyId,
-            "product": product,
-            "bill_type": billType,
-          },
-        ),
-      ) .timeout(const Duration(seconds: 10));
+      final response = await http
+          .post(
+            Uri.parse("${service.backend}${service.bills}all"),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": product,
+                "bill_type": billType,
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
@@ -51,60 +54,28 @@ class TransactionsService {
   }
 
   Future fetchOutstanding(
-      String billType, String userId, String companyId,String product) async {
+      String billType, String userId, String companyId, String product) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse("${service.backend}${service.bills}outstanding"),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(
-          <String, String>{
-            "userid": userId,
-            "companyid": companyId,
-            "product": product,
-            "bill_type": billType,
-          },
-        ),
-      ) .timeout(const Duration(seconds: 10));
-      responseJson = returnResponse(response);
-    } on SocketException {
-      throw FetchDataException('No Internet Connection');
-    }on TimeoutException {
-      throw FetchDataException('Request timed out.');
-    }
-
-    if (responseJson["type"] == "success" &&
-        responseJson["response_data"] != "") {
-      return responseJson["response_data"] as List;
-    } else if (responseJson["response_data"] == "") {
-      return [];
-    }
-  }
-
-  Future fetchLedgerList(String userId, String companyId,String product) async {
-    dynamic responseJson;
-    try {
-      final response = await http.post(
-        Uri.parse(service.backend + service.ledgers),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(
-          <String, String>{
-            "userid": userId,
-            "companyid": companyId,
-            "product": product,
-          },
-        ),
-      ) .timeout(const Duration(seconds: 10));
+      final response = await http
+          .post(
+            Uri.parse("${service.backend}${service.bills}outstanding"),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": product,
+                "bill_type": billType,
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
@@ -120,25 +91,65 @@ class TransactionsService {
     }
   }
 
-  Future fetchDataList(String category, String userId, String companyId,String product) async {
+  Future fetchLedgerList(
+      String userId, String companyId, String product) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse(service.backend + service.bills + category),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(
-          <String, String>{
-            "userid": userId,
-            "companyid": companyId,
-            "product": product,
-          },
-        ),
-      ) .timeout(const Duration(seconds: 10));
+      final response = await http
+          .post(
+            Uri.parse(service.backend + service.ledgers),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": product,
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
+    }
+
+    if (responseJson["type"] == "success" &&
+        responseJson["response_data"] != "") {
+      return responseJson["response_data"] as List;
+    } else if (responseJson["response_data"] == "") {
+      return [];
+    }
+  }
+
+  Future fetchDataList(
+      String category, String userId, String companyId, String product) async {
+    dynamic responseJson;
+    try {
+      final response = await http
+          .post(
+            Uri.parse(service.backend + service.bills + category),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": product,
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
@@ -153,25 +164,28 @@ class TransactionsService {
     }
   }
 
-  Future fetchExtraFieldData(String userId, String companyId,String product) async {
+  Future fetchExtraFieldData(
+      String userId, String companyId, String product) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse("${service.backend}${service.bills}extra_field"),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(
-          <String, String>{
-            "userid": userId,
-            "companyid": companyId,
-            "product": product,
-          },
-        ),
-      ) .timeout(const Duration(seconds: 10));
+      final response = await http
+          .post(
+            Uri.parse("${service.backend}${service.bills}extra_field"),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": product,
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
@@ -185,27 +199,29 @@ class TransactionsService {
     }
   }
 
-  Future fetchBillById(String companyId, Map data,String product) async {
+  Future fetchBillById(String companyId, Map data, String product) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse("${service.backend}${service.billById}"),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(<String, String>{
-          "userid": data["user_id"],
-          "companyid": companyId,
-          "product": product,
-          "bill_type": data["s_invoice_no"] == null ? "P" : "S",
-          "invoice_no": data["s_invoice_no"] ?? data["p_invoice_no"],
-          "invoice_date": data["inv_date"],
-          "party_id": data["party_id"],
-        }),
-      ) .timeout(const Duration(seconds: 10));
+      final response = await http
+          .post(
+            Uri.parse("${service.backend}${service.billById}"),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(<String, String>{
+              "userid": data["user_id"],
+              "companyid": companyId,
+              "product": product,
+              "bill_type": data["s_invoice_no"] == null ? "P" : "S",
+              "invoice_no": data["s_invoice_no"] ?? data["p_invoice_no"],
+              "invoice_date": data["inv_date"],
+              "party_id": data["party_id"],
+            }),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
@@ -216,25 +232,27 @@ class TransactionsService {
     return responseJson["response_data"] as Map;
   }
 
-  Future fetchSaleInvNo(String userId, String companyId,String product) async {
+  Future fetchSaleInvNo(String userId, String companyId, String product) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse("${service.backend}${service.bills}invoice_no"),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(
-          <String, String>{
-            "userid": userId,
-            "companyid": companyId,
-            "product": product,
-          },
-        ),
-      ) .timeout(const Duration(seconds: 10));
+      final response = await http
+          .post(
+            Uri.parse("${service.backend}${service.bills}invoice_no"),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": product,
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
@@ -245,25 +263,27 @@ class TransactionsService {
     return responseJson["response_data"] as String;
   }
 
-  Future fetchJVInvNo(String userId, String companyId,String product) async {
+  Future fetchJVInvNo(String userId, String companyId, String product) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse("${service.backend}${service.bills}jv_no"),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(
-          <String, String>{
-            "userid": userId,
-            "companyid": companyId,
-            "product": product,
-          },
-        ),
-      ) .timeout(const Duration(seconds: 10));
+      final response = await http
+          .post(
+            Uri.parse("${service.backend}${service.bills}jv_no"),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": product,
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
@@ -277,16 +297,18 @@ class TransactionsService {
   Future addVoucher(Voucher voucher) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse(service.backend + service.addVoucher),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(voucher.toMap()),
-      ) .timeout(const Duration(seconds: 10));
+      final response = await http
+          .post(
+            Uri.parse(service.backend + service.addVoucher),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(voucher.toMap()),
+          )
+          .timeout(const Duration(seconds: 10));
       print(voucher.toMap());
       responseJson = returnResponse(response);
     } on SocketException {
@@ -302,16 +324,18 @@ class TransactionsService {
     dynamic responseJson;
     try {
       print(data);
-      final response = await http.post(
-        editUri(category),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(data),
-      ) .timeout(const Duration(seconds: 10));
+      final response = await http
+          .post(
+            editUri(category),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(data),
+          )
+          .timeout(const Duration(seconds: 10));
 
       responseJson = returnResponse(response);
     } on SocketException {
@@ -327,16 +351,50 @@ class TransactionsService {
     dynamic responseJson;
     try {
       print(journalVoucher.toMap());
-      final response = await http.post(
-        Uri.parse(service.backend + service.addJournalVoucher),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(journalVoucher.toMap()),
-      ) .timeout(const Duration(seconds: 10));
+      final response = await http
+          .post(
+            Uri.parse(service.backend + service.addJournalVoucher),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(journalVoucher.toMap()),
+          )
+          .timeout(const Duration(seconds: 10));
+
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
+    }
+
+    return responseJson;
+  }
+
+  Future addPayment(Map data) async {
+    dynamic responseJson;
+    String username = 'keepup';
+  String password = 'Superior#123';
+  String basicAuth =
+      'Basic ${base64.encode(utf8.encode('$username:$password'))}';
+    try {
+      print(data);
+      final response = await http
+          .post(
+            Uri.parse(service.backend + service.addPayment),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'authorization': basicAuth,
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(data),
+          )
+          .timeout(const Duration(seconds: 10));
 
       responseJson = returnResponse(response);
     } on SocketException {
@@ -352,16 +410,18 @@ class TransactionsService {
     dynamic responseJson;
     try {
       print(bill.toMap());
-      final response = await http.post(
-        Uri.parse(service.backend + service.createBill),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(bill.toMap()),
-      ) .timeout(const Duration(seconds: 10));
+      final response = await http
+          .post(
+            Uri.parse(service.backend + service.createBill),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(bill.toMap()),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
@@ -386,28 +446,30 @@ class TransactionsService {
     }
   }
 
-  Future fetchBillPDF(
-      String billType, String userId, String companyId, String billID,String product) async {
+  Future fetchBillPDF(String billType, String userId, String companyId,
+      String billID, String product) async {
     dynamic responseJson;
     try {
-      final response = await http.post(
-        Uri.parse("${service.backend}${service.bills}bill_pdf"),
-        encoding: Encoding.getByName('gzip, deflate, br'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'Connection': 'keep-alive'
-        },
-        body: jsonEncode(
-          <String, String>{
-            "userid": userId,
-            "companyid": companyId,
-            "product": product,
-            "bill_type": billType,
-            "bill_id": billID,
-          },
-        ),
-      ) .timeout(const Duration(seconds: 10));
+      final response = await http
+          .post(
+            Uri.parse("${service.backend}${service.bills}bill_pdf"),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": product,
+                "bill_type": billType,
+                "bill_id": billID,
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
       print(responseJson);
     } on SocketException {
@@ -417,6 +479,44 @@ class TransactionsService {
     }
 
     return responseJson;
+  }
+
+  Future fetchOutstandingList(String userId, String companyId, String product,
+      String billType, String partyId) async {
+    dynamic responseJson;
+    try {
+      final response = await http
+          .post(
+            Uri.parse(service.backend + service.outstanding),
+            encoding: Encoding.getByName('gzip, deflate, br'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+              'Connection': 'keep-alive'
+            },
+            body: jsonEncode(
+              <String, String>{
+                "userid": userId,
+                "companyid": companyId,
+                "product": product,
+                "bill_type": billType,
+                "party_id": partyId,
+              },
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException('No Internet Connection');
+    } on TimeoutException {
+      throw FetchDataException('Request timed out.');
+    }
+    if (responseJson["type"] == "success" &&
+        responseJson["response_data"] != "") {
+      return responseJson["response_data"]["bill"];
+    } else if (responseJson["response_data"] == "") {
+      return [];
+    }
   }
 
   static Future<File> loadPDF(String url) async {

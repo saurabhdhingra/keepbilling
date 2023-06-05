@@ -50,15 +50,14 @@ class _GeneralReportState extends State<GeneralReport> {
         Provider.of<AuthenticationProvider>(context, listen: false).product;
     try {
       data = await service.fetchGeneralReport(
-        userId,
-        companyId,
-        widget.sundryCreditor,
-        widget.sundryDebitor,
-        widget.itemId,
-        widget.fromDate,
-        widget.toDate,
-        product
-      );
+          userId,
+          companyId,
+          widget.sundryCreditor,
+          widget.sundryDebitor,
+          widget.itemId,
+          widget.fromDate,
+          widget.toDate,
+          product);
       saleList = data["saleData"];
       purchaseList = data["purchaseData"];
     } catch (e) {
@@ -133,6 +132,7 @@ class _GeneralReportState extends State<GeneralReport> {
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: DataTable(
+                          dataRowHeight: height * 0.08,
                           columns: <DataColumn>[
                             customDataColumn('Date'),
                             customDataColumn('Invoice Number'),

@@ -6,6 +6,7 @@ import 'package:keepbilling/widgets/formPages/customField.dart';
 import 'package:keepbilling/widgets/formPages/titleText.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../model/bill.dart';
+import '../../../responsive/screen_type_layout.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/functions.dart';
 import '../../../widgets/formPages/dropdownSelector.dart';
@@ -29,7 +30,8 @@ class CreateBill extends StatefulWidget {
       required this.partyList,
       required this.invoiceNo,
       required this.itemList,
-      required this.extraFieldData, required this.product})
+      required this.extraFieldData,
+      required this.product})
       : super(key: key);
 
   @override
@@ -46,8 +48,8 @@ class _CreateBillState extends State<CreateBill> {
   String invoiceNo = "";
   String orderBy = "";
   String orderNo = "";
-  dynamic orderDate = "";
-  dynamic invoiceDate = "";
+  dynamic orderDate = DateTime.now();
+  dynamic invoiceDate = DateTime.now();
   String despatchNo = "";
   String despatchThrough = "";
   String paymentTerm = "";
@@ -65,7 +67,7 @@ class _CreateBillState extends State<CreateBill> {
   String tax = "";
   String otherCharges = "";
   String extraDiscount = "";
-  String round = "";
+  String round = "on";
 
   String itemName = "";
   int itemNameIndex = 0;
@@ -158,12 +160,18 @@ class _CreateBillState extends State<CreateBill> {
             children: [
               Row(
                 children: [
-                  SizedBox(width: width * 0.8),
+                  ScreenTypeLayout(
+                    mobile: SizedBox(width: width * 0.8),
+                    tablet: SizedBox(width: width * 0.9),
+                  ),
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: const Text("Cancel"),
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(fontSize: height * 0.015),
+                    ),
                   )
                 ],
               ),
@@ -209,9 +217,10 @@ class _CreateBillState extends State<CreateBill> {
               SizedBox(height: height * 0.02),
               const RowText(text: "Order Date"),
               CupertinoDateSelector(
-                  initialDate: DateTime.now(),
-                  setFunction: (value) => setState(() => orderDate = value),
-                  reset: () => setState(() => orderDate = "")),
+                initialDate: DateTime.now(),
+                setFunction: (value) => setState(() => orderDate = value),
+                showReset: false,
+              ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Despatch Number"),
               CustomField(
@@ -259,12 +268,12 @@ class _CreateBillState extends State<CreateBill> {
                 setValue: (value) => setState(() => ewaybillNo = value),
                 formKey: _formKey12,
               ),
-              SizedBox(height: height * 0.02),
-              const RowText(text: "Vendor Code"),
-              CustomField(
-                setValue: (value) => setState(() => vendorCode = value),
-                formKey: _formKey13,
-              ),
+              // SizedBox(height: height * 0.02),
+              // const RowText(text: "Vendor Code"),
+              // CustomField(
+              //   setValue: (value) => setState(() => vendorCode = value),
+              //   formKey: _formKey13,
+              // ),
               // Extra fields. Depeends on values set by user
               widget.extraFieldData["flag_1"] == "N"
                   ? SizedBox(height: height * 0.02)
@@ -315,33 +324,9 @@ class _CreateBillState extends State<CreateBill> {
                     )
                   : const SizedBox(),
               SizedBox(height: height * 0.02),
-              const RowText(text: "Extra Discount"),
-              CustomField(
-                setValue: (value) {
-                  setState(() => extraDiscount = value);
-                  updateMainValues();
-                },
-                formKey: _formKey16,
-              ),
-              SizedBox(height: height * 0.02),
-              const RowText(text: "Other Charges"),
-              CustomField(
-                setValue: (value) {
-                  setState(() => otherCharges = value);
-                  updateMainValues();
-                },
-                formKey: _formKey15,
-              ),
-              SizedBox(height: height * 0.02),
-              const RowText(text: "Grand Total"),
-              CustomField(
-                setValue: (value) => setState(() => invoiceNo = value),
-                formKey: _formKey14,
-                controller: gTotalController,
-                readOnly: true,
-              ),
-              SizedBox(height: height * 0.02),
-              const RowText(text: "Item Array"),
+              items.isNotEmpty
+                  ? const RowText(text: "Items")
+                  : const SizedBox(),
               ...items.map(
                 (e) {
                   return Padding(
@@ -383,7 +368,7 @@ class _CreateBillState extends State<CreateBill> {
                             builder: (context) {
                               return addorEditEntry(context, (Map value) {
                                 setState(() => items[items.indexOf(e)] = value);
-                              }, false);
+                              }, false, height);
                             },
                           );
                         },
@@ -405,12 +390,41 @@ class _CreateBillState extends State<CreateBill> {
                           context,
                           (Map value) =>
                               setState(() => items = [...items, value]),
-                          true),
+                          true,
+                          height),
                     );
                   },
                   child: const Text("Add item"),
                 ),
               ),
+              SizedBox(height: height * 0.02),
+              const RowText(text: "Extra Discount"),
+              CustomField(
+                setValue: (value) {
+                  setState(() => extraDiscount = value);
+                  updateMainValues();
+                },
+                formKey: _formKey16,
+              ),
+              SizedBox(height: height * 0.02),
+              const RowText(text: "Other Charges"),
+              CustomField(
+                setValue: (value) {
+                  setState(() => otherCharges = value);
+                  updateMainValues();
+                },
+                formKey: _formKey15,
+              ),
+              SizedBox(height: height * 0.02),
+              const RowText(text: "Grand Total"),
+              CustomField(
+                setValue: (value) => setState(() => invoiceNo = value),
+                formKey: _formKey14,
+                controller: gTotalController,
+                readOnly: true,
+              ),
+              SizedBox(height: height * 0.02),
+
               const RowText(text: "Round ?"),
               SizedBox(height: height * 0.02),
               Row(
@@ -433,6 +447,14 @@ class _CreateBillState extends State<CreateBill> {
                 onSubmit: () {
                   add().then(
                     (value) {
+                      if (value == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                                "Error with placing request. Please try again."),
+                          ),
+                        );
+                      }
                       if (value["type"] == "success") {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -509,7 +531,8 @@ class _CreateBillState extends State<CreateBill> {
     }
   }
 
-  Widget addorEditEntry(context, Function(Map) function, bool addOrEdit) {
+  Widget addorEditEntry(
+      context, Function(Map) function, bool addOrEdit, double height) {
     return StatefulBuilder(
       builder: (BuildContext context, StateSetter setState) {
         return DraggableScrollableSheet(
@@ -540,7 +563,10 @@ class _CreateBillState extends State<CreateBill> {
                     Align(
                       alignment: Alignment.topRight,
                       child: TextButton(
-                        child: const Text('Cancel'),
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(fontSize: height * 0.018),
+                        ),
                         onPressed: () {
                           Navigator.pop(context);
                           setState(

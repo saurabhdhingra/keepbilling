@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/widgets/formPages/titleText.dart';
 import '../../../api/master.dart';
+import '../../../responsive/screen_type_layout.dart';
 import '../../../utils/constants.dart';
 import '../../../widgets/formPages/dropdownSelector.dart';
 import '../../../widgets/formPages/customField.dart';
@@ -14,7 +15,13 @@ import '../../../widgets/formPages/submitButton.dart';
 class EditPartyMaster extends StatefulWidget {
   final Map data;
   final String product;
-  const EditPartyMaster({Key? key, required this.data, required this.product}) : super(key: key);
+  
+  const EditPartyMaster(
+      {Key? key,
+      required this.data,
+      required this.product,
+      })
+      : super(key: key);
 
   @override
   State<EditPartyMaster> createState() => _EditPartyMasterState();
@@ -101,12 +108,18 @@ class _EditPartyMasterState extends State<EditPartyMaster> {
             children: [
               Row(
                 children: [
-                  SizedBox(width: width * 0.8),
+                ScreenTypeLayout(
+                    mobile: SizedBox(width: width * 0.8),
+                    tablet: SizedBox(width: width * 0.9),
+                  ),
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: const Text("Cancel"),
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(fontSize: height * 0.015),
+                    ),
                   )
                 ],
               ),
@@ -354,6 +367,14 @@ class _EditPartyMasterState extends State<EditPartyMaster> {
                   edit().then(
                     (value) {
                       print(value);
+                      if (value == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                                "Error with placing request. Please try again."),
+                          ),
+                        );
+                      }
                       if (value["type"] == "success") {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

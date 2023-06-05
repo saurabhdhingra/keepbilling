@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:keepbilling/responsive/screen_type_layout.dart';
 import 'package:keepbilling/screens/authentication/verifyOTP.dart';
 
 import '../../api/authentication.dart';
@@ -22,7 +23,7 @@ class _SendOTPPageState extends State<SendOTPPage> {
 
   final _formKey1 = GlobalKey<FormState>();
 
-    @override
+  @override
   void initState() {
     super.initState();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -32,25 +33,52 @@ class _SendOTPPageState extends State<SendOTPPage> {
   Widget build(BuildContext context) {
     var height = SizeConfig.getHeight(context);
     var width = SizeConfig.getWidth(context);
-    return Scaffold(
-      appBar: widget.showAppBar
-          ? AppBar(
-              iconTheme: const IconThemeData(color: Colors.black),
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-            )
-          : null,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: height * 0.12),
-              imageLogo(width),
-              SizedBox(height: height * 0.1),
-              userNameField(width, height),
-              SizedBox(height: height * 0.12),
-              sendOTPButton(context, height, width),
-            ],
+    return ScreenTypeLayout(
+      mobile: Scaffold(
+        appBar: widget.showAppBar
+            ? AppBar(
+                iconTheme: const IconThemeData(color: Colors.black),
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+              )
+            : null,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: height * 0.12),
+                imageLogo(width),
+                SizedBox(height: height * 0.1),
+                userNameField(width, height),
+                SizedBox(height: height * 0.12),
+                sendOTPButton(context, height, width),
+              ],
+            ),
+          ),
+        ),
+      ),
+      tablet: Scaffold(
+        appBar: widget.showAppBar
+            ? AppBar(
+                iconTheme: const IconThemeData(color: Colors.black),
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+              )
+            : null,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Center(
+              child: Column(
+                children: [
+                  SizedBox(height: height * 0.12),
+                  imageLogo(width * 0.7),
+                  SizedBox(height: height * 0.1),
+                  userNameField(width, height),
+                  SizedBox(height: height * 0.12),
+                  sendOTPButton(context, height * 0.9, width * 0.7),
+                ],
+              ),
+            ),
           ),
         ),
       ),

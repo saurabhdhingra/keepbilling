@@ -14,7 +14,9 @@ import '../../../widgets/formPages/submitButton.dart';
 
 class AddPartyMaster extends StatefulWidget {
   final String product;
-  const AddPartyMaster({Key? key, required this.product}) : super(key: key);
+  final bool isTab;
+  const AddPartyMaster({Key? key, required this.product, required this.isTab})
+      : super(key: key);
 
   @override
   State<AddPartyMaster> createState() => _AddPartyMasterState();
@@ -67,8 +69,8 @@ class _AddPartyMasterState extends State<AddPartyMaster> {
   // final _formKey18 = GlobalKey<FormState>();
   // final _formKey19 = GlobalKey<FormState>();
 
-  List gstTypes = ["Unselected", "Composite", "Unregistered", "Regular"];
-  List gstTypesV = ["", "Composite", "Unregistered", "Regular"];
+  List gstTypes = ["Unselected", "Unregistered", "Regular", "Composite"];
+  List gstTypesV = ["", "Unregistered", "Regular", "Composite"];
 
   Future getUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -95,12 +97,15 @@ class _AddPartyMasterState extends State<AddPartyMaster> {
             children: [
               Row(
                 children: [
-                  SizedBox(width: width * 0.8),
+                  SizedBox(width: widget.isTab ? width * 0.9 : width * 0.8),
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: const Text("Cancel"),
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(fontSize: height * 0.015),
+                    ),
                   )
                 ],
               ),

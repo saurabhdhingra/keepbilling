@@ -47,6 +47,11 @@ class MasterService {
         return Uri.parse(service.backend + service.addQuotation);
       case "bank":
         return Uri.parse(service.backend + service.addBank);
+      case "group":
+      return Uri.parse(service.backend + service.addGroup);
+       case "unit":
+      return Uri.parse(service.backend + service.addUnit);
+
       default:
         return Uri.parse(service.backend);
     }

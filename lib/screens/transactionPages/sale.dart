@@ -49,13 +49,16 @@ class _SaleTransactionState extends State<SaleTransaction> {
 
     cashId = Provider.of<AuthenticationProvider>(context, listen: false).cashid;
     try {
-      dataList = await service.fetchBills("S", userId, companyId,product);
-      paymentTerms =
-          await service.fetchDataList('payment_term', userId, companyId,product);
-      partyList = await serviceM.fetchDataList(userId, companyId, "party",product);
-      extraFieldsData = await service.fetchExtraFieldData(userId, companyId,product);
-      itemList = await serviceM.fetchDataList(userId, companyId, "item",product);
-      invoiceNo = await service.fetchSaleInvNo(userId, companyId,product);
+      dataList = await service.fetchBills("S", userId, companyId, product);
+      paymentTerms = await service.fetchDataList(
+          'payment_term', userId, companyId, product);
+      partyList =
+          await serviceM.fetchDataList(userId, companyId, "party", product);
+      extraFieldsData =
+          await service.fetchExtraFieldData(userId, companyId, product);
+      itemList =
+          await serviceM.fetchDataList(userId, companyId, "item", product);
+      invoiceNo = await service.fetchSaleInvNo(userId, companyId, product);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -70,8 +73,8 @@ class _SaleTransactionState extends State<SaleTransaction> {
   Future getUpdatedData() async {
     setState(() => isLoading = true);
     try {
-      dataList = await service.fetchBills("S", userId, companyId,product);
-      invoiceNo = await service.fetchSaleInvNo(userId, companyId,product);
+      dataList = await service.fetchBills("S", userId, companyId, product);
+      invoiceNo = await service.fetchSaleInvNo(userId, companyId, product);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -100,8 +103,9 @@ class _SaleTransactionState extends State<SaleTransaction> {
       "title": "party_name",
       "subtitle": "inv_date",
       "entries": [
+        {"fieldName": "Invoice Number", "fieldValue": "s_invoice_no"},
+        {"fieldName": "Base Amount", "fieldValue": "totalamount"},
         {"fieldName": "Tax Amount", "fieldValue": "tax_amount"},
-        {"fieldName": "Discount Amount", "fieldValue": "disc_amount"},
       ]
     };
     List parties = [
@@ -124,7 +128,8 @@ class _SaleTransactionState extends State<SaleTransaction> {
                       partyList: parties,
                       paymentTerms: paymentTerms,
                       invoiceNo: invoiceNo,
-                      itemList: itemList,product: product,
+                      itemList: itemList,
+                      product: product,
                     ),
                   ),
                 );
@@ -220,7 +225,7 @@ class _SaleTransactionState extends State<SaleTransaction> {
       ),
     );
     try {
-      return await service.fetchBillById(compId, bill,product);
+      return await service.fetchBillById(compId, bill, product);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -238,7 +243,9 @@ class _SaleTransactionState extends State<SaleTransaction> {
       ),
     );
     try {
-      return await service.fetchBillPDF('S', userId, companyId, billID,product).then(
+      return await service
+          .fetchBillPDF('S', userId, companyId, billID, product)
+          .then(
         (value) async {
           if (value["type"] == "success") {
             ScaffoldMessenger.of(context).showSnackBar(

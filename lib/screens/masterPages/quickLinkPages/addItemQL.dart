@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../provider/authenticationProvider.dart';
+import '../../../responsive/screen_type_layout.dart';
 import '../../../utils/constants.dart';
 import '../../../widgets/formPages/customField.dart';
 import '../../../widgets/formPages/rowText.dart';
@@ -48,8 +49,13 @@ class _AddItemMasterQLState extends State<AddItemMasterQL> {
   String trackable = "";
   String stockLimit = "";
 
+  String addGroupText = "";
+  String addUnitText = "";
+  bool addedGroupOrUnitFlag = false;
+
   final _formKey1 = GlobalKey<FormState>();
   final _formKey3 = GlobalKey<FormState>();
+  final _formKey6 = GlobalKey<FormState>();
   final _formKey4 = GlobalKey<FormState>();
   final _formKey5 = GlobalKey<FormState>();
   final _formKey7 = GlobalKey<FormState>();
@@ -68,11 +74,13 @@ class _AddItemMasterQLState extends State<AddItemMasterQL> {
     product =
         Provider.of<AuthenticationProvider>(context, listen: false).product;
     try {
-      groups = await service.fetchDataList(userId, companyId, "allgroup",product);
-      units = await service.fetchDataList(userId, companyId, "allunit",product);
+      groups =
+          await service.fetchDataList(userId, companyId, "allgroup", product);
+      units =
+          await service.fetchDataList(userId, companyId, "allunit", product);
     } catch (e) {
       groups = [];
-      units = []; 
+      units = [];
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString()),
@@ -114,12 +122,20 @@ class _AddItemMasterQLState extends State<AddItemMasterQL> {
                   children: [
                     Row(
                       children: [
-                        SizedBox(width: width * 0.8),
+                        ScreenTypeLayout(
+                          mobile: SizedBox(width: width * 0.8),
+                          tablet: SizedBox(width: width * 0.9),
+                        ),
                         TextButton(
                           onPressed: () {
-                            Navigator.pop(context);
+                            addedGroupOrUnitFlag
+                                ? Navigator.pop(context, "added GOU")
+                                : Navigator.pop(context);
                           },
-                          child: const Text("Cancel"),
+                          child: Text(
+                            "Cancel",
+                            style: TextStyle(fontSize: height * 0.015),
+                          ),
                         )
                       ],
                     ),
@@ -141,11 +157,24 @@ class _AddItemMasterQLState extends State<AddItemMasterQL> {
                           (index) => groupsList[index]["item_group_name"]),
                       dropDownValue: groupsList[underIndex]["item_group_name"],
                     ),
-                    SizedBox(height: height * 0.02),
-                    const RowText(text: "Stock"),
-                    CustomField(
-                      setValue: (value) => setState(() => itemStock = value),
-                      formKey: _formKey3,
+                    // SizedBox(height: height * 0.02),
+                    // const RowText(text: "Stock"),
+                    // CustomField(
+                    //   setValue: (value) => setState(() => itemStock = value),
+                    //   formKey: _formKey3,
+                    // ),
+                    SubmitButton(
+                      text: "Add Group",
+                      onSubmit: () {
+                        showModalBottomSheet(
+                          isScrollControlled: true,
+                          enableDrag: false,
+                          isDismissible: true,
+                          backgroundColor: Colors.transparent,
+                          context: context,
+                          builder: (context) => addGroupOrUnit(context, true),
+                        );
+                      },
                     ),
                     SizedBox(height: height * 0.02),
                     const RowText(text: "HSN SAC"),
@@ -170,14 +199,27 @@ class _AddItemMasterQLState extends State<AddItemMasterQL> {
                           (index) => unitsList[index]["item_uom_name"]),
                       dropDownValue: unitsList[unitIndex]["item_uom_name"],
                     ),
+                    SubmitButton(
+                      text: "Add Unit",
+                      onSubmit: () {
+                        showModalBottomSheet(
+                          isScrollControlled: true,
+                          enableDrag: false,
+                          isDismissible: true,
+                          backgroundColor: Colors.transparent,
+                          context: context,
+                          builder: (context) => addGroupOrUnit(context, false),
+                        );
+                      },
+                    ),
                     SizedBox(height: height * 0.02),
-                    const RowText(text: "Operational Stock"),
+                    const RowText(text: "Opening Stock"),
                     CustomField(
                       setValue: (value) => setState(() => opStock = value),
                       formKey: _formKey7,
                     ),
                     SizedBox(height: height * 0.02),
-                    const RowText(text: "Operational Rate"),
+                    const RowText(text: "Opening Rate"),
                     CustomField(
                       setValue: (value) => setState(() => opRate = value),
                       formKey: _formKey8,
@@ -243,13 +285,23 @@ class _AddItemMasterQLState extends State<AddItemMasterQL> {
                       onSubmit: () {
                         add().then(
                           (value) {
+                            if (value == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      "Error with placing request. Please try again."),
+                                ),
+                              );
+                            }
                             if (value["type"] == "success") {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(value["message"]),
                                 ),
                               );
-                              Navigator.pop(context, "update");
+                              addedGroupOrUnitFlag
+                                  ? Navigator.pop(context, "update and gus")
+                                  : Navigator.pop(context, "update");
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
@@ -266,6 +318,100 @@ class _AddItemMasterQLState extends State<AddItemMasterQL> {
               ),
             ),
           );
+  }
+
+  Widget addGroupOrUnit(context, bool addGroupFlag) {
+    return StatefulBuilder(
+      builder: (BuildContext context, StateSetter setState) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.9,
+          builder: (_, controller) {
+            var height = SizeConfig.getHeight(context);
+            var width = SizeConfig.getWidth(context);
+
+            return Container(
+              padding: EdgeInsets.all(width * 0.02),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: TextButton(
+                        child: const Text('Cancel'),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ),
+                    RowText(text: addGroupFlag ? "New Group" : "New Unit"),
+                    CustomField(
+                      setValue: (value) {
+                        setState(() => addGroupFlag
+                            ? addGroupText = value
+                            : addUnitText = value);
+                      },
+                      formKey: _formKey6,
+                    ),
+                    SizedBox(height: height * 0.02),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: SubmitButton(
+                        text: "Add",
+                        onSubmit: () async {
+                          addGroupOrUnitAPI(addGroupFlag).then((value) {
+                            if (value == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      "Error with placing request. Please try again."),
+                                ),
+                              );
+                            }
+                            if (value["type"] == "success") {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(value["message"]),
+                                ),
+                              );
+                              Navigator.pop(context);
+                              addedGroupOrUnitFlag = true;
+                              setState(() {
+                                addGroupFlag
+                                    ? groups.add({
+                                        "item_group_name": addGroupText,
+                                        "id": value["response_data"]["id"]
+                                            .toString()
+                                      })
+                                    : units.add({
+                                        "item_uom_name": addUnitText,
+                                        "id": value["response_data"]["id"]
+                                            .toString()
+                                      });
+                              });
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(value["message"]),
+                                ),
+                              );
+                            }
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   Future add() async {
@@ -293,6 +439,35 @@ class _AddItemMasterQLState extends State<AddItemMasterQL> {
             trackable: trackable,
           ).toMap(),
           "item");
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+  }
+
+  Future addGroupOrUnitAPI(bool group) async {
+    final MasterService service = MasterService();
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text("Processing")));
+    try {
+      return await service.addMaster(
+          group
+              ? {
+                  "userid": userId,
+                  "companyid": companyId,
+                  "product": product,
+                  "item_group_name": addGroupText,
+                }
+              : {
+                  "userid": userId,
+                  "companyid": companyId,
+                  "product": product,
+                  "item_unit_name": addUnitText,
+                },
+          group ? "group" : "unit");
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

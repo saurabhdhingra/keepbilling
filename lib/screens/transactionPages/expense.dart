@@ -36,7 +36,8 @@ class _ExpensesTransactionState extends State<ExpensesTransaction> {
     product =
         Provider.of<AuthenticationProvider>(context, listen: false).product;
     try {
-      dataList = await service.fetchDataList("expense", userId, companyId,product);
+      dataList =
+          await service.fetchDataList("expense", userId, companyId, product);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -73,9 +74,6 @@ class _ExpensesTransactionState extends State<ExpensesTransaction> {
     return isLoading
         ? infoLoading(context)
         : Scaffold(
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {},
-            ),
             backgroundColor: Colors.white,
             appBar: AppBar(
               backgroundColor: Colors.white,

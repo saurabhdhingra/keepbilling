@@ -270,6 +270,13 @@ class _AddQuotationMasterState extends State<AddQuotationMaster> {
                 onSubmit: () {
                   add().then(
                     (value) {
+                      if(value == null){
+                         ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Error with placing request. Please try again."),
+                          ),
+                        );
+                      }
                       if (value["type"] == "success") {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

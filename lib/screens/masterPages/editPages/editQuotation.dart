@@ -4,6 +4,7 @@ import 'package:keepbilling/widgets/formPages/titleText.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../api/master.dart';
 import '../../../model/quotation.dart';
+import '../../../responsive/screen_type_layout.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/functions.dart';
 import '../../../widgets/formPages/datePicker.dart';
@@ -129,12 +130,18 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
             children: [
               Row(
                 children: [
-                  SizedBox(width: width * 0.8),
+                  ScreenTypeLayout(
+                    mobile: SizedBox(width: width * 0.8),
+                    tablet: SizedBox(width: width * 0.9),
+                  ),
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: const Text("Cancel"),
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(fontSize: height * 0.015),
+                    ),
                   )
                 ],
               ),
@@ -280,6 +287,14 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
                 onSubmit: () {
                   edit().then(
                     (value) {
+                      if (value == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                                "Error with placing request. Please try again."),
+                          ),
+                        );
+                      }
                       if (value["type"] == "success") {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -495,7 +510,7 @@ class _EditQuotationMasterState extends State<EditQuotationMaster> {
         "oldparty_id": widget.data["party_id"],
         "party_id": partyId,
         "build_date": buildDate == "" ? buildDate : formatDate(buildDate),
-        "oldbuild_date" : widget.data["build_date"],
+        "oldbuild_date": widget.data["build_date"],
         "subject": subject,
         "grandtotal": grandTotal,
         "extra_comment": extraComment,
