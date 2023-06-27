@@ -123,7 +123,7 @@ class _NavScreenState extends State<NavScreen> {
     }
   }
 
-  var period = const Duration(seconds: 15);
+  var period = const Duration(seconds: 10);
 
   Future updateQuickLinks() async {
     setState(() => isQLLoading = true);

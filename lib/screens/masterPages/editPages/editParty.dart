@@ -159,25 +159,7 @@ class _EditPartyMasterState extends State<EditPartyMaster> {
                 initialValue: widget.data["pincode"] ?? "",
               ),
               SizedBox(height: height * 0.02),
-              const RowText(text: "Phone Number"),
-              CustomField(
-                setValue: (value) => setState(() => partyPhone = value),
-                formKey: _formKey5,
-                keyboardType: TextInputType.phone,
-                validator: (value) {
-                  if (partyPhone != "" &&
-                      partyPhone != "0" &&
-                      !RegExp(r'((\+*)((0[ -]*)*|((91 )*))((\d{12})+|(\d{10})+))|\d{5}([- ]*)\d{6}')
-                          .hasMatch(partyPhone)) {
-                    return 'Please enter a valid phone number';
-                  }
-                  return null;
-                },
-                initialValue: widget.data["party_phone"] == '0'
-                    ? ""
-                    : widget.data["party_phone"],
-              ),
-              SizedBox(height: height * 0.02),
+             
               const RowText(text: "Mobile"),
               CustomField(
                 setValue: (value) => setState(() => partyMobile = value),
@@ -195,6 +177,25 @@ class _EditPartyMasterState extends State<EditPartyMaster> {
                 initialValue: widget.data["party_mobile"] == '0'
                     ? ""
                     : widget.data["party_mobile"],
+              ),
+              SizedBox(height: height * 0.02),
+               const RowText(text: "Phone Number"),
+              CustomField(
+                setValue: (value) => setState(() => partyPhone = value),
+                formKey: _formKey5,
+                keyboardType: TextInputType.phone,
+                validator: (value) {
+                  if (partyPhone != "" &&
+                      partyPhone != "0" &&
+                      !RegExp(r'((\+*)((0[ -]*)*|((91 )*))((\d{12})+|(\d{10})+))|\d{5}([- ]*)\d{6}')
+                          .hasMatch(partyPhone)) {
+                    return 'Please enter a valid phone number';
+                  }
+                  return null;
+                },
+                initialValue: widget.data["party_phone"] == '0'
+                    ? ""
+                    : widget.data["party_phone"],
               ),
               SizedBox(height: height * 0.02),
               const RowText(text: "Email"),

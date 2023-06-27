@@ -165,7 +165,7 @@ class _EditItemMasterState extends State<EditItemMaster> {
                 }),
                 items: List.generate(widget.units.length,
                     (index) => widget.units[index]["item_uom_name"]),
-                dropDownValue: widget.units[underIndex]["item_uom_name"],
+                dropDownValue: widget.units[unitIndex]["item_uom_name"],
                 scrollController:
                     FixedExtentScrollController(initialItem: unitIndex),
               ),

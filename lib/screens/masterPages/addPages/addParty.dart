@@ -43,7 +43,7 @@ class _AddPartyMasterState extends State<AddPartyMaster> {
   String openingBal = "";
   String deliveryAdd = "";
   String partnerLimit = "";
-  String tds = "";
+  String tds = "No";
   String tdsPercent = "";
   String paymentType = "";
   String payValue = "";

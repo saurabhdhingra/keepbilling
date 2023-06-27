@@ -49,8 +49,8 @@ class _AddItemMasterState extends State<AddItemMaster> {
   String opRate = "";
   String sRate = "";
   String pRate = "";
-  String itemType = "";
-  String trackable = "";
+  String itemType = "Goods";
+  String trackable = "Y";
   String stockLimit = "";
 
   String addGroupText = "";

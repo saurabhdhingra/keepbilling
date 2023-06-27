@@ -203,27 +203,27 @@ final List<Map> links = [
   {
     "title": "Transaction",
     "icon": Icons.payments_rounded,
-    "subLinks": [
-      {
-        "title": "Purchase",
-        "screen": const PurchaseTransaction(),
-        "icon": CupertinoIcons.purchased
-      },
-      {
+    "subLinks": [{
         "title": "Sale",
         "screen": const SaleTransaction(),
         "icon": CupertinoIcons.cube_box
       },
       {
+        "title": "Purchase",
+        "screen": const PurchaseTransaction(),
+        "icon": CupertinoIcons.purchased
+      },
+      
+      {
         "title": "Receipts",
         "screen": const RecieptsTransaction(),
         "icon": CupertinoIcons.news
       },
-      {
-        "title": "Expense",
-        "screen": const ExpensesTransaction(),
-        "icon": CupertinoIcons.money_dollar_circle
-      },
+      // {
+      //   "title": "Expense",
+      //   "screen": const ExpensesTransaction(),
+      //   "icon": CupertinoIcons.money_dollar_circle
+      // },
       {
         "title": "Voucher",
         "screen": const VoucherTransaction(),
@@ -239,16 +239,16 @@ final List<Map> links = [
         "screen": const OutstandingTransaction(),
         "icon": CupertinoIcons.doc_append
       },
-      {
-        "title": "Debit Note",
-        "screen": const DebitNoteTransaction(),
-        "icon": Icons.money_off
-      },
-      {
-        "title": "Credit Note",
-        "screen": const CreditNoteTransaction(),
-        "icon": Icons.credit_card_outlined
-      },
+      // {
+      //   "title": "Debit Note",
+      //   "screen": const DebitNoteTransaction(),
+      //   "icon": Icons.money_off
+      // },
+      // {
+      //   "title": "Credit Note",
+      //   "screen": const CreditNoteTransaction(),
+      //   "icon": Icons.credit_card_outlined
+      // },
     ]
   },
   {

@@ -44,7 +44,7 @@ class _AddVoucherTransactionState extends State<AddVoucherTransaction> {
   String party = "";
   int partyIndex = 0;
   String totalAmount = "";
-  dynamic voucherDate = "";
+  dynamic voucherDate = DateTime.now();
 
   final _formKey1 = GlobalKey<FormState>();
   final _formKey2 = GlobalKey<FormState>();

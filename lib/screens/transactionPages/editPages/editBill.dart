@@ -147,9 +147,7 @@ class _EditBillState extends State<EditBill> {
     extraF2 = widget.data["extra_2"] ?? "";
     extraF3 = widget.data["extra_3"] ?? "";
     extraF4 = widget.data["extra_4"] ?? "";
-    grandTotal = (double.parse(widget.data["totalamount"]) +
-            double.parse(widget.data["tax_amount"]))
-        .toString();
+    grandTotal = double.parse(widget.data["totalamount"]).toString();
     tax = widget.data["tax_amount"] ?? "";
     otherCharges = widget.data["other_charges"] ?? "";
     extraDiscount = widget.data["extra_disc"] ?? "";

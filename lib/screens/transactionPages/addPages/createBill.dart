@@ -455,6 +455,7 @@ class _CreateBillState extends State<CreateBill> {
                           ),
                         );
                       }
+                      
                       if (value["type"] == "success") {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

@@ -1,6 +1,7 @@
 import 'dart:io';
 import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
+import 'package:keepbilling/responsive/screen_type_layout.dart';
 import 'package:provider/provider.dart';
 import '../../../api/master.dart';
 import '../../../api/transaction.dart';
@@ -91,6 +92,7 @@ class _PaymentPageState extends State<PaymentPage> {
     try {
       dataList = await service.fetchOutstandingList(
           userId, companyId, product, widget.billType, widget.partyId);
+
       partyList =
           await serviceM.fetchDataList(userId, companyId, "party", product);
       bankList =
@@ -100,50 +102,27 @@ class _PaymentPageState extends State<PaymentPage> {
       data = List.generate(
         dataList.length,
         (index) {
-          if (dataList[index]["id"] == widget.selected["id"]) {
-            return {
-              "id": dataList[index]["id"],
-              "selected": true,
-              "party_name": partyName,
-              "user_id": userId,
-              "party_id": widget.partyId,
-              "inv_no": dataList[index]["invoice_date"],
-              "inv_date": dataList[index]["invoice_date"],
-              "tds": false,
-              "tds_round": false,
-              "tds_percent": 0.0,
-              "amount": dataList[index]["amount"],
-              "base_amount": dataList[index]["base_amount"],
-              "tax_amount": dataList[index]["tax_amount"],
-              "bill_type": dataList[index]["bill_type"],
-              "flag": dataList[index]["flag"],
-              "company_id": companyId,
-              "callid": dataList[index]["callid"],
-            };
-          } else {
-            return {
-              "id": dataList[index]["id"],
-              "selected": false,
-              "party_name": partyName,
-              "user_id": userId,
-              "party_id": widget.partyId,
-              "inv_no": dataList[index]["invoice_date"],
-              "inv_date": dataList[index]["invoice_date"],
-              "tds": false,
-              "tds_round": false,
-              "tds_percent": 0.0,
-              "amount": dataList[index]["amount"],
-              "base_amount": dataList[index]["base_amount"],
-              "tax_amount": dataList[index]["tax_amount"],
-              "bill_type": dataList[index]["bill_type"],
-              "flag": dataList[index]["flag"],
-              "company_id": companyId,
-              "callid": dataList[index]["callid"],
-            };
-          }
+          return {
+            "id": dataList[index]["id"],
+            "selected": dataList[index]["id"] == widget.selected["id"],
+            "party_name": partyName,
+            "user_id": userId,
+            "party_id": widget.partyId,
+            "inv_no": dataList[index]["invoice_date"],
+            "inv_date": dataList[index]["invoice_date"],
+            "tds": false,
+            "tds_round": false,
+            "tds_percent": 0.0,
+            "amount": dataList[index]["amount"],
+            "base_amount": double.parse(dataList[index]["base_amount"]),
+            "tax_amount": dataList[index]["tax_amount"],
+            "bill_type": dataList[index]["bill_type"],
+            "flag": dataList[index]["flag"],
+            "company_id": companyId,
+            "callid": dataList[index]["callid"],
+          };
         },
       );
-      print(data);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -482,108 +461,221 @@ class _PaymentPageState extends State<PaymentPage> {
     }
   }
 
-  Padding receit(Map rowData, int index, double width, double height) {
+  Widget receit(Map rowData, int index, double width, double height) {
     final theme = Theme.of(context).copyWith(dividerColor: Colors.transparent);
-    return Padding(
-      padding: EdgeInsets.fromLTRB(width * 0.02, 0, width * 0.02, 0),
-      child: Theme(
-        data: theme,
-        child: ExpansionTile(
-          leading: IconButton(
-            icon: rowData["selected"]
-                ? const Icon(Icons.check_box)
-                : const Icon(Icons.check_box_outline_blank),
-            onPressed: () {
-              setState(() {
-                data[index]["selected"] = !data[index]["selected"];
-              });
-              updateAmount();
-            },
-          ),
-          title: Text(
-            rowData["party_name"],
-            overflow: TextOverflow.ellipsis,
-          ),
-          subtitle: Text("Amount : ${rowData["amount"]}"),
-          textColor: Colors.black87,
-          iconColor: Colors.black87,
-          expandedAlignment: Alignment.centerLeft,
-          expandedCrossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                SizedBox(width: width * 0.07),
-                Text("Invoice No. : ${rowData["party_name"]}")
-              ],
+    return ScreenTypeLayout(
+      mobile: Padding(
+        padding: EdgeInsets.fromLTRB(width * 0.02, 0, width * 0.02, 0),
+        child: Theme(
+          data: theme,
+          child: ExpansionTile(
+            leading: IconButton(
+              icon: rowData["selected"]
+                  ? const Icon(Icons.check_box)
+                  : const Icon(Icons.check_box_outline_blank),
+              onPressed: () {
+                setState(() {
+                  data[index]["selected"] = !data[index]["selected"];
+                });
+                updateAmount();
+              },
             ),
-            Row(
-              children: [
-                SizedBox(width: width * 0.07),
-                Text("Invoice Date : ${rowData["inv_date"]}"),
-              ],
+            title: Text(
+              rowData["party_name"],
+              overflow: TextOverflow.ellipsis,
             ),
-            Row(
-              children: [
-                SizedBox(width: width * 0.07),
-                const Text("TDS :"),
-                IconButton(
-                  icon: rowData["tds"]
-                      ? const Icon(Icons.check_box)
-                      : const Icon(Icons.check_box_outline_blank),
-                  onPressed: () {
-                    setState(() {
-                      data[index]["tds"] = !data[index]["tds"];
-                    });
-                  },
-                ),
-                SizedBox(
-                  width: width * 0.3,
-                  child: TextFormField(
-                    keyboardType: TextInputType.number,
-                    cursorColor: Colors.black,
-                    inputFormatters: [
-                      DecimalTextInputFormatter(decimalRange: 2)
-                    ],
-                    onChanged: (value) {
-                      setState(() =>
-                          data[index]["tds_percent"] = double.parse(value));
+            subtitle: Text("Amount : ${rowData["amount"]}"),
+            textColor: Colors.black87,
+            iconColor: Colors.black87,
+            expandedAlignment: Alignment.centerLeft,
+            expandedCrossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  SizedBox(width: width * 0.07),
+                  Text("Invoice No. : ${rowData["party_name"]}")
+                ],
+              ),
+              Row(
+                children: [
+                  SizedBox(width: width * 0.07),
+                  Text("Invoice Date : ${rowData["inv_date"]}"),
+                ],
+              ),
+              Row(
+                children: [
+                  SizedBox(width: width * 0.07),
+                  const Text("TDS :"),
+                  IconButton(
+                    icon: rowData["tds"]
+                        ? const Icon(Icons.check_box)
+                        : const Icon(Icons.check_box_outline_blank),
+                    onPressed: () {
+                      setState(() {
+                        data[index]["tds"] = !data[index]["tds"];
+                      });
                     },
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Platform.isIOS
-                          ? const Color.fromRGBO(235, 235, 235, 1)
-                          : Colors.white,
-                      border: Platform.isIOS
-                          ? const OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)))
-                          : const OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                      hintText: "0.00",
-                    ),
                   ),
-                )
-              ],
+                  SizedBox(
+                    width: width * 0.3,
+                    child: TextFormField(
+                      keyboardType: TextInputType.number,
+                      cursorColor: Colors.black,
+                      inputFormatters: [
+                        DecimalTextInputFormatter(decimalRange: 2)
+                      ],
+                      onChanged: (value) {
+                        setState(() =>
+                            data[index]["tds_percent"] = double.parse(value));
+                      },
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Platform.isIOS
+                            ? const Color.fromRGBO(235, 235, 235, 1)
+                            : Colors.white,
+                        border: Platform.isIOS
+                            ? const OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10)))
+                            : const OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
+                        hintText: "0.00",
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              // Row(
+              //   children: [
+              //     SizedBox(width: width * 0.07),
+              //     const Text("TDS Round ? : "),
+              //     IconButton(
+              //       icon: rowData["tds_round"]
+              //           ? const Icon(Icons.check_box)
+              //           : const Icon(Icons.check_box_outline_blank),
+              //       onPressed: () {
+              //         setState(() {
+              //           data[index]["tds_round"] = !data[index]["tds_round"];
+              //         });
+              //       },
+              //     ),
+              //   ],
+              // )
+            ],
+          ),
+        ),
+      ),
+      tablet: Padding(
+        padding: EdgeInsets.fromLTRB(width * 0.065, 0, width * 0.065, 0),
+        child: Theme(
+          data: theme,
+          child: ExpansionTile(
+            leading: IconButton(
+              icon: rowData["selected"]
+                  ? const Icon(Icons.check_box, size: 35)
+                  : const Icon(Icons.check_box_outline_blank, size: 35),
+              onPressed: () {
+                setState(() {
+                  data[index]["selected"] = !data[index]["selected"];
+                });
+                updateAmount();
+              },
             ),
-            // Row(
-            //   children: [
-            //     SizedBox(width: width * 0.07),
-            //     const Text("TDS Round ? : "),
-            //     IconButton(
-            //       icon: rowData["tds_round"]
-            //           ? const Icon(Icons.check_box)
-            //           : const Icon(Icons.check_box_outline_blank),
-            //       onPressed: () {
-            //         setState(() {
-            //           data[index]["tds_round"] = !data[index]["tds_round"];
-            //         });
-            //       },
-            //     ),
-            //   ],
-            // )
-          ],
+            title: Text(
+              rowData["party_name"],
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: height * 0.025),
+            ),
+            subtitle: Text("Amount : ${rowData["amount"]}",
+                style: TextStyle(fontSize: height * 0.02)),
+            textColor: Colors.black87,
+            iconColor: Colors.black87,
+            expandedAlignment: Alignment.centerLeft,
+            expandedCrossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  SizedBox(width: width * 0.07),
+                  Text("Invoice No. : ${rowData["party_name"]}",
+                      style: TextStyle(fontSize: height * 0.017))
+                ],
+              ),
+              Row(
+                children: [
+                  SizedBox(width: width * 0.07),
+                  Text("Invoice Date : ${rowData["inv_date"]}",
+                      style: TextStyle(fontSize: height * 0.017)),
+                ],
+              ),
+              Row(
+                children: [
+                  SizedBox(width: width * 0.05),
+                  IconButton(
+                    icon: rowData["tds"]
+                        ? const Icon(Icons.check_box)
+                        : const Icon(Icons.check_box_outline_blank),
+                    onPressed: () {
+                      setState(() {
+                        data[index]["tds"] = !data[index]["tds"];
+                      });
+                      updateAmount();
+                    },
+                  ),
+                  Text("TDS ", style: TextStyle(fontSize: height * 0.017)),
+                  SizedBox(width: width * 0.35),
+                  SizedBox(
+                    width: width * 0.3,
+                    child: TextFormField(
+                      keyboardType: TextInputType.number,
+                      cursorColor: Colors.black,
+                      style: TextStyle(fontSize: height * 0.017),
+                      inputFormatters: [
+                        DecimalTextInputFormatter(decimalRange: 2)
+                      ],
+                      onChanged: (value) {
+                        setState(() =>
+                            data[index]["tds_percent"] = double.parse(value));
+                        updateAmount();
+                      },
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Platform.isIOS
+                            ? const Color.fromRGBO(235, 235, 235, 1)
+                            : Colors.white,
+                        border: Platform.isIOS
+                            ? const OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10)))
+                            : const OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
+                        hintText: "0.00",
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              // Row(
+              //   children: [
+              //     SizedBox(width: width * 0.07),
+              //     const Text("TDS Round ? : "),
+              //     IconButton(
+              //       icon: rowData["tds_round"]
+              //           ? const Icon(Icons.check_box)
+              //           : const Icon(Icons.check_box_outline_blank),
+              //       onPressed: () {
+              //         setState(() {
+              //           data[index]["tds_round"] = !data[index]["tds_round"];
+              //         });
+              //       },
+              //     ),
+              //   ],
+              // )
+            ],
+          ),
         ),
       ),
     );
@@ -685,9 +777,8 @@ class _PaymentPageState extends State<PaymentPage> {
         if (data[i]["tds"]) {
           temp += (data[i]["base_amount"] * (1 - data[i]["tds_percent"] / 100) +
               data[i]["tax_amount"]);
-          if (data[i]["tds_round"]) {
-            temp = temp.round().toDouble();
-          }
+        } else {
+          temp += data[i]["base_amount"] + data[i]["tax_amount"];
         }
       }
     }

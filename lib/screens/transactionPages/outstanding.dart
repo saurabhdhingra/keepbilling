@@ -187,6 +187,7 @@ class _OutstandingTransactionState extends State<OutstandingTransaction> {
                               properties: propeties,
                               partyName: partyName,
                               payAction: () async {
+                                
                                 var navigationResult = await Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -199,6 +200,7 @@ class _OutstandingTransactionState extends State<OutstandingTransaction> {
                                     ),
                                   ),
                                 );
+                             
                                 if (navigationResult == "update" &&
                                     listName == "Sale") {
                                   updateSaleData();

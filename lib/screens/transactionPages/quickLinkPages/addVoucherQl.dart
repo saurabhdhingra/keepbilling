@@ -47,7 +47,7 @@ class _AddVoucherTransactionQLState extends State<AddVoucherTransactionQL> {
   String party = "";
   int partyIndex = 0;
   String totalAmount = "";
-  dynamic voucherDate = "";
+  dynamic voucherDate = DateTime.now();
 
   final _formKey1 = GlobalKey<FormState>();
   // final _formKey2 = GlobalKey<FormState>();
@@ -72,8 +72,9 @@ class _AddVoucherTransactionQLState extends State<AddVoucherTransactionQL> {
     product =
         Provider.of<AuthenticationProvider>(context, listen: false).product;
     try {
-      ledgers = await service.fetchLedgerList(userId, companyId,product);
-      partyList = await serviceM.fetchDataList(userId, companyId, "party",product);
+      ledgers = await service.fetchLedgerList(userId, companyId, product);
+      partyList =
+          await serviceM.fetchDataList(userId, companyId, "party", product);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -123,17 +124,17 @@ class _AddVoucherTransactionQLState extends State<AddVoucherTransactionQL> {
                     Row(
                       children: [
                         ScreenTypeLayout(
-                    mobile: SizedBox(width: width * 0.8),
-                    tablet: SizedBox(width: width * 0.9),
-                  ),
+                          mobile: SizedBox(width: width * 0.8),
+                          tablet: SizedBox(width: width * 0.9),
+                        ),
                         TextButton(
                           onPressed: () {
                             Navigator.pop(context);
                           },
                           child: Text(
-                      "Cancel",
-                      style: TextStyle(fontSize: height * 0.015),
-                    ),
+                            "Cancel",
+                            style: TextStyle(fontSize: height * 0.015),
+                          ),
                         )
                       ],
                     ),
@@ -235,13 +236,14 @@ class _AddVoucherTransactionQLState extends State<AddVoucherTransactionQL> {
                       onSubmit: () {
                         add().then(
                           (value) {
-                            if(value == null){
-                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Error with placing request. Please try again."),
-                          ),
-                        );
-                      }
+                            if (value == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      "Error with placing request. Please try again."),
+                                ),
+                              );
+                            }
                             if (value["type"] == "success") {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
