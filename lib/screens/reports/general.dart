@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../api/reports.dart';
 import '../../provider/authenticationProvider.dart';
 import '../../utils/constants.dart';
 import '../../widgets/formPages/rowText.dart';
+import '../../widgets/formPages/statusButton.dart';
 import '../../widgets/infoPages/paddedText.dart';
 
 class GeneralReport extends StatefulWidget {
@@ -31,6 +30,7 @@ class GeneralReport extends StatefulWidget {
 
 class _GeneralReportState extends State<GeneralReport> {
   bool isLoading = false;
+  bool isSale = true;
   List saleList = [];
   List purchaseList = [];
   Map data = {};
@@ -120,68 +120,72 @@ class _GeneralReportState extends State<GeneralReport> {
                       ),
                     ),
                     SizedBox(height: height * 0.02),
-                    RowText(
-                      text: "Purchase",
-                      style: TextStyle(
-                        fontSize: height * 0.025,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Flexible(
-                      fit: FlexFit.loose,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: DataTable(
-                          dataRowHeight: height * 0.08,
-                          columns: <DataColumn>[
-                            customDataColumn('Date'),
-                            customDataColumn('Invoice Number'),
-                            customDataColumn('Amount'),
-                            customDataColumn('Tax Amount'),
-                            customDataColumn('Voucher Type'),
-                            customDataColumn('Credit'),
-                            customDataColumn('Debit'),
-                          ],
-                          rows: List.generate(
-                            purchaseList.length,
-                            (index) {
-                              return customDataRow(purchaseList[index]);
-                            },
-                          ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        StatusButton(
+                          isSelected: isSale,
+                          setState: (String value) => setState(() {
+                            isSale = true;
+                          }),
+                          text: "Sale",
                         ),
-                      ),
-                    ),
-                    SizedBox(height: height * 0.02),
-                    RowText(
-                      text: "Sale",
-                      style: TextStyle(
-                        fontSize: height * 0.025,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Flexible(
-                      fit: FlexFit.loose,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: DataTable(
-                          columns: <DataColumn>[
-                            customDataColumn('Date'),
-                            customDataColumn('Invoice Number'),
-                            customDataColumn('Amount'),
-                            customDataColumn('Tax Amount'),
-                            customDataColumn('Voucher Type'),
-                            customDataColumn('Credit'),
-                            customDataColumn('Debit'),
-                          ],
-                          rows: List.generate(
-                            saleList.length,
-                            (index) {
-                              return customDataRow(saleList[index]);
-                            },
-                          ),
+                        StatusButton(
+                          isSelected: !isSale,
+                          setState: (String value) => setState(() {
+                            isSale = false;
+                          }),
+                          text: "Purchase",
                         ),
-                      ),
+                      ],
                     ),
+                    isSale
+                        ? Flexible(
+                            fit: FlexFit.loose,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: DataTable(
+                                columns: <DataColumn>[
+                                  customDataColumn('Date'),
+                                  customDataColumn('Invoice Number'),
+                                  customDataColumn('Amount'),
+                                  customDataColumn('Tax Amount'),
+                                  customDataColumn('Voucher Type'),
+                                  customDataColumn('Credit'),
+                                  customDataColumn('Debit'),
+                                ],
+                                rows: List.generate(
+                                  saleList.length,
+                                  (index) {
+                                    return customDataRow(saleList[index]);
+                                  },
+                                ),
+                              ),
+                            ),
+                          )
+                        : Flexible(
+                            fit: FlexFit.loose,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: DataTable(
+                                columns: <DataColumn>[
+                                  customDataColumn('Date'),
+                                  customDataColumn('Invoice Number'),
+                                  customDataColumn('Amount'),
+                                  customDataColumn('Tax Amount'),
+                                  customDataColumn('Voucher Type'),
+                                  customDataColumn('Credit'),
+                                  customDataColumn('Debit'),
+                                ],
+                                rows: List.generate(
+                                  purchaseList.length,
+                                  (index) {
+                                    return customDataRow(purchaseList[index]);
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
                   ],
                 ),
               ),

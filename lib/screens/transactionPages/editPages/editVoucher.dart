@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/api/transaction.dart';
-import 'package:keepbilling/screens/transactionPages/voucher.dart';
 import 'package:keepbilling/utils/functions.dart';
 import 'package:keepbilling/widgets/formPages/titleText.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../model/voucher.dart';
 import '../../../responsive/screen_type_layout.dart';
 import '../../../utils/constants.dart';
 import '../../../widgets/formPages/datePicker.dart';
@@ -24,7 +22,8 @@ class EditVoucherTransaction extends StatefulWidget {
       {Key? key,
       required this.partyList,
       required this.ledgerList,
-      required this.data, required this.product})
+      required this.data,
+      required this.product})
       : super(key: key);
 
   @override
@@ -108,14 +107,14 @@ class _EditVoucherTransactionState extends State<EditVoucherTransaction> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                   child: Text(
+                    child: Text(
                       "Cancel",
                       style: TextStyle(fontSize: height * 0.015),
                     ),
                   )
                 ],
               ),
-              const TitleText(text: "Add Voucher"),
+              const TitleText(text: "Edit Voucher"),
               SizedBox(height: height * 0.02),
               const RowText(text: "Party"),
               DropdownSelector(

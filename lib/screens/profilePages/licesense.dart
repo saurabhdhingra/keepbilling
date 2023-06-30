@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:keepbilling/widgets/formPages/submitButton.dart';
 import 'package:keepbilling/widgets/infoPages/infoText.dart';
-import 'package:keepbilling/widgets/infoPages/paddedText.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../../api/profile.dart';
 import '../../provider/authenticationProvider.dart';
 import '../../utils/constants.dart';

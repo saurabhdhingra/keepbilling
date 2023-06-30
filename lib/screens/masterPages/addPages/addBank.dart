@@ -12,7 +12,6 @@ import '../../../widgets/formPages/dropdownSelector.dart';
 import '../../../widgets/formPages/rowText.dart';
 import '../../../widgets/formPages/statusButton.dart';
 import '../../../widgets/formPages/submitButton.dart';
-import '../bank.dart';
 
 class AddBankMaster extends StatefulWidget {
   final String product;

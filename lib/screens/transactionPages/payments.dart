@@ -9,14 +9,14 @@ import '../../widgets/infoPages/CustomExpansionTile.dart';
 import '../../widgets/infoPages/paddedText.dart';
 import '../searchBarDelegate.dart';
 
-class RecieptsTransaction extends StatefulWidget {
-  const RecieptsTransaction({Key? key}) : super(key: key);
+class PaymentsTransaction extends StatefulWidget {
+  const PaymentsTransaction({Key? key}) : super(key: key);
 
   @override
-  State<RecieptsTransaction> createState() => _RecieptsTransactionState();
+  State<PaymentsTransaction> createState() => _PaymentsTransactionState();
 }
 
-class _RecieptsTransactionState extends State<RecieptsTransaction> {
+class _PaymentsTransactionState extends State<PaymentsTransaction> {
   bool isLoading = false;
   List dataList = [];
 
@@ -31,10 +31,12 @@ class _RecieptsTransactionState extends State<RecieptsTransaction> {
     userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
     companyId =
         Provider.of<AuthenticationProvider>(context, listen: false).companyid;
+
     product =
         Provider.of<AuthenticationProvider>(context, listen: false).product;
     try {
-      dataList = await service.fetchDataList("reciept", userId, companyId,product);
+      dataList =
+          await service.fetchDataList("payment", userId, companyId, product);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -60,19 +62,16 @@ class _RecieptsTransactionState extends State<RecieptsTransaction> {
     var width = SizeConfig.getWidth(context);
 
     final Map propeties = {
-      "title": "narration",
-      "subtitle": "inv_date",
+      "title": "party_name",
+      "subtitle": "amount",
       "entries": [
-        {"fieldName": "Amount", "fieldValue": "amount"},
-        {"fieldName": "Transaction Date", "fieldValue": "trans_date"},
+        {"fieldName": "Invoice No", "fieldValue": "invoice_no"},
+        {"fieldName": "Invoice Date", "fieldValue": "inv_date"},
       ]
     };
     return isLoading
         ? infoLoading(context)
         : Scaffold(
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {},
-            ),
             backgroundColor: Colors.white,
             appBar: AppBar(
               backgroundColor: Colors.white,
@@ -96,7 +95,7 @@ class _RecieptsTransactionState extends State<RecieptsTransaction> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     PaddedText(
-                      text: "Reciepts",
+                      text: "Payments",
                       style: TextStyle(
                         fontSize: height * 0.035,
                         fontWeight: FontWeight.w600,

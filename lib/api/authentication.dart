@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:keepbilling/api/constants.dart';
-import 'package:keepbilling/model/cheque.dart';
-import 'package:keepbilling/model/toDoTask.dart';
 
 import 'exceptions.dart';
 

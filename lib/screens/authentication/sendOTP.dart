@@ -2,12 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/responsive/screen_type_layout.dart';
 import 'package:keepbilling/screens/authentication/verifyOTP.dart';
-
 import '../../api/authentication.dart';
 import '../../utils/constants.dart';
-
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../widgets/formPages/customField.dart';
 
 class SendOTPPage extends StatefulWidget {

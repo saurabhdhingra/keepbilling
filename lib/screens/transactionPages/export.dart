@@ -4,6 +4,5 @@ export 'journalVoucher.dart';
 export 'outstanding.dart';
 export 'purchase.dart';
 export 'sale.dart';
-export 'creditNotes.dart';
-export 'debitNotes.dart';
 export 'voucher.dart';
+export 'payments.dart';

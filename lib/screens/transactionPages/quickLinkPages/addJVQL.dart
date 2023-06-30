@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/widgets/formPages/titleText.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../api/transaction.dart';
 import '../../../model/journalVoucher.dart';
 import '../../../provider/authenticationProvider.dart';

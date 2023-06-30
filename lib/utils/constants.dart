@@ -4,7 +4,6 @@ import 'package:keepbilling/screens/masterPages/export.dart';
 import 'package:keepbilling/screens/profilePages/export.dart';
 import 'package:keepbilling/screens/settings/export.dart';
 import 'package:keepbilling/screens/transactionPages/export.dart';
-import 'package:keepbilling/screens/masterPages/addPages/export.dart';
 import 'package:keepbilling/screens/masterPages/quickLinkPages/export.dart';
 import 'package:keepbilling/screens/transactionPages/quickLinkPages/export.dart';
 import '../screens/masterPages/bank.dart';
@@ -113,8 +112,8 @@ Map quickLinksScreens = {
   "New Sale": const CreateBillQL(billType: 'S'),
   "Purchase List": const PurchaseTransaction(),
   "New Purchase": const CreateBillQL(billType: 'P'),
-  "Credit Notes": const CreditNoteTransaction(),
-  "Debit Notes": const DebitNoteTransaction(),
+  // "Credit Notes": const CreditNoteTransaction(),
+  // "Debit Notes": const DebitNoteTransaction(),
   "Journal Vouchers": const JournalVoucherTransaction(),
   "New Journal Voucher": const AddJVTransactionQL(),
   "Vouchers": const VoucherTransaction(),
@@ -224,6 +223,11 @@ final List<Map> links = [
       //   "screen": const ExpensesTransaction(),
       //   "icon": CupertinoIcons.money_dollar_circle
       // },
+      {
+        "title": "Payments",
+        "screen": const PaymentsTransaction(),
+        "icon": CupertinoIcons.money_dollar
+      },
       {
         "title": "Voucher",
         "screen": const VoucherTransaction(),

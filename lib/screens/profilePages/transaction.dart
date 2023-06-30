@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../api/profile.dart';
 import '../../provider/authenticationProvider.dart';
 import '../../utils/constants.dart';

@@ -12,18 +12,19 @@ class CustomExpansionTile extends StatefulWidget {
   final VoidCallback? payAction;
   final Map data;
   final List? groups;
-  final String? partyName;
+
   final bool? isTab;
+  final Color? color;
   const CustomExpansionTile({
     Key? key,
     required this.properties,
     required this.data,
     this.editAction,
     this.pdfAction,
-    this.partyName = "",
     this.groups,
     this.payAction,
     this.isTab = false,
+    this.color,
   }) : super(key: key);
 
   @override
@@ -54,7 +55,8 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> {
           ),
           textColor: Colors.black87,
           iconColor: Colors.black87,
-          backgroundColor: const Color.fromARGB(255, 16, 196, 160),
+          backgroundColor:
+              widget.color ?? const Color.fromARGB(255, 16, 196, 160),
           expandedAlignment: Alignment.centerLeft,
           expandedCrossAxisAlignment: CrossAxisAlignment.start,
           children: fields(widget.properties["entries"], width),
@@ -83,21 +85,37 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> {
           widget.editAction != null &&
           widget.pdfAction != null) {
         widgets.add(
-          Row(
-            children: [
-              SizedBox(
-                width: width * 0.7,
-              ),
-              IconButton(
-                icon: const Icon(CupertinoIcons.doc),
-                onPressed: widget.pdfAction,
-              ),
-              IconButton(
-                icon: const Icon(CupertinoIcons.pencil),
-                onPressed: widget.editAction,
-              ),
-            ],
-          ),
+          (widget.isTab ?? false)
+              ? Row(
+                  children: [
+                    SizedBox(
+                      width: width * 0.85,
+                    ),
+                    IconButton(
+                      icon: const Icon(CupertinoIcons.doc),
+                      onPressed: widget.pdfAction,
+                    ),
+                    IconButton(
+                      icon: const Icon(CupertinoIcons.pencil),
+                      onPressed: widget.editAction,
+                    ),
+                  ],
+                )
+              : Row(
+                  children: [
+                    SizedBox(
+                      width: width * 0.7,
+                    ),
+                    IconButton(
+                      icon: const Icon(CupertinoIcons.doc),
+                      onPressed: widget.pdfAction,
+                    ),
+                    IconButton(
+                      icon: const Icon(CupertinoIcons.pencil),
+                      onPressed: widget.editAction,
+                    ),
+                  ],
+                ),
         );
       } else if (i == properties.length && widget.payAction != null) {
         widgets.add(
@@ -112,31 +130,12 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> {
       } else if (i == properties.length && widget.editAction == null) {
         continue;
       } else {
-        if (properties[i]["fieldName"] == "under" && widget.groups != null) {
-          widgets.add(
-            Description(
-              property: properties[i]["fieldName"] + " : ",
-              value: widget
-                  .groups![widget.data["${properties[i]["fieldValue"]}"]]
-                  .toString(),
-            ),
-          );
-        } else if (properties[i]["fieldName"] == "party_name" &&
-            widget.partyName != null) {
-          widgets.add(
-            Description(
-              property: "Party : ",
-              value: widget.partyName ?? "",
-            ),
-          );
-        } else {
-          widgets.add(
-            Description(
-              property: properties[i]["fieldName"] + " : ",
-              value: widget.data["${properties[i]["fieldValue"]}"].toString(),
-            ),
-          );
-        }
+        widgets.add(
+          Description(
+            property: properties[i]["fieldName"] + " : ",
+            value: widget.data["${properties[i]["fieldValue"]}"].toString(),
+          ),
+        );
       }
     }
     return widgets;

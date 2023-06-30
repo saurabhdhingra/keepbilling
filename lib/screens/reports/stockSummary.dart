@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../api/reports.dart';
 import '../../provider/authenticationProvider.dart';
 import '../../utils/constants.dart';
-import '../../widgets/formPages/rowText.dart';
 import '../../widgets/infoPages/paddedText.dart';
 
 class StockSummary extends StatefulWidget {

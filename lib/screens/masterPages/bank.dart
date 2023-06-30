@@ -84,10 +84,10 @@ class _BankMasterState extends State<BankMaster> {
     var width = SizeConfig.getWidth(context);
 
     final Map propeties = {
-      "title": "account_name",
+      "title": "bank_name",
       "subtitle": "balance",
       "entries": [
-        {"fieldName": "IFSC", "fieldValue": "bank_ifsc"},
+        {"fieldName": "Account Name", "fieldValue": "account_name"},
         {"fieldName": "Account Number", "fieldValue": "account_no"},
       ]
     };
@@ -154,6 +154,7 @@ class _BankMasterState extends State<BankMaster> {
                                 data: e,
                                 isTab : false, 
                                 properties: propeties,
+                                color : e["def"] =="Y" ? Colors.blue: null,
                                 editAction: () async {
                                   var navigationResult = await Navigator.push(
                                     context,
@@ -238,6 +239,8 @@ class _BankMasterState extends State<BankMaster> {
                               child: CustomExpansionTile(
                                 data: e,
                                 properties: propeties,
+                                isTab: true,
+                                 color : e["def"] =="Y" ? Colors.blue : null,
                                 editAction: () async {
                                   var navigationResult = await Navigator.push(
                                     context,

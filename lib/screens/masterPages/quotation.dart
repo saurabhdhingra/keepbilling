@@ -95,6 +95,7 @@ class _QuotationMasterState extends State<QuotationMaster> {
       "title": "party_name",
       "subtitle": "subject",
       "entries": [
+        {"fieldName": "Quotation No.", "fieldValue": "quot_no"},
         {"fieldName": "Date", "fieldValue": "build_date"},
         {"fieldName": "Amount", "fieldValue": "grandtotal"}
       ]

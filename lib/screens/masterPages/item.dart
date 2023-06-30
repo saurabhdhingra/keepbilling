@@ -46,6 +46,7 @@ class _ItemMasterState extends State<ItemMaster> {
           await service.fetchDataList(userId, companyId, "allgroup", product);
       units =
           await service.fetchDataList(userId, companyId, "allunit", product);
+      addGroup(dataList, groups);
     } catch (e) {
       dataList = [];
       // ignore: use_build_context_synchronously
@@ -64,6 +65,7 @@ class _ItemMasterState extends State<ItemMaster> {
     try {
       dataList =
           await service.fetchDataList(userId, companyId, "item", product);
+       addGroup(dataList, groups);
     } catch (e) {
       dataList = [];
       // ignore: use_build_context_synchronously
@@ -119,8 +121,9 @@ class _ItemMasterState extends State<ItemMaster> {
       "title": "item_name",
       "subtitle": "item_stock",
       "entries": [
-        {"fieldName": "Group", "fieldValue": "under"},
+        {"fieldName": "Group", "fieldValue": "group"},
         {"fieldName": "HSN_SAC", "fieldValue": "hsn_sac"},
+        {"fieldName": "Tax %", "fieldValue": "tax"},
       ]
     };
     return isLoading
@@ -238,5 +241,18 @@ class _ItemMasterState extends State<ItemMaster> {
               ),
             ),
           );
+  }
+
+  void addGroup(List dataList, List groups) {
+    for (int i = 0; i < dataList.length; i++) {
+      String groupId = dataList[i]["under"];
+      String groupName = "";
+      for (int j = 0; j < groups.length; j++) {
+        if (groups[j]["id"] == groupId) {
+          groupName = groups[j]["item_group_name"];
+        }
+      }
+      dataList[i]["group"] = groupName;
+    }
   }
 }

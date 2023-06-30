@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/api/transaction.dart';
+import 'package:keepbilling/responsive/screen_type_layout.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
 import 'package:keepbilling/screens/transactionPages/addPages/createBill.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../utils/constants.dart';
 import '../../api/master.dart';
 import '../../provider/authenticationProvider.dart';
@@ -174,36 +174,70 @@ class _SaleTransactionState extends State<SaleTransaction> {
                               width * 0.02, 0, width * 0.02, 0),
                           child: Theme(
                             data: theme,
-                            child: CustomExpansionTile(
-                              data: e,
-                              properties: propeties,
-                              editAction: () async {
-                                var navigationResult =
-                                    await getBillData(companyId, e).then(
-                                  (value) => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => EditBill(
-                                        data: value,
-                                        cashId: cashId,
-                                        companyId: companyId,
-                                        extraFieldData: extraFieldsData,
-                                        itemList: itemList,
-                                        partyList: parties,
-                                        paymentTerms: paymentTerms,
-                                        userId: userId,
-                                        product: product,
+                            child: ScreenTypeLayout(
+                              mobile: CustomExpansionTile(
+                                data: e,
+                                properties: propeties,
+                                editAction: () async {
+                                  var navigationResult =
+                                      await getBillData(companyId, e).then(
+                                    (value) => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => EditBill(
+                                          data: value,
+                                          cashId: cashId,
+                                          companyId: companyId,
+                                          extraFieldData: extraFieldsData,
+                                          itemList: itemList,
+                                          partyList: parties,
+                                          paymentTerms: paymentTerms,
+                                          userId: userId,
+                                          product: product,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                );
-                                if (navigationResult == "update") {
-                                  getUpdatedData();
-                                }
-                              },
-                              pdfAction: () async {
-                                await generatePDF(e["id"]);
-                              },
+                                  );
+                                  if (navigationResult == "update") {
+                                    getUpdatedData();
+                                  }
+                                },
+                                pdfAction: () async {
+                                  await generatePDF(e["id"]);
+                                },
+                              ),
+                              tablet: CustomExpansionTile(
+                                data: e,
+                                properties: propeties,
+                                isTab: true,
+                                editAction: () async {
+                                  var navigationResult =
+                                      await getBillData(companyId, e).then(
+                                    (value) => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => EditBill(
+                                          data: value,
+                                          cashId: cashId,
+                                          companyId: companyId,
+                                          extraFieldData: extraFieldsData,
+                                          itemList: itemList,
+                                          partyList: parties,
+                                          paymentTerms: paymentTerms,
+                                          userId: userId,
+                                          product: product,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                  if (navigationResult == "update") {
+                                    getUpdatedData();
+                                  }
+                                },
+                                pdfAction: () async {
+                                  await generatePDF(e["id"]);
+                                },
+                              ),
                             ),
                           ),
                         );

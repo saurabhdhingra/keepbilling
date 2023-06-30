@@ -469,6 +469,7 @@ class _PaymentPageState extends State<PaymentPage> {
         child: Theme(
           data: theme,
           child: ExpansionTile(
+            initiallyExpanded: true,
             leading: IconButton(
               icon: rowData["selected"]
                   ? const Icon(Icons.check_box)
@@ -572,6 +573,7 @@ class _PaymentPageState extends State<PaymentPage> {
         child: Theme(
           data: theme,
           child: ExpansionTile(
+            initiallyExpanded: true,
             leading: IconButton(
               icon: rowData["selected"]
                   ? const Icon(Icons.check_box, size: 35)
