@@ -122,7 +122,7 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> {
           Align(
             alignment: const AlignmentDirectional(0.9, 0),
             child: IconButton(
-              icon: const Icon(CupertinoIcons.money_dollar),
+              icon: const Icon(Icons.currency_rupee_outlined),
               onPressed: widget.payAction,
             ),
           ),

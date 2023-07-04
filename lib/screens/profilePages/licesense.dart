@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:keepbilling/widgets/formPages/submitButton.dart';
 import 'package:keepbilling/widgets/infoPages/infoText.dart';
@@ -23,6 +25,7 @@ class _LicenseDetailsState extends State<LicenseDetails> {
   ProfileService service = ProfileService();
 
   String userId = "";
+  String companyId = "";
   String product = "";
 
   int days = 0;
@@ -30,10 +33,12 @@ class _LicenseDetailsState extends State<LicenseDetails> {
   Future getData() async {
     setState(() => isLoading = true);
     userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    companyId =
+        Provider.of<AuthenticationProvider>(context, listen: false).companyid;
     product =
         Provider.of<AuthenticationProvider>(context, listen: false).product;
     try {
-      data = await service.fetchLicenseDetails(userId,product);
+      data = await service.fetchLicenseDetails(userId, product);
     } catch (e) {
       data = {
         "CustomerID": "",
@@ -141,15 +146,62 @@ class _LicenseDetailsState extends State<LicenseDetails> {
                 ],
               ),
             ),
-            SubmitButton(
-              text: "Renew",
-              isEndIndent: false,
-              onSubmit: () async {
-                const url = 'https://www.google.com';
-                openBrowserURL(url: url, inApp: true);
-              },
+            SizedBox(height: height * 0.02),
+            Row(
+              children: [
+                SizedBox(width: width * 0.3),
+                product == "2"
+                    ? SizedBox(width: width * 0.26)
+                    : button(() async {
+                        var url =
+                            'https://app.bmscomputers.com/renew.php?user_id=$userId&companyid=$userId&productid=$userId&act=upgrade';
+                        openBrowserURL(url: url, inApp: true);
+                      }, height, width, "Upgrade"),
+                SizedBox(width: width * 0.04),
+                button(() async {
+                  var url =
+                      'https://app.bmscomputers.com/renew.php?user_id=$userId&companyid=$userId&productid=$userId&act=renew';
+                  openBrowserURL(url: url, inApp: true);
+                }, height, width, "Renew"),
+                SizedBox(width: width * 0.04)
+              ],
             )
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget button(Function() onSubmit, double height, double width, String text) {
+    return GestureDetector(
+      onTap: onSubmit,
+      child: Container(
+        height: height * 0.04,
+        width: width * 0.25,
+        decoration: BoxDecoration(
+          color: Platform.isIOS
+              ? const Color.fromRGBO(235, 235, 235, 1)
+              : Colors.white,
+          border: Platform.isIOS
+              ? Border.all(
+                  color: Colors.white,
+                  width: 0,
+                  style: BorderStyle.solid,
+                )
+              : Border.all(
+                  color: Colors.black,
+                  width: 1,
+                  style: BorderStyle.solid,
+                ),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+        ),
+        child: Center(
+          child: FittedBox(
+            child: Text(
+              text,
+              style: TextStyle(fontSize: height * 0.02),
+            ),
+          ),
         ),
       ),
     );

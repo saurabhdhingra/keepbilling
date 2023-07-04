@@ -1071,7 +1071,7 @@ class _NavScreenState extends State<NavScreen> {
                 child: ExpansionTile(
                   leading: Icon(
                     e["icon"],
-                    size: isTablet ? width * 0.04 : width * 0.01,
+                    size: isTablet ? width * 0.04 : width * 0.05,
                   ),
                   key: PageStorageKey<String>(e["title"]),
                   title: Text(e["title"],
@@ -1085,7 +1085,7 @@ class _NavScreenState extends State<NavScreen> {
                         (i) => ListTile(
                           leading: Icon(
                             i["icon"],
-                            size: isTablet ? width * 0.04 : width * 0.01,
+                            size: isTablet ? width * 0.04 : width * 0.05,
                           ),
                           onTap: () {
                             Navigator.push(
@@ -1107,7 +1107,7 @@ class _NavScreenState extends State<NavScreen> {
             ListTile(
               leading: Icon(
                 Icons.message,
-                size: isTablet ? width * 0.04 : width * 0.01,
+                size: isTablet ? width * 0.04 : width * 0.05,
               ),
               title: Text("Send Feedback",
                   style: GoogleFonts.mukta(fontSize: height * 0.02)),

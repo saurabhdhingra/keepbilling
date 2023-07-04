@@ -226,7 +226,7 @@ final List<Map> links = [
       {
         "title": "Payments",
         "screen": const PaymentsTransaction(),
-        "icon": CupertinoIcons.money_dollar
+        "icon": Icons.currency_rupee_outlined
       },
       {
         "title": "Voucher",
