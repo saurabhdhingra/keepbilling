@@ -12,6 +12,7 @@ import 'package:keepbilling/screens/settings/changePIN.dart';
 import 'package:keepbilling/screens/settings/quickLinks.dart';
 import 'package:keepbilling/screens/support.dart';
 import 'package:keepbilling/widgets/formPages/titleText.dart';
+import 'package:keepbilling/widgets/navscreens/quickLinkGrid.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../api/dashboard.dart';
@@ -135,17 +136,18 @@ class _NavScreenState extends State<NavScreen> {
   }
 
   final List<List> _screensData = [
+    // [
+    //   CupertinoIcons.arrow_up_circle,
+    //   'Quick Links',
+    // ],
+
     [
-      CupertinoIcons.arrow_up_circle,
-      'Quick Links',
+      CupertinoIcons.doc,
+      'Reports',
     ],
     [
       CupertinoIcons.home,
       'Dashboard',
-    ],
-    [
-      CupertinoIcons.doc,
-      'Reports',
     ],
     [
       CupertinoIcons.settings,
@@ -207,123 +209,124 @@ class _NavScreenState extends State<NavScreen> {
 
   Widget selectedScreen(double height, double width) {
     switch (_currentIndex) {
+      // case 0:
+      //   return quickLinksPage(height, width);
       case 0:
-        return quickLinksPage(height, width);
+        return reportsPage();
       case 1:
         return homePage(height, width);
+
       case 2:
-        return reportsPage();
-      case 3:
         return settingsPage();
       default:
         return homePage(height, width);
     }
   }
 
-  Widget quickLinksPage(double height, double width) {
-    return ScreenTypeLayout(
-      mobile: isQLLoading
-          ? infoLoading(context)
-          : Scaffold(
-              backgroundColor: const Color.fromARGB(255, 243, 243, 243),
-              body: SafeArea(
-                child: SingleChildScrollView(
-                  controller: controller0,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const TitleText(text: "Quick Links"),
-                      ...quickLinks.map(
-                        (e) {
-                          return QuickLink(
-                            icon: quickLinksIcons[e],
-                            text: e,
-                            screen: quickLinksScreens[e],
-                            isButton: false,
-                          );
-                        },
-                      ),
-                      Divider(
-                        thickness: 2,
-                        height: height * 0.02,
-                        indent: width * 0.05,
-                        endIndent: width * 0.05,
-                        color: Colors.black87,
-                      ),
-                      QuickLink(
-                        icon: CupertinoIcons.arrow_up_circle,
-                        text: "Set Quick Links",
-                        screen: const DumyScreen(),
-                        isButton: true,
-                        function: () async {
-                          var navigationResult = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const QuickLinksSettings()),
-                          );
-                          if (navigationResult == "updated") {
-                            updateQuickLinks();
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-      tablet: isQLLoading
-          ? infoLoading(context)
-          : Scaffold(
-              backgroundColor: const Color.fromARGB(255, 243, 243, 243),
-              body: SafeArea(
-                child: SingleChildScrollView(
-                  controller: controller0,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const TitleText(text: "Quick Links"),
-                      ...quickLinks.map(
-                        (e) {
-                          return QuickLink(
-                            icon: quickLinksIcons[e],
-                            text: e,
-                            screen: quickLinksScreens[e],
-                            isButton: false,
-                          );
-                        },
-                      ),
-                      Divider(
-                        thickness: 2,
-                        height: height * 0.02,
-                        indent: width * 0.05,
-                        endIndent: width * 0.05,
-                        color: Colors.black87,
-                      ),
-                      QuickLink(
-                        icon: CupertinoIcons.arrow_up_circle,
-                        text: "Set Quick Links",
-                        screen: const DumyScreen(),
-                        isButton: true,
-                        function: () async {
-                          var navigationResult = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const QuickLinksSettings()),
-                          );
-                          if (navigationResult == "updated") {
-                            updateQuickLinks();
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-    );
-  }
+  // Widget quickLinksPage(double height, double width) {
+  //   return ScreenTypeLayout(
+  //     mobile: isQLLoading
+  //         ? infoLoading(context)
+  //         : Scaffold(
+  //             backgroundColor: const Color.fromARGB(255, 243, 243, 243),
+  //             body: SafeArea(
+  //               child: SingleChildScrollView(
+  //                 controller: controller0,
+  //                 child: Column(
+  //                   crossAxisAlignment: CrossAxisAlignment.start,
+  //                   children: [
+  //                     const TitleText(text: "Quick Links"),
+  //                     ...quickLinks.map(
+  //                       (e) {
+  //                         return QuickLink(
+  //                           icon: quickLinksIcons[e],
+  //                           text: e,
+  //                           screen: quickLinksScreens[e],
+  //                           isButton: false,
+  //                         );
+  //                       },
+  //                     ),
+  //                     Divider(
+  //                       thickness: 2,
+  //                       height: height * 0.02,
+  //                       indent: width * 0.05,
+  //                       endIndent: width * 0.05,
+  //                       color: Colors.black87,
+  //                     ),
+  //                     QuickLink(
+  //                       icon: CupertinoIcons.arrow_up_circle,
+  //                       text: "Set Quick Links",
+  //                       screen: const DumyScreen(),
+  //                       isButton: true,
+  //                       function: () async {
+  //                         var navigationResult = await Navigator.push(
+  //                           context,
+  //                           MaterialPageRoute(
+  //                               builder: (context) =>
+  //                                   const QuickLinksSettings()),
+  //                         );
+  //                         if (navigationResult == "updated") {
+  //                           updateQuickLinks();
+  //                         }
+  //                       },
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //     tablet: isQLLoading
+  //         ? infoLoading(context)
+  //         : Scaffold(
+  //             backgroundColor: const Color.fromARGB(255, 243, 243, 243),
+  //             body: SafeArea(
+  //               child: SingleChildScrollView(
+  //                 controller: controller0,
+  //                 child: Column(
+  //                   crossAxisAlignment: CrossAxisAlignment.start,
+  //                   children: [
+  //                     const TitleText(text: "Quick Links"),
+  //                     ...quickLinks.map(
+  //                       (e) {
+  //                         return QuickLink(
+  //                           icon: quickLinksIcons[e],
+  //                           text: e,
+  //                           screen: quickLinksScreens[e],
+  //                           isButton: false,
+  //                         );
+  //                       },
+  //                     ),
+  //                     Divider(
+  //                       thickness: 2,
+  //                       height: height * 0.02,
+  //                       indent: width * 0.05,
+  //                       endIndent: width * 0.05,
+  //                       color: Colors.black87,
+  //                     ),
+  //                     QuickLink(
+  //                       icon: CupertinoIcons.arrow_up_circle,
+  //                       text: "Set Quick Links",
+  //                       screen: const DumyScreen(),
+  //                       isButton: true,
+  //                       function: () async {
+  //                         var navigationResult = await Navigator.push(
+  //                           context,
+  //                           MaterialPageRoute(
+  //                               builder: (context) =>
+  //                                   const QuickLinksSettings()),
+  //                         );
+  //                         if (navigationResult == "updated") {
+  //                           updateQuickLinks();
+  //                         }
+  //                       },
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //   );
+  // }
 
   Widget reportsPage() {
     return Scaffold(
@@ -754,11 +757,12 @@ class _NavScreenState extends State<NavScreen> {
                 const RowText(
                     text: "To Do List", color: Color.fromRGBO(16, 196, 161, 1)),
 
-                todoListBox(height, width, userId, companyId),
+                todoListBox(height, width, userId, companyId, false),
                 const RowText(
                     text: "Cheques to be deposited",
                     color: Color.fromRGBO(16, 196, 161, 1)),
-                chequesBox(height, width),
+                chequesBox(height, width, false),
+                ...quickLinksBox(height, width, false),
                 SizedBox(height: height * 0.1),
               ],
             ),
@@ -812,11 +816,12 @@ class _NavScreenState extends State<NavScreen> {
                 const RowText(
                     text: "To Do List", color: Color.fromRGBO(16, 196, 161, 1)),
 
-                todoListBox(height, width, userId, companyId),
+                todoListBox(height, width, userId, companyId, true),
                 const RowText(
                     text: "Cheques to be deposited",
                     color: Color.fromRGBO(16, 196, 161, 1)),
-                chequesBox(height, width),
+                chequesBox(height, width, true),
+                ...quickLinksBox(height, width, true),
                 SizedBox(height: height * 0.1),
               ],
             ),
@@ -826,14 +831,18 @@ class _NavScreenState extends State<NavScreen> {
     );
   }
 
-  SizedBox chequesBox(height, width) {
+  SizedBox chequesBox(height, width, bool isTablet) {
     return SizedBox(
       width: width * 0.95,
       child: Column(
         children: chequeData.isEmpty
-            ? const [
+            ? [
                 ListTile(
-                  title: Text("No Cheques to be deposited"),
+                  title: Text(
+                    "No Cheques to be deposited",
+                    style: TextStyle(
+                        fontSize: isTablet ? height * 0.02 : height * 0.018),
+                  ),
                 )
               ]
             : [
@@ -859,14 +868,19 @@ class _NavScreenState extends State<NavScreen> {
     );
   }
 
-  SizedBox todoListBox(height, width, String userId, String companyId) {
+  SizedBox todoListBox(
+      height, width, String userId, String companyId, bool isTablet) {
     return SizedBox(
       width: width * 0.95,
       child: Column(
         children: toDoData.isEmpty
-            ? const [
+            ? [
                 ListTile(
-                  title: Text("Todo list empty."),
+                  title: Text(
+                    "Todo list empty.",
+                    style: TextStyle(
+                        fontSize: isTablet ? height * 0.02 : height * 0.018),
+                  ),
                 )
               ]
             : [
@@ -1027,8 +1041,67 @@ class _NavScreenState extends State<NavScreen> {
     );
   }
 
-  SizedBox quickLinksBox(height, width) {
-    return SizedBox(
+  List quickLinksBox(height, width, bool isTablet) {
+    return [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Padding(
+            padding: EdgeInsets.fromLTRB(width * 0.04, 0, 0, 0),
+            child: Text(
+              "Quick Links",
+              textAlign: TextAlign.start,
+              style: GoogleFonts.mukta(
+                color: const Color.fromRGBO(16, 196, 161, 1),
+                fontSize: isTablet ? width * 0.04 : width * 0.055,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, width * 0.04, 0),
+            child: IconButton(
+              onPressed: () async {
+                var navigationResult = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const QuickLinksSettings()),
+                );
+                if (navigationResult == "updated") {
+                  updateQuickLinks();
+                }
+              },
+              icon: Icon(Icons.edit, size: isTablet ? width * 0.035 : null),
+            ),
+          ),
+        ],
+      ),
+      Padding(
+        padding:
+            EdgeInsetsDirectional.fromSTEB(width * 0.05, 0, width * 0.05, 0),
+        child: GridView.builder(
+          physics: const NeverScrollableScrollPhysics(),
+          key: const PageStorageKey("New Collections"),
+          shrinkWrap: true,
+          // physics: const NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.zero,
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: width * 0.4,
+              childAspectRatio: isTablet ? 4.0 : 3.0,
+              crossAxisSpacing: width * 0.05,
+              mainAxisSpacing: isTablet ? width * 0.03 : width * 0.05),
+          itemCount: quickLinks.length,
+          itemBuilder: (context, i) => QuickLinkGrid(
+            icon: quickLinksIcons[quickLinks[i]],
+            text: quickLinks[i],
+            screen: quickLinksScreens[quickLinks[i]],
+            isButton: false,
+            isTablet: isTablet,
+          ),
+        ),
+      ),
+    ];
+    SizedBox(
       height: height * 0.15,
       child: Padding(
         padding: EdgeInsetsDirectional.fromSTEB(
@@ -1040,13 +1113,13 @@ class _NavScreenState extends State<NavScreen> {
           // physics: const NeverScrollableScrollPhysics(),
           padding: EdgeInsets.zero,
           gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: width * 0.3,
+              maxCrossAxisExtent: width * 0.4,
               childAspectRatio: 3.0,
               crossAxisSpacing: width * 0.05,
               mainAxisSpacing: width * 0.05),
-          itemCount: min(quickLinks.length, 6),
+          itemCount: quickLinks.length,
           itemBuilder: (context, i) => QuickLink(
-            icon: Icons.abc,
+            icon: quickLinksIcons[quickLinks[i]],
             text: quickLinks[i],
             screen: quickLinksScreens[quickLinks[i]],
             isButton: false,

@@ -146,10 +146,10 @@ class QuickView extends StatelessWidget {
       },
       child: Padding(
         padding: EdgeInsets.fromLTRB(
-            isFirst ? width * 0.05 : 0, 0, isLast ? width * 0.05 : 0, 0),
+            isFirst ? width * 0.04 : 0, 0, isLast ? width * 0.05 : 0, 0),
         child: Container(
           padding: EdgeInsets.fromLTRB(0, 0, 0, width * 0.02),
-          width: isTab ? width * 0.5 : width * 0.9,
+          width: isTab ? width * 0.45 : width * 0.9,
           height: isTab ? height * 0.27 : height * 0.3,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(
@@ -232,13 +232,13 @@ class QuickView extends StatelessWidget {
                     children: [
                       SizedBox(
                         height: isTab ? height * 0.026 : height * 0.032,
-                        child: FittedBox(
-                          child: Text(
-                            '  ${data[index]["name"]}',
-                            style: GoogleFonts.alfaSlabOne(
-                              color: Colors.white,
-                              fontSize: height * 0.023,
-                            ),
+                        width: isTab ? width * 0.28 : width * 0.32,
+                        child: Text(
+                          '  ${data[index]["name"]}',
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.alfaSlabOne(
+                            color: Colors.white,
+                            fontSize: height * 0.023,
                           ),
                         ),
                       ),
