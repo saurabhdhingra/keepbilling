@@ -215,7 +215,6 @@ class _NavScreenState extends State<NavScreen> {
         return reportsPage();
       case 1:
         return homePage(height, width);
-
       case 2:
         return settingsPage();
       default:
