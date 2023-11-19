@@ -124,7 +124,7 @@ class _JournalVoucherTransactionState extends State<JournalVoucherTransaction> {
                   onPressed: () {
                     showSearch(
                       context: context,
-                      delegate: SearchBar(dataList, propeties),
+                      delegate: SearchBarDelegate(dataList, propeties),
                     );
                   },
                   icon: const Icon(Icons.search),

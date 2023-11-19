@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -161,6 +160,7 @@ class _NavScreenState extends State<NavScreen> {
   void initState() {
     super.initState();
     _currentIndex = widget.currentIndex;
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     getData();
     Timer.periodic(period, (arg) async {
       toDoData = await service.fetchToDoList(userId, companyId, product);
@@ -168,7 +168,6 @@ class _NavScreenState extends State<NavScreen> {
       quickViewData =
           await service.fetchAllAccounts(userId, companyId, product);
     });
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
 
   @override
@@ -859,7 +858,7 @@ class _NavScreenState extends State<NavScreen> {
 
   SizedBox quickViewsBox(height, bool isTablet) {
     return SizedBox(
-      height: isTablet ? height * 0.22 : height * 0.25,
+      height: isTablet ? height * 0.3 : height * 0.25,
       child: QuickView(
         data: quickViewData,
         isTab: isTablet,
@@ -1080,9 +1079,8 @@ class _NavScreenState extends State<NavScreen> {
             EdgeInsetsDirectional.fromSTEB(width * 0.05, 0, width * 0.05, 0),
         child: GridView.builder(
           physics: const NeverScrollableScrollPhysics(),
-          key: const PageStorageKey("New Collections"),
+          key: const PageStorageKey("Quick Links"),
           shrinkWrap: true,
-          // physics: const NeverScrollableScrollPhysics(),
           padding: EdgeInsets.zero,
           gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: width * 0.4,
@@ -1100,32 +1098,6 @@ class _NavScreenState extends State<NavScreen> {
         ),
       ),
     ];
-    SizedBox(
-      height: height * 0.15,
-      child: Padding(
-        padding: EdgeInsetsDirectional.fromSTEB(
-            width * 0.05, height * 0.02, width * 0.05, height * 0.02),
-        child: GridView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          key: const PageStorageKey("New Collections"),
-          shrinkWrap: true,
-          // physics: const NeverScrollableScrollPhysics(),
-          padding: EdgeInsets.zero,
-          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: width * 0.4,
-              childAspectRatio: 3.0,
-              crossAxisSpacing: width * 0.05,
-              mainAxisSpacing: width * 0.05),
-          itemCount: quickLinks.length,
-          itemBuilder: (context, i) => QuickLink(
-            icon: quickLinksIcons[quickLinks[i]],
-            text: quickLinks[i],
-            screen: quickLinksScreens[quickLinks[i]],
-            isButton: false,
-          ),
-        ),
-      ),
-    );
   }
 
   Drawer dashboardDrawer(

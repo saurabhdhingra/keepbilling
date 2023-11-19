@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:keepbilling/widgets/infoPages/customExpansionTile.dart';
 import '../../utils/constants.dart';
 
-class SearchBar extends SearchDelegate<String> {
+class SearchBarDelegate extends SearchDelegate<String> {
   final List searchList;
 
   final Map properties;
 
-  SearchBar(this.searchList, this.properties);
+  SearchBarDelegate(this.searchList, this.properties);
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
@@ -31,7 +31,7 @@ class SearchBar extends SearchDelegate<String> {
   @override
   Widget buildResults(BuildContext context) {
     final theme = Theme.of(context).copyWith(dividerColor: Colors.transparent);
-    var height = SizeConfig.getHeight(context);
+
     var width = SizeConfig.getWidth(context);
     List<Map> matchQuery = [];
     for (var item in searchList) {

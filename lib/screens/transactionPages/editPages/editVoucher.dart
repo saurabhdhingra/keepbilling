@@ -48,9 +48,6 @@ class _EditVoucherTransactionState extends State<EditVoucherTransaction> {
   final _formKey2 = GlobalKey<FormState>();
   final _formKey3 = GlobalKey<FormState>();
   final _formKey4 = GlobalKey<FormState>();
-  final _formKey5 = GlobalKey<FormState>();
-  final _formKey6 = GlobalKey<FormState>();
-  final _formKey7 = GlobalKey<FormState>();
 
   TextEditingController gstController = TextEditingController();
   TextEditingController tAmountController = TextEditingController();
@@ -195,7 +192,7 @@ class _EditVoucherTransactionState extends State<EditVoucherTransaction> {
                         setState(() => gstPercent = value);
                         updateValues();
                       },
-                      formKey: _formKey3,
+                      formKey: _formKey2,
                       controller: gstController,
                     )
                   : const SizedBox(),
@@ -203,7 +200,7 @@ class _EditVoucherTransactionState extends State<EditVoucherTransaction> {
               const RowText(text: "Total Amount"),
               CustomField(
                 setValue: (value) => setState(() => totalAmount = value),
-                formKey: _formKey6,
+                formKey: _formKey4,
                 readOnly: true,
                 controller: tAmountController,
               ),
@@ -211,7 +208,7 @@ class _EditVoucherTransactionState extends State<EditVoucherTransaction> {
               const RowText(text: "Narration"),
               CustomField(
                 setValue: (value) => setState(() => narration = value),
-                formKey: _formKey4,
+                formKey: _formKey3,
                 initialValue: widget.data["narration"] ?? "",
               ),
               SizedBox(height: height * 0.02),

@@ -5,8 +5,6 @@ import 'package:keepbilling/model/item.dart';
 import 'package:keepbilling/widgets/formPages/dropdownSelector.dart';
 import 'package:keepbilling/widgets/formPages/titleText.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../../provider/authenticationProvider.dart';
 import '../../../responsive/screen_type_layout.dart';
 import '../../../utils/constants.dart';

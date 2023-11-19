@@ -129,7 +129,7 @@ class _CupertinoDateSelectorState extends State<CupertinoDateSelector> {
                                 dateInput.text = "";
                               },
                               child: const Text(
-                                " Reset ?",
+                                " Set to none ?",
                                 style: TextStyle(color: Colors.blue),
                               ),
                             )

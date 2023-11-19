@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:keepbilling/model/bank.dart';
 import 'package:keepbilling/widgets/formPages/titleText.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../api/master.dart';
 import '../../../responsive/screen_type_layout.dart';

@@ -3,13 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:keepbilling/api/master.dart';
 import 'package:keepbilling/responsive/screen_type_layout.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
+import 'package:keepbilling/screens/searchBarDelegate.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../utils/constants.dart';
 import '../../provider/authenticationProvider.dart';
 import '../../widgets/infoPages/CustomExpansionTile.dart';
 import '../../widgets/infoPages/paddedText.dart';
-import '../searchBarDelegate.dart';
 import 'addPages/addBank.dart';
 import 'editPages/editBank.dart';
 
@@ -121,7 +120,7 @@ class _BankMasterState extends State<BankMaster> {
                     onPressed: () {
                       showSearch(
                         context: context,
-                        delegate: SearchBar(
+                        delegate: SearchBarDelegate(
                           dataList,
                           propeties,
                         ),
@@ -207,7 +206,7 @@ class _BankMasterState extends State<BankMaster> {
                     onPressed: () {
                       showSearch(
                         context: context,
-                        delegate: SearchBar(
+                        delegate: SearchBarDelegate(
                           dataList,
                           propeties,
                         ),

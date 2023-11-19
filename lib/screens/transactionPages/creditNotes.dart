@@ -82,7 +82,7 @@ class _CreditNoteTransactionState extends State<CreditNoteTransaction> {
                   onPressed: () {
                     showSearch(
                       context: context,
-                      delegate: SearchBar(
+                      delegate: SearchBarDelegate(
                         dataList,
                         propeties,
                       ),

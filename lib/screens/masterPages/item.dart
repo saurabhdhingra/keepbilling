@@ -5,7 +5,6 @@ import 'package:keepbilling/responsive/screen_type_layout.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
 import 'package:keepbilling/screens/searchBarDelegate.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../provider/authenticationProvider.dart';
 import '/widgets/infoPages/CustomExpansionTile.dart';
 import '../../../utils/constants.dart';
@@ -160,7 +159,7 @@ class _ItemMasterState extends State<ItemMaster> {
                   onPressed: () {
                     showSearch(
                       context: context,
-                      delegate: SearchBar(dataList, propeties),
+                      delegate: SearchBarDelegate(dataList, propeties),
                     );
                   },
                   icon: const Icon(Icons.search),

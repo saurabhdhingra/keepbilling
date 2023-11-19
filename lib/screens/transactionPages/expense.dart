@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/api/transaction.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
+import 'package:keepbilling/screens/searchBarDelegate.dart';
 import 'package:provider/provider.dart';
 import '../../../utils/constants.dart';
 import '../../provider/authenticationProvider.dart';
 import '../../widgets/infoPages/CustomExpansionTile.dart';
 import '../../widgets/infoPages/paddedText.dart';
-import '../searchBarDelegate.dart';
 
 class ExpensesTransaction extends StatefulWidget {
   const ExpensesTransaction({Key? key}) : super(key: key);
@@ -83,7 +83,7 @@ class _ExpensesTransactionState extends State<ExpensesTransaction> {
                   onPressed: () {
                     showSearch(
                       context: context,
-                      delegate: SearchBar(dataList, propeties),
+                      delegate: SearchBarDelegate(dataList, propeties),
                     );
                   },
                   icon: const Icon(Icons.search),

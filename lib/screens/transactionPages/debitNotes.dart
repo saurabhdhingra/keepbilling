@@ -82,7 +82,7 @@ class _DebitNoteTransactionState extends State<DebitNoteTransaction> {
                   onPressed: () {
                     showSearch(
                       context: context,
-                      delegate: SearchBar(
+                      delegate: SearchBarDelegate(
                         dataList,
                         propeties,
                       ),

@@ -36,7 +36,7 @@ class _StatusButtonState extends State<StatusButton> {
           width: width * 0.28,
           decoration: BoxDecoration(
             color: widget.isSelected
-                ? Colors.red[100]
+                ? const Color.fromARGB(165, 16, 196, 160)
                 : Platform.isIOS
                     ? const Color.fromRGBO(235, 235, 235, 1)
                     : Colors.white,
@@ -62,7 +62,7 @@ class _StatusButtonState extends State<StatusButton> {
           width: width * 0.28,
           decoration: BoxDecoration(
             color: widget.isSelected
-                ? Colors.red[100]
+                ? const Color.fromRGBO(16, 196, 161, 1)
                 : Platform.isIOS
                     ? const Color.fromRGBO(235, 235, 235, 1)
                     : Colors.white,

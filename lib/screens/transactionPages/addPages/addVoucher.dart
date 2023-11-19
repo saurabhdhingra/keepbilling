@@ -48,9 +48,6 @@ class _AddVoucherTransactionState extends State<AddVoucherTransaction> {
   final _formKey2 = GlobalKey<FormState>();
   final _formKey3 = GlobalKey<FormState>();
   final _formKey4 = GlobalKey<FormState>();
-  final _formKey5 = GlobalKey<FormState>();
-  final _formKey6 = GlobalKey<FormState>();
-  final _formKey7 = GlobalKey<FormState>();
 
   TextEditingController gstController = TextEditingController(text: "0");
   TextEditingController tAmountController = TextEditingController(text: "0");
@@ -178,7 +175,7 @@ class _AddVoucherTransactionState extends State<AddVoucherTransaction> {
                         setState(() => gstPercent = value);
                         updateValues();
                       },
-                      formKey: _formKey3,
+                      formKey: _formKey2,
                       controller: gstController,
                     )
                   : const SizedBox(),
@@ -186,7 +183,7 @@ class _AddVoucherTransactionState extends State<AddVoucherTransaction> {
               const RowText(text: "Total Amount"),
               CustomField(
                 setValue: (value) => setState(() => totalAmount = value),
-                formKey: _formKey6,
+                formKey: _formKey4,
                 readOnly: true,
                 controller: tAmountController,
               ),
@@ -194,7 +191,7 @@ class _AddVoucherTransactionState extends State<AddVoucherTransaction> {
               const RowText(text: "Narration"),
               CustomField(
                 setValue: (value) => setState(() => narration = value),
-                formKey: _formKey4,
+                formKey: _formKey3,
               ),
               SizedBox(height: height * 0.02),
               SubmitButton(

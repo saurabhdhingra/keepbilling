@@ -82,7 +82,7 @@ class _PaymentsTransactionState extends State<PaymentsTransaction> {
                   onPressed: () {
                     showSearch(
                       context: context,
-                      delegate: SearchBar(dataList, propeties),
+                      delegate: SearchBarDelegate(dataList, propeties),
                     );
                   },
                   icon: const Icon(Icons.search),

@@ -3,10 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:keepbilling/api/master.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../utils/constants.dart';
 import '../../provider/authenticationProvider.dart';
-import '../../widgets/infoPages/CustomExpansionTile.dart';
 import '../../widgets/infoPages/paddedText.dart';
 import '../searchBarDelegate.dart';
 
@@ -57,7 +55,6 @@ class _BillMasterState extends State<BillMaster> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).copyWith(dividerColor: Colors.transparent);
     var height = SizeConfig.getHeight(context);
     var width = SizeConfig.getWidth(context);
 
@@ -81,7 +78,7 @@ class _BillMasterState extends State<BillMaster> {
                   onPressed: () {
                     showSearch(
                       context: context,
-                      delegate: SearchBar(dataList, propeties),
+                      delegate: SearchBarDelegate(dataList, propeties),
                     );
                   },
                   icon: const Icon(Icons.search),

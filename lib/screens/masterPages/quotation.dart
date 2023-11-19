@@ -4,7 +4,6 @@ import 'package:keepbilling/api/master.dart';
 import 'package:keepbilling/responsive/screen_type_layout.dart';
 import 'package:keepbilling/screens/loadingScreens.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../utils/constants.dart';
 import '../../provider/authenticationProvider.dart';
 import '../../widgets/infoPages/CustomExpansionTile.dart';
@@ -132,7 +131,7 @@ class _QuotationMasterState extends State<QuotationMaster> {
                   onPressed: () {
                     showSearch(
                       context: context,
-                      delegate: SearchBar(dataList, propeties),
+                      delegate: SearchBarDelegate(dataList, propeties),
                     );
                   },
                   icon: const Icon(Icons.search),

@@ -16,7 +16,8 @@ class QuickLinkGrid extends StatefulWidget {
     required this.screen,
     required this.isButton,
     this.function,
-    required this.icon, required this.isTablet,
+    required this.icon,
+    required this.isTablet,
   }) : super(key: key);
 
   @override
@@ -70,7 +71,7 @@ class _QuickLinkGridState extends State<QuickLinkGrid> {
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.mukta(
-                        fontSize: width * 0.04,
+                        fontSize: widget.isTablet ? width * 0.03 : width * 0.04,
                         fontWeight: FontWeight.w700,
                         color: Colors.blue,
                       ),

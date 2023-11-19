@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import '../../api/reports.dart';
 import '../../provider/authenticationProvider.dart';
 import '../../utils/constants.dart';
-import '../../widgets/formPages/rowText.dart';
 import '../../widgets/formPages/statusButton.dart';
 import '../../widgets/infoPages/paddedText.dart';
 

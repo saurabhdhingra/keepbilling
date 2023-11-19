@@ -14,19 +14,17 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.5
-  charts_flutter: ^0.12.0
   provider: ^6.0.5
-  google_fonts: ^3.0.1
+  google_fonts: ^6.1.0
   shared_preferences: ^2.0.17
   flutter_pdfview: ^1.2.5
   file_picker: ^5.2.5
   path: ^1.8.1
   path_provider: ^2.0.12
-  intl: ^0.17.0
+  intl:
   url_launcher: ^6.1.8
-
   share_plus: ^6.3.0
-  device_preview: ^1.1.0
+  device_preview:
 
   
 

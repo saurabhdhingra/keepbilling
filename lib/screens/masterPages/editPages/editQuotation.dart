@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keepbilling/widgets/formPages/titleText.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../api/master.dart';
-import '../../../model/quotation.dart';
 import '../../../responsive/screen_type_layout.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/functions.dart';

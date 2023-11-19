@@ -548,8 +548,7 @@ class TransactionsService {
         throw FetchDataException(response.body.toString());
       default:
         throw FetchDataException(
-            'Error occured while communication with server' +
-                ' with status code : ${response.statusCode}');
+            'Error occured while communication with server' ' with status code : ${response.statusCode}');
     }
   }
 }

@@ -135,7 +135,7 @@ class _OutstandingTransactionState extends State<OutstandingTransaction> {
                   onPressed: () {
                     showSearch(
                       context: context,
-                      delegate: SearchBar(
+                      delegate: SearchBarDelegate(
                           listName == "Sale" ? saleList : purchaseList,
                           propeties),
                     );
