@@ -705,7 +705,9 @@ class _NavScreenState extends State<NavScreen> {
   //Home Page Starts
   //Home Page Starts
   Widget homePage(double height, double width) {
-    final theme = Theme.of(context).copyWith(dividerColor: Colors.transparent);
+    final theme = Theme.of(context).copyWith(
+      dividerColor: Colors.transparent,
+    );
     var scaffoldKey = GlobalKey<ScaffoldState>();
     return ScreenTypeLayout(
       mobile: Scaffold(
@@ -718,7 +720,7 @@ class _NavScreenState extends State<NavScreen> {
           title: Text(
             companyName,
             style: GoogleFonts.alfaSlabOne(
-              color: Colors.black87,
+              color: const Color.fromRGBO(91, 95, 255, 1),
               fontSize: height * 0.018,
             ),
           ),
@@ -1112,39 +1114,46 @@ class _NavScreenState extends State<NavScreen> {
             ...links.map(
               (e) => Theme(
                 data: theme,
-                child: ExpansionTile(
-                  leading: Icon(
-                    e["icon"],
-                    size: isTablet ? width * 0.04 : width * 0.05,
-                  ),
-                  key: PageStorageKey<String>(e["title"]),
-                  title: Text(e["title"],
-                      style: GoogleFonts.mukta(
-                          fontSize: isTablet ? height * 0.03 : height * 0.02)),
-                  textColor: Colors.black87,
-                  iconColor: Colors.black87,
-                  childrenPadding: EdgeInsets.fromLTRB(width * 0.02, 0, 0, 0),
-                  children: e["subLinks"]
-                      .map<Widget>(
-                        (i) => ListTile(
-                          leading: Icon(
-                            i["icon"],
-                            size: isTablet ? width * 0.04 : width * 0.05,
+                child: Padding(
+                  padding:
+                      EdgeInsets.fromLTRB(0, width * 0.01, 0, width * 0.01),
+                  child: ExpansionTile(
+                    leading: Icon(
+                      e["icon"],
+                      size: isTablet ? width * 0.04 : width * 0.05,
+                    ),
+                    backgroundColor: const Color.fromRGBO(232, 250, 223, 1),
+                    key: PageStorageKey<String>(e["title"]),
+                    title: Text(e["title"],
+                        style: GoogleFonts.mukta(
+                            fontSize:
+                                isTablet ? height * 0.03 : height * 0.02)),
+                    textColor: const Color.fromRGBO(0, 194, 140, 1),
+                    iconColor: const Color.fromRGBO(0, 194, 140, 1),
+                    childrenPadding: EdgeInsets.fromLTRB(width * 0.02, 0, 0, 0),
+                    children: e["subLinks"]
+                        .map<Widget>(
+                          (i) => ListTile(
+                            leading: Icon(i["icon"],
+                                size: isTablet ? width * 0.04 : width * 0.05,
+                                color: const Color.fromRGBO(12, 195, 236, 1)),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: ((context) => i["screen"]),
+                                ),
+                              );
+                            },
+                            title: Text(i["title"],
+                                style: GoogleFonts.mukta(
+                                    fontSize: height * 0.02,
+                                    color:
+                                        const Color.fromRGBO(12, 195, 236, 1))),
                           ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: ((context) => i["screen"]),
-                              ),
-                            );
-                          },
-                          title: Text(i["title"],
-                              style:
-                                  GoogleFonts.mukta(fontSize: height * 0.02)),
-                        ),
-                      )
-                      .toList(),
+                        )
+                        .toList(),
+                  ),
                 ),
               ),
             ),

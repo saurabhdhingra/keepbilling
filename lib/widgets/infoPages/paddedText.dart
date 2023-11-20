@@ -3,9 +3,7 @@ import '../../../utils/constants.dart';
 
 class PaddedText extends StatelessWidget {
   final String text;
-  final TextStyle style;
-  const PaddedText({Key? key, required this.text, required this.style})
-      : super(key: key);
+  const PaddedText({Key? key, required this.text}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +16,10 @@ class PaddedText extends StatelessWidget {
           padding: EdgeInsets.fromLTRB(width * 0.02, 0, width * 0.02, 0),
           child: Text(
             text,
-            style: style,
+            style: TextStyle(
+                fontSize: height * 0.035,
+                fontWeight: FontWeight.w600,
+                color: const Color.fromRGBO(91, 95, 255, 1)),
           ),
         ),
       ),

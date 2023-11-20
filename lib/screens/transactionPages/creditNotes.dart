@@ -35,7 +35,8 @@ class _CreditNoteTransactionState extends State<CreditNoteTransaction> {
     product =
         Provider.of<AuthenticationProvider>(context, listen: false).product;
     try {
-      dataList = await service.fetchDataList("creditnote", userId, companyId,product);
+      dataList =
+          await service.fetchDataList("creditnote", userId, companyId, product);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -97,13 +98,7 @@ class _CreditNoteTransactionState extends State<CreditNoteTransaction> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    PaddedText(
-                      text: "Credit Note",
-                      style: TextStyle(
-                        fontSize: height * 0.035,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    const PaddedText(text: "Credit Note"),
                     ...dataList.map(
                       (e) {
                         return Padding(

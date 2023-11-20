@@ -54,12 +54,9 @@ class _AddPaymentTermSettingsState extends State<AddPaymentTermSettings> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            PaddedText(
-              text: "Add Payment Term",
-              style: TextStyle(
-                fontSize: height * 0.03,
-                fontWeight: FontWeight.w600,
-              ),
+            const PaddedText(
+              text: "Add Payment Term"
+              
             ),
             SizedBox(height: height * 0.02),
             CustomField(

@@ -10,7 +10,7 @@ class RowText extends StatelessWidget {
     Key? key,
     required this.text,
     this.style = const TextStyle(
-        color: Colors.black87, fontWeight: FontWeight.w700, fontSize: 16),
+        color: Color.fromRGBO(0, 194, 140, 1), fontWeight: FontWeight.w700, fontSize: 16),
   }) : super(key: key);
 
   @override

@@ -99,9 +99,8 @@ class _PurchaseTransactionState extends State<PurchaseTransaction> {
       "subtitle": "inv_date",
       "entries": [
         {"fieldName": "Invoice Number", "fieldValue": "p_invoice_no"},
-         {"fieldName": "Base Amount", "fieldValue": "totalamount"},
+        {"fieldName": "Base Amount", "fieldValue": "totalamount"},
         {"fieldName": "Tax Amount", "fieldValue": "tax_amount"},
-       
       ]
     };
     List parties = [
@@ -114,6 +113,7 @@ class _PurchaseTransactionState extends State<PurchaseTransaction> {
         ? infoLoading(context)
         : Scaffold(
             floatingActionButton: FloatingActionButton(
+              backgroundColor: const Color.fromRGBO(3, 195, 237, 1),
               child: const Icon(Icons.add),
               onPressed: () async {
                 var navigationResult = await Navigator.push(
@@ -157,13 +157,7 @@ class _PurchaseTransactionState extends State<PurchaseTransaction> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    PaddedText(
-                      text: "Purchase Bills",
-                      style: TextStyle(
-                        fontSize: height * 0.035,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    const PaddedText(text: "Purchase Bills"),
                     ...dataList.map(
                       (e) {
                         return Padding(
@@ -179,7 +173,6 @@ class _PurchaseTransactionState extends State<PurchaseTransaction> {
                                   var navigationResult =
                                       await getBillData(e).then(
                                     (value) {
-                                      
                                       return Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -214,7 +207,6 @@ class _PurchaseTransactionState extends State<PurchaseTransaction> {
                                   var navigationResult =
                                       await getBillData(e).then(
                                     (value) {
-                                      
                                       return Navigator.push(
                                         context,
                                         MaterialPageRoute(

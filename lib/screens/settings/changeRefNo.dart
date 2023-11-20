@@ -40,7 +40,7 @@ class _ChangeRefNoSettingsState extends State<ChangeRefNoSettings> {
     "Voucher"
   ];
   Future getUserData() async {
-   userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
+    userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
     companyId =
         Provider.of<AuthenticationProvider>(context, listen: false).companyid;
     cashId = Provider.of<AuthenticationProvider>(context, listen: false).cashid;
@@ -69,13 +69,7 @@ class _ChangeRefNoSettingsState extends State<ChangeRefNoSettings> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            PaddedText(
-              text: "Change Reference Number",
-              style: TextStyle(
-                fontSize: height * 0.03,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            const PaddedText(text: "Change Reference Number"),
             SizedBox(height: height * 0.02),
             const RowText(text: "Type"),
             SizedBox(height: height * 0.02),
@@ -117,8 +111,8 @@ class _ChangeRefNoSettingsState extends State<ChangeRefNoSettings> {
                 );
               },
             ),
-             SizedBox(height: height * 0.02),
-                  const NotesSettings(text: changeRefnoNote),
+            SizedBox(height: height * 0.02),
+            const NotesSettings(text: changeRefnoNote),
           ],
         ),
       ),
@@ -131,7 +125,7 @@ class _ChangeRefNoSettingsState extends State<ChangeRefNoSettings> {
         .showSnackBar(const SnackBar(content: Text("Processing")));
     try {
       return await service.changeReferenceNo(
-          userId, companyId, cashId, type, number,product);
+          userId, companyId, cashId, type, number, product);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

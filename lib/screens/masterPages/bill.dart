@@ -90,12 +90,9 @@ class _BillMasterState extends State<BillMaster> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    PaddedText(
-                      text: "Bill Prefix",
-                      style: TextStyle(
-                        fontSize: height * 0.035,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    const PaddedText(
+                      text: "Bill Prefix"
+                      
                     ),
                     ...dataList.map(
                       (e) {

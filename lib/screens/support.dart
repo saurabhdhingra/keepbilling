@@ -30,7 +30,7 @@ class _SupportState extends State<Support> {
     userId = Provider.of<AuthenticationProvider>(context, listen: false).userid;
     companyId =
         Provider.of<AuthenticationProvider>(context, listen: false).companyid;
-   
+
     product =
         Provider.of<AuthenticationProvider>(context, listen: false).product;
   }
@@ -63,19 +63,22 @@ class _SupportState extends State<Support> {
                 child: Text(
                   "Contact Support",
                   style: TextStyle(
-                      color: Colors.black87,
+                      color: const Color.fromRGBO(255, 175, 7, 1),
                       fontWeight: FontWeight.bold,
                       fontSize: height * 0.04),
                 ),
               ),
               SizedBox(height: height * 0.02),
-              const RowText(text: "Subject", color: Colors.black87),
+              const RowText(
+                  text: "Subject", color: Color.fromRGBO(91, 95, 255, 1)),
               CustomField(
                 setValue: (value) => setState(() => subject = value),
                 formKey: _formKey1,
               ),
               SizedBox(height: height * 0.02),
-              const RowText(text: "Write your query", color: Colors.black87),
+              const RowText(
+                  text: "Write your query",
+                  color: Color.fromRGBO(91, 95, 255, 1)),
               CustomField(
                 setValue: (value) => setState(() => query = value),
                 formKey: _formKey2,
@@ -117,7 +120,8 @@ class _SupportState extends State<Support> {
     ScaffoldMessenger.of(context)
         .showSnackBar(const SnackBar(content: Text("Processing")));
     try {
-      return await service.sendFeedback(userId, companyId, subject, query,product);
+      return await service.sendFeedback(
+          userId, companyId, subject, query, product);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

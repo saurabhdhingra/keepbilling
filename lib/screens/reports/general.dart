@@ -111,13 +111,7 @@ class _GeneralReportState extends State<GeneralReport> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    PaddedText(
-                      text: "General Report",
-                      style: TextStyle(
-                        fontSize: height * 0.035,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    const PaddedText(text: "General Report"),
                     SizedBox(height: height * 0.02),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,

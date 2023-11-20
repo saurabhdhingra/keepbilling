@@ -94,13 +94,7 @@ class _PaymentsTransactionState extends State<PaymentsTransaction> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    PaddedText(
-                      text: "Payments",
-                      style: TextStyle(
-                        fontSize: height * 0.035,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    const PaddedText(text: "Payments"),
                     ...dataList.map(
                       (e) {
                         return Padding(

@@ -34,7 +34,8 @@ class _RecieptsTransactionState extends State<RecieptsTransaction> {
     product =
         Provider.of<AuthenticationProvider>(context, listen: false).product;
     try {
-      dataList = await service.fetchDataList("reciept", userId, companyId,product);
+      dataList =
+          await service.fetchDataList("reciept", userId, companyId, product);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -70,9 +71,6 @@ class _RecieptsTransactionState extends State<RecieptsTransaction> {
     return isLoading
         ? infoLoading(context)
         : Scaffold(
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {},
-            ),
             backgroundColor: Colors.white,
             appBar: AppBar(
               backgroundColor: Colors.white,
@@ -95,13 +93,7 @@ class _RecieptsTransactionState extends State<RecieptsTransaction> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    PaddedText(
-                      text: "Reciepts",
-                      style: TextStyle(
-                        fontSize: height * 0.035,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    const PaddedText(text: "Reciepts"),
                     ...dataList.map(
                       (e) {
                         return Padding(

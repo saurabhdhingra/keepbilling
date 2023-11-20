@@ -99,12 +99,9 @@ class _TDSreportState extends State<TDSreport> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    PaddedText(
-                      text: "TDS Report",
-                      style: TextStyle(
-                        fontSize: height * 0.035,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    const PaddedText(
+                      text: "TDS Report"
+                     
                     ),
                     SizedBox(height: height * 0.02),
                     Flexible(

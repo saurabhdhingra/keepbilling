@@ -99,12 +99,9 @@ class _GSTdetailedReportState extends State<GSTdetailedReport> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    PaddedText(
-                      text: "GST Detailed Report",
-                      style: TextStyle(
-                        fontSize: height * 0.035,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    const PaddedText(
+                      text: "GST Detailed Report"
+                      
                     ),
                     SizedBox(height: height * 0.02),
                     Flexible(

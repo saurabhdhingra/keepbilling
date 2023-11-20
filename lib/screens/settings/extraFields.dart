@@ -52,7 +52,7 @@ class _ExtraFieldsSetingsState extends State<ExtraFieldsSetings> {
     cashId = Provider.of<AuthenticationProvider>(context, listen: false).cashid;
     product =
         Provider.of<AuthenticationProvider>(context, listen: false).product;
-    data = await service.fetchExtraFieldData(userId, companyId,product);
+    data = await service.fetchExtraFieldData(userId, companyId, product);
     setState(() => isLoading = false);
   }
 
@@ -88,13 +88,7 @@ class _ExtraFieldsSetingsState extends State<ExtraFieldsSetings> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PaddedText(
-                    text: "Adjust Extra Fields in Bills",
-                    style: TextStyle(
-                      fontSize: height * 0.03,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  const PaddedText(text: "Adjust Extra Fields in Bills"),
                   SizedBox(height: height * 0.02),
                   const RowText(text: "Extra Field 1"),
                   CustomField(
@@ -184,7 +178,6 @@ class _ExtraFieldsSetingsState extends State<ExtraFieldsSetings> {
                       );
                     },
                   ),
-                 
                 ],
               ),
             ),

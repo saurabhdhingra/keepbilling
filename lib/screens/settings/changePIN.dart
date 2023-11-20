@@ -78,12 +78,9 @@ class _ChangePINSetingsState extends State<ChangePINSetings> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PaddedText(
-                    text: "Change Login PIN",
-                    style: TextStyle(
-                      fontSize: height * 0.03,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  const PaddedText(
+                    text: "Change Login PIN"
+                    
                   ),
                   SizedBox(height: height * 0.02),
                   const RowText(text: "Enter OTP"),

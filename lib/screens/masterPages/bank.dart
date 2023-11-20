@@ -95,6 +95,7 @@ class _BankMasterState extends State<BankMaster> {
         : ScreenTypeLayout(
             mobile: Scaffold(
               floatingActionButton: FloatingActionButton(
+                backgroundColor: const Color.fromRGBO(3, 195, 237, 1),
                 child: const Icon(Icons.add),
                 onPressed: () async {
                   var navigationResult = await Navigator.push(
@@ -135,12 +136,9 @@ class _BankMasterState extends State<BankMaster> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      PaddedText(
-                        text: "Bank",
-                        style: TextStyle(
-                          fontSize: height * 0.035,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      const PaddedText(
+                        text: "Bank"
+                        
                       ),
                       ...dataList.map(
                         (e) {
@@ -151,9 +149,9 @@ class _BankMasterState extends State<BankMaster> {
                               data: theme,
                               child: CustomExpansionTile(
                                 data: e,
-                                isTab : false, 
+                                isTab: false,
                                 properties: propeties,
-                                color : e["def"] =="Y" ? Colors.blue: null,
+                                color: e["def"] == "Y" ? Colors.blue : null,
                                 editAction: () async {
                                   var navigationResult = await Navigator.push(
                                     context,
@@ -181,7 +179,7 @@ class _BankMasterState extends State<BankMaster> {
             ),
             tablet: Scaffold(
               floatingActionButton: FloatingActionButton(
-                child: const Icon(Icons.add),
+                backgroundColor: const Color.fromRGBO(3, 195, 237, 1),
                 onPressed: () async {
                   var navigationResult = await Navigator.push(
                     context,
@@ -195,6 +193,7 @@ class _BankMasterState extends State<BankMaster> {
                     getUpdatedData();
                   }
                 },
+                child: const Icon(Icons.add),
               ),
               backgroundColor: Colors.white,
               appBar: AppBar(
@@ -221,13 +220,7 @@ class _BankMasterState extends State<BankMaster> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      PaddedText(
-                        text: "Bank",
-                        style: TextStyle(
-                          fontSize: height * 0.035,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      const PaddedText(text: "Bank"),
                       ...dataList.map(
                         (e) {
                           return Padding(
@@ -239,7 +232,7 @@ class _BankMasterState extends State<BankMaster> {
                                 data: e,
                                 properties: propeties,
                                 isTab: true,
-                                 color : e["def"] =="Y" ? Colors.blue : null,
+                                color: e["def"] == "Y" ? Colors.blue : null,
                                 editAction: () async {
                                   var navigationResult = await Navigator.push(
                                     context,

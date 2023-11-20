@@ -105,6 +105,7 @@ class _VoucherTransactionState extends State<VoucherTransaction> {
         ? infoLoading(context)
         : Scaffold(
             floatingActionButton: FloatingActionButton(
+              backgroundColor: const Color.fromRGBO(3, 195, 237, 1),
               child: const Icon(Icons.add),
               onPressed: () async {
                 var navigationResult = await Navigator.push(
@@ -143,13 +144,7 @@ class _VoucherTransactionState extends State<VoucherTransaction> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    PaddedText(
-                      text: "Voucher",
-                      style: TextStyle(
-                        fontSize: height * 0.035,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    const PaddedText(text: "Voucher"),
                     ...dataList.map(
                       (e) {
                         return Padding(
@@ -189,5 +184,4 @@ class _VoucherTransactionState extends State<VoucherTransaction> {
             ),
           );
   }
-  
 }

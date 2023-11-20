@@ -104,6 +104,7 @@ class _QuotationMasterState extends State<QuotationMaster> {
         ? infoLoading(context)
         : Scaffold(
             floatingActionButton: FloatingActionButton(
+              backgroundColor: const Color.fromRGBO(3, 195, 237, 1),
               child: const Icon(Icons.add),
               onPressed: () async {
                 var navigationResult = await Navigator.push(
@@ -143,13 +144,7 @@ class _QuotationMasterState extends State<QuotationMaster> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    PaddedText(
-                      text: "Quotation",
-                      style: TextStyle(
-                        fontSize: height * 0.035,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    const PaddedText(text: "Quotation"),
                     ...dataList.map(
                       (e) {
                         return Padding(

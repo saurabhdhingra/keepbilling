@@ -98,6 +98,7 @@ class _PartyMasterState extends State<PartyMaster> {
         : ScreenTypeLayout(
             mobile: Scaffold(
               floatingActionButton: FloatingActionButton(
+                 backgroundColor: const Color.fromRGBO(3, 195, 237, 1),
                 child: const Icon(Icons.add),
                 onPressed: () async {
                   var navigationResult = await Navigator.push(
@@ -134,12 +135,9 @@ class _PartyMasterState extends State<PartyMaster> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      PaddedText(
-                        text: "Party",
-                        style: TextStyle(
-                          fontSize: height * 0.035,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      const PaddedText(
+                        text: "Party"
+                        
                       ),
                       ...dataList.map(
                         (e) {
@@ -179,6 +177,7 @@ class _PartyMasterState extends State<PartyMaster> {
             ),
             tablet: Scaffold(
               floatingActionButton: FloatingActionButton(
+                 backgroundColor: const Color.fromRGBO(3, 195, 237, 1),
                 child: const Icon(Icons.add),
                 onPressed: () async {
                   var navigationResult = await Navigator.push(
@@ -215,12 +214,9 @@ class _PartyMasterState extends State<PartyMaster> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      PaddedText(
-                        text: "Party",
-                        style: TextStyle(
-                          fontSize: height * 0.035,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      const PaddedText(
+                        text: "Party"
+                        
                       ),
                       ...dataList.map(
                         (e) {

@@ -110,13 +110,7 @@ class _QuickLinksSettingsState extends State<QuickLinksSettings> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    PaddedText(
-                      text: "Set Quick Links",
-                      style: TextStyle(
-                        fontSize: height * 0.03,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    const PaddedText(text: "Set Quick Links"),
                     SizedBox(height: height * 0.02),
                     const RowText(text: "Quick Link 1"),
                     SizedBox(height: height * 0.02),

@@ -59,8 +59,8 @@ class _JournalVoucherTransactionState extends State<JournalVoucherTransaction> {
   Future getUpdatedData() async {
     setState(() => isLoading = true);
     try {
-      jvNo = await service.fetchJVInvNo(userId, companyId,product);
-      dataList = await service.fetchDataList("JV", userId, companyId,product);
+      jvNo = await service.fetchJVInvNo(userId, companyId, product);
+      dataList = await service.fetchDataList("JV", userId, companyId, product);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -97,6 +97,7 @@ class _JournalVoucherTransactionState extends State<JournalVoucherTransaction> {
         ? infoLoading(context)
         : Scaffold(
             floatingActionButton: FloatingActionButton(
+              backgroundColor: const Color.fromRGBO(3, 195, 237, 1),
               child: const Icon(Icons.add),
               onPressed: () async {
                 var navigationResult = await Navigator.push(
@@ -136,13 +137,7 @@ class _JournalVoucherTransactionState extends State<JournalVoucherTransaction> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    PaddedText(
-                      text: "Journal Voucher",
-                      style: TextStyle(
-                        fontSize: height * 0.035,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    const PaddedText(text: "Journal Voucher"),
                     ...dataList.map(
                       (e) {
                         return Padding(

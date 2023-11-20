@@ -23,7 +23,7 @@ class InfoText extends StatelessWidget {
               style: TextStyle(
                 fontSize: height * 0.025,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color:const  Color.fromRGBO(3, 195, 237, 1)
               ),
               children: [
                 TextSpan(

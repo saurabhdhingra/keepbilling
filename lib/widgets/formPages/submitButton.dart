@@ -28,9 +28,7 @@ class SubmitButton extends StatelessWidget {
             height: height * 0.04,
             width: width * 0.25,
             decoration: BoxDecoration(
-              color: Platform.isIOS
-                  ? const Color.fromRGBO(235, 235, 235, 1)
-                  : Colors.white,
+              color: const Color.fromRGBO(231, 231, 255, 1),
               border: Platform.isIOS
                   ? Border.all(
                       color: Colors.white,

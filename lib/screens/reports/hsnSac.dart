@@ -96,12 +96,9 @@ class _HSNreportState extends State<HSNreport> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    PaddedText(
-                      text: "HSN Report",
-                      style: TextStyle(
-                        fontSize: height * 0.035,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    const PaddedText(
+                      text: "HSN Report"
+                      
                     ),
                     SizedBox(height: height * 0.02),
                     Flexible(

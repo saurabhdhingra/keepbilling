@@ -117,6 +117,7 @@ class _SaleTransactionState extends State<SaleTransaction> {
         ? infoLoading(context)
         : Scaffold(
             floatingActionButton: FloatingActionButton(
+              backgroundColor: const Color.fromRGBO(3, 195, 237, 1),
               child: const Icon(Icons.add),
               onPressed: () async {
                 var navigationResult = await Navigator.push(
@@ -160,13 +161,7 @@ class _SaleTransactionState extends State<SaleTransaction> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    PaddedText(
-                      text: "Sale Bills",
-                      style: TextStyle(
-                        fontSize: height * 0.035,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    const PaddedText(text: "Sale Bills"),
                     ...dataList.map(
                       (e) {
                         return Padding(

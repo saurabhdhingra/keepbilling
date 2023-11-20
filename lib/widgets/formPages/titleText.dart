@@ -17,8 +17,10 @@ class TitleText extends StatelessWidget {
               width * 0.02, height * 0.01, width * 0.02, height * 0.01),
           child: Text(
             text,
-            style:
-                TextStyle(fontSize: height * 0.04, fontWeight: FontWeight.w800),
+            style: TextStyle(
+                fontSize: height * 0.04,
+                fontWeight: FontWeight.w800,
+                color:const Color.fromRGBO(91, 95, 255, 1)),
           ),
         ),
       ),

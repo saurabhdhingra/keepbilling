@@ -168,12 +168,9 @@ class _GSTreportState extends State<GSTreport> {
                       ),
                     ),
                     SizedBox(height: height * 0.02),
-                    PaddedText(
-                      text: "Final",
-                      style: TextStyle(
-                        fontSize: height * 0.025,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    const PaddedText(
+                      text: "Final"
+                      
                     ),
                     RowText(text: "Sales GST : $sales"),
                     RowText(text: "Sales GST : $purchase"),
