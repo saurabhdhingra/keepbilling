@@ -21,126 +21,137 @@ class QuickView extends StatelessWidget {
   Widget build(BuildContext context) {
     var height = SizeConfig.getHeight(context);
     var width = SizeConfig.getWidth(context);
-    return SizedBox(
-      height: height * 0.25,
-      child: Padding(
-        padding:
-            EdgeInsetsDirectional.fromSTEB(width * 0.05, 0, width * 0.05, 0),
-        child: GridView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          key: const PageStorageKey("Quick Links"),
-          shrinkWrap: true,
-          padding: EdgeInsets.zero,
-          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: width * 0.45,
-            childAspectRatio: isTab ? 4.0 : 3.0,
-            crossAxisSpacing: width * 0.02,
-            mainAxisSpacing: isTab ? width * 0.03 : width * 0.05,
-          ),
-          itemCount: 6,
-          itemBuilder: (context, index) {
-            switch (index) {
-              case 0:
-                {
-                  return card(
-                    height,
-                    width,
-                    "Total Balance",
-                    "Cash and Bank ",
-                    const Color.fromRGBO(255, 242, 214, 1),
-                    const BankMaster(),
-                    true,
-                    context,
-                  );
-                }
-              case 1:
-                {
-                  return card(
-                    height,
-                    width,
-                    data["Expenses"]["Total"].toInt().toString(),
-                    "Expenses",
-                    const Color.fromRGBO(255, 242, 214, 1),
-                    const ExpensesTransaction(),
-                    true,
-                    context,
-                  );
-                }
-
-              case 2:
-                {
-                  return card(
-                    height,
-                    width,
-                    data["Sales"]["Total"].toInt().toString(),
-                    "Sales",
-                    const Color.fromRGBO(255, 242, 214, 1),
-                    const SaleTransaction(),
-                    true,
-                    context,
-                  );
-                }
-              case 3:
-                {
-                  return card(
-                    height,
-                    width,
-                    data["Purchase"]["Total"].toInt().toString(),
-                    "Purchase",
-                    const Color.fromRGBO(255, 242, 214, 1),
-                    const PurchaseTransaction(),
-                    true,
-                    context,
-                  );
-                }
-              case 4:
-                {
-                  return card(
-                    height,
-                    width,
-                    data["Post Dated Cheque"]["Recievable"].toInt().toString(),
-                    "Cheque Recievable",
-                    const Color.fromARGB(167, 16, 196, 160),
-                    const SizedBox(),
-                    false,
-                    context,
-                  );
-                }
-              case 5:
-                {
-                  return card(
-                    height,
-                    width,
-                    data["Post Dated Cheque"]["Payable"].toInt().toString(),
-                    "Cheque Payable",
-                    const Color.fromARGB(160, 244, 67, 54),
-                    const SizedBox(),
-                    false,
-                    context,
-                  );
-                }
-              default:
-                {
-                  return card(
-                    height,
-                    width,
-                    data["Bank"] + data["Cash"],
-                    "ABC",
-                    const Color.fromARGB(255, 214, 214, 214),
-                    const ExpensesTransaction(),
-                    true,
-                    context,
-                  );
-                }
-            }
-          },
+    return Padding(
+      padding: EdgeInsetsDirectional.fromSTEB(width * 0.05, 0, width * 0.05, 0),
+      child: GridView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        key: const PageStorageKey("Quick Links"),
+        shrinkWrap: true,
+        padding: EdgeInsets.zero,
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: width * 0.45,
+          childAspectRatio: isTab ? 4.0 : 3.0,
+          crossAxisSpacing: width * 0.02,
+          mainAxisSpacing: isTab ? width * 0.03 : width * 0.05,
         ),
+        itemCount: 6,
+        itemBuilder: (context, index) {
+          switch (index) {
+            case 0:
+              {
+                return card(
+                  height,
+                  width,
+                  "Total Balance",
+                  "Cash and Bank ",
+                  const Color.fromRGBO(255, 242, 214, 1),
+                  const BankMaster(),
+                  true,
+                  false,
+                  context,
+                );
+              }
+            case 1:
+              {
+                return card(
+                  height,
+                  width,
+                  data["Expenses"]["Total"].toInt().toString(),
+                  "Expenses",
+                  const Color.fromRGBO(255, 242, 214, 1),
+                  const ExpensesTransaction(),
+                  true,
+                  true,
+                  context,
+                );
+              }
+
+            case 2:
+              {
+                return card(
+                  height,
+                  width,
+                  data["Sales"]["Total"].toInt().toString(),
+                  "Sales",
+                  const Color.fromRGBO(255, 242, 214, 1),
+                  const SaleTransaction(),
+                  true,
+                  true,
+                  context,
+                );
+              }
+            case 3:
+              {
+                return card(
+                  height,
+                  width,
+                  data["Purchase"]["Total"].toInt().toString(),
+                  "Purchase",
+                  const Color.fromRGBO(255, 242, 214, 1),
+                  const PurchaseTransaction(),
+                  true,
+                  true,
+                  context,
+                );
+              }
+            case 4:
+              {
+                return card(
+                  height,
+                  width,
+                  data["Post Dated Cheque"]["Recievable"].toInt().toString(),
+                  "Cheque Recievable",
+                  const Color.fromARGB(167, 16, 196, 160),
+                  const SizedBox(),
+                  false,
+                  true,
+                  context,
+                );
+              }
+            case 5:
+              {
+                return card(
+                  height,
+                  width,
+                  data["Post Dated Cheque"]["Payable"].toInt().toString(),
+                  "Cheque Payable",
+                  const Color.fromARGB(160, 244, 67, 54),
+                  const SizedBox(),
+                  false,
+                  true,
+                  context,
+                );
+              }
+            default:
+              {
+                return card(
+                  height,
+                  width,
+                  data["Bank"] + data["Cash"],
+                  "ABC",
+                  const Color.fromARGB(255, 214, 214, 214),
+                  const ExpensesTransaction(),
+                  true,
+                  false,
+                  context,
+                );
+              }
+          }
+        },
       ),
     );
   }
 
-  Widget card(double height, double width, String title, String subtitle,
-      Color color, Widget screen, bool isButton, BuildContext context) {
+  Widget card(
+      double height,
+      double width,
+      String title,
+      String subtitle,
+      Color color,
+      Widget screen,
+      bool isButton,
+      bool isRupee,
+      BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(
           horizontal: width * 0.005, vertical: height * 0.002),
@@ -185,7 +196,7 @@ class QuickView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        title,
+                        isRupee ? "\u{20B9} $title" : title,
                         style: TextStyle(
                           fontSize: height * 0.02,
                           fontWeight: FontWeight.bold,

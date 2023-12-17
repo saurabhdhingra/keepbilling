@@ -1122,7 +1122,7 @@ class _NavScreenState extends State<NavScreen> {
                       e["icon"],
                       size: isTablet ? width * 0.04 : width * 0.05,
                     ),
-                    backgroundColor: const Color.fromRGBO(232, 250, 223, 1),
+                   
                     key: PageStorageKey<String>(e["title"]),
                     title: Text(e["title"],
                         style: GoogleFonts.mukta(

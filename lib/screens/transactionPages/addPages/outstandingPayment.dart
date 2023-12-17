@@ -63,7 +63,7 @@ class _PaymentPageState extends State<PaymentPage> {
   int partyBankNameInd = 0;
   String branchName = "";
 
-  List<String> paymentOpts = ["Unselected", "Cash", "Checque", "Online"];
+  List<String> paymentOpts = ["Unselected", "Cash", "Cheque", "Online"];
 
   bool showEssentials = false;
   bool showSelectBank = false;
@@ -241,7 +241,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     showEssentials
                         ? RowText(
                             text: showChecqueNo
-                                ? "Checque Date"
+                                ? "Cheque Date"
                                 : "Transfer Date")
                         : const SizedBox(),
                     showEssentials
@@ -442,7 +442,7 @@ class _PaymentPageState extends State<PaymentPage> {
           showBranchName = false;
         });
         return;
-      case "Checque":
+      case "Cheque":
         setState(() {
           showEssentials = true;
           showSelectBank = true;
